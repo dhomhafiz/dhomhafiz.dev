@@ -70,7 +70,7 @@ const content: PortfolioContent = {
       },
       {
         id: "application",
-        comingSoon: true,
+        comingSoon: false,
         title: "Custom Web Application",
         audience: "For businesses that need purpose-built tools, connected systems, or workflows beyond a standard website.",
         price: "Custom quote",
