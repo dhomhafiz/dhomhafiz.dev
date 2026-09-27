@@ -16,6 +16,12 @@ npm start
 
 `npm run build` exports the site to `out/`. `npm start` serves that export. Google fonts are downloaded during the build by `next/font/google`; build machines need network access to Google Fonts.
 
+## GitHub Pages deployment
+
+The `.github/workflows/nextjs.yml` workflow builds and publishes `out/`. Its Configure Pages step provides `base_path` to the build as `NEXT_PUBLIC_BASE_PATH`, so Next.js scripts, images, responsive image candidates, video, poster, and favicon all use the same prefix. For the project site this is `/dhomhafiz.dev`; for a root-domain site it is empty. Do not use `assetPrefix` alone for public media.
+
+Local development leaves `NEXT_PUBLIC_BASE_PATH` unset. To reproduce the project deployment in PowerShell, run `$env:NEXT_PUBLIC_BASE_PATH='/dhomhafiz.dev'` followed by `npm.cmd run build`, and serve the export under that subpath. Rebuild without that variable for a root-path preview. Ensure the workflow, `src/lib/assetPath.ts`, `next.config.ts`, updated content/layout, and the tracked files in `public/` are included in your commit.
+
 ## Edit your content
 
 Edit `src/config/portfolio.ts` to update brand, contact email, content, services, and media. Direct email links open the visitor's mail client. The Contact Us form sends through EmailJS using the public service configuration in `src/lib/contact.ts`, with template variables `name`, `email`, and `message`. In the EmailJS template, set To Email to `dhomhafiz@gmail.com` and Reply-To to `{{email}}`; the recipient is managed in EmailJS, not by the form. Fields clear only after a successful response, and remain available after an error. Production build and mocked request checks do not verify live email delivery.

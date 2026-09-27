@@ -1,3 +1,4 @@
+import { assetPath, assetSrcSet } from "@/lib/assetPath";
 import type { PortfolioContent, PortfolioProvider } from "@/types/portfolio";
 
 // SRP: editable sample content lives outside rendering and interaction code.
@@ -10,9 +11,9 @@ const content: PortfolioContent = {
     heading: "Human ideas.",
     highlight: "Digital futures.",
     portrait: {
-      src: "/images/hafiz-768.webp",
-      avifSrcSet: "/images/hafiz-480.avif 480w, /images/hafiz-640.avif 640w, /images/hafiz-768.avif 768w, /images/hafiz-1024.avif 1024w",
-      webpSrcSet: "/images/hafiz-480.webp 480w, /images/hafiz-640.webp 640w, /images/hafiz-768.webp 768w, /images/hafiz-1024.webp 1024w",
+      src: assetPath("/images/hafiz-768.webp"),
+      avifSrcSet: assetSrcSet("/images/hafiz-480.avif 480w, /images/hafiz-640.avif 640w, /images/hafiz-768.avif 768w, /images/hafiz-1024.avif 1024w"),
+      webpSrcSet: assetSrcSet("/images/hafiz-480.webp 480w, /images/hafiz-640.webp 640w, /images/hafiz-768.webp 768w, /images/hafiz-1024.webp 1024w"),
       socials: [
         { platform: "github", href: "https://github.com/dhomhafiz" },
         { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/" },
@@ -23,8 +24,8 @@ const content: PortfolioContent = {
   },
   media: {
     // Compressed local copy of the credited Pexels footage.
-    sources: [{ src: "/videos/hero-720p.mp4", type: "video/mp4" }],
-    poster: "/images/hero-poster.webp",
+    sources: [{ src: assetPath("/videos/hero-720p.mp4"), type: "video/mp4" }],
+    poster: assetPath("/images/hero-poster.webp"),
     sourceUrl: "https://www.pexels.com/video/a-computer-screen-with-the-word-target-on-it-6037155/",
   },
   technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
@@ -100,8 +101,8 @@ const content: PortfolioContent = {
       location: "Ampang Park MRT Station, Kuala Lumpur",
       technologies: ["Python", "Hardware integration", "Interactive installation"],
       image: {
-        src: "/images/squid-game-2-installation.webp",
-        srcSet: "/images/squid-game-2-480.webp 480w, /images/squid-game-2-640.webp 640w, /images/squid-game-2-768.webp 768w, /images/squid-game-2-installation.webp 1024w",
+        src: assetPath("/images/squid-game-2-installation.webp"),
+        srcSet: assetSrcSet("/images/squid-game-2-480.webp 480w, /images/squid-game-2-640.webp 640w, /images/squid-game-2-768.webp 768w, /images/squid-game-2-installation.webp 1024w"),
         alt: "Squid Game 2 promotional installation with a voting console between two costumed guards at Ampang Park MRT Station.",
         width: 1024,
         height: 768,
