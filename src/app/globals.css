@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* OCP: shared RGB tokens support Tailwind opacity modifiers and future themes. */
+  :root {
+    color-scheme: dark;
+    --cyber-dark: 5 10 17;
+    --cyber-surface: 14 22 33;
+    --cyber-text: 241 245 249;
+    --cyber-muted: 168 183 196;
+    --cyber-cyan: 99 236 220;
+    --cyber-purple: 143 115 235;
+    --cyber-border: 255 255 255;
+    --cyber-on-accent: 5 10 17;
+    --cyber-hover: 255 255 255;
+    --hero-video-opacity: .45;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --cyber-dark: 247 250 252;
+    --cyber-surface: 255 255 255;
+    --cyber-text: 18 32 47;
+    --cyber-muted: 70 88 106;
+    --cyber-cyan: 0 105 98;
+    --cyber-purple: 101 69 170;
+    --cyber-border: 32 55 72;
+    --cyber-on-accent: 255 255 255;
+    --cyber-hover: 0 80 75;
+    --hero-video-opacity: .85;
+  }
+  html { scroll-behavior: smooth; scroll-padding-top: 10rem; }
+  body { margin: 0; }
+  ::selection { background: rgb(var(--cyber-cyan) / .3); }
+  :focus-visible { outline: 2px solid rgb(var(--cyber-cyan)); outline-offset: 5px; }
+  button:disabled { cursor: not-allowed; opacity: .5; }
+}
+
+@layer components {
+  /* SRP: decorative surfaces remain independent of content and media availability. */
+  .glass-panel { border: 1px solid rgb(var(--cyber-border) / .16); background: rgb(var(--cyber-surface) / .55); backdrop-filter: blur(12px); }
+  .hero-fallback {
+    background: radial-gradient(ellipse at 80% 42%, rgb(var(--cyber-cyan) / .14), transparent 46%), radial-gradient(ellipse at 95% 75%, rgb(var(--cyber-purple) / .16), transparent 48%), rgb(var(--cyber-dark));
+  }
+  .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .95) 0%, rgb(var(--cyber-dark) / .78) 48%, rgb(var(--cyber-dark) / .28)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 50%); }
+  :root[data-theme="light"] .hero-scrim { background: linear-gradient(180deg, rgb(var(--cyber-dark) / .86), rgb(var(--cyber-dark) / .82) 48%, rgb(var(--cyber-dark) / .35) 75%), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
+  @media (min-width: 1024px) {
+    :root[data-theme="light"] .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .82), rgb(var(--cyber-dark) / .72) 45%, rgb(var(--cyber-dark) / .18)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
+  }
+  .skip-link { position: fixed; top: 1rem; left: 1rem; z-index: 100; transform: translateY(-200%); padding: .8rem 1rem; background: rgb(var(--cyber-cyan)); color: rgb(var(--cyber-on-accent)); }
+  .skip-link:focus { transform: translateY(0); }
+}
+
+@layer utilities {
+  .radial-grid { background-image: radial-gradient(rgb(var(--cyber-cyan) / .45) 1px, transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(ellipse at right, black, transparent 75%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

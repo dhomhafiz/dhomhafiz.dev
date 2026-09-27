@@ -1,0 +1,62 @@
+# Signal — Frontend portfolio starter
+
+A hero-first Next.js App Router portfolio with TypeScript and Tailwind CSS 3. The initial scope includes the video hero, a small supporting approach section, and reusable primitives. Project grids, experience timelines and contact forms can be added as independent feature modules later.
+
+## Run
+
+Requires Node.js 20.9+.
+
+```sh
+npm install
+npm run dev
+npm run typecheck
+npm run build
+npm start
+```
+
+`npm run build` exports the site to `out/`. `npm start` serves that export. Google fonts are downloaded during the build by `next/font/google`; build machines need network access to Google Fonts.
+
+## Edit your content
+
+Edit `src/config/portfolio.ts` to update brand, contact email, content, services, and media. Direct email links open the visitor's mail client. The Contact Us form sends through EmailJS using the public service configuration in `src/lib/contact.ts`, with template variables `name`, `email`, and `message`. In the EmailJS template, set To Email to `dhomhafiz@gmail.com` and Reply-To to `{{email}}`; the recipient is managed in EmailJS, not by the form. Fields clear only after a successful response, and remain available after an error. Production build and mocked request checks do not verify live email delivery.
+
+The hero uses a compressed local copy of the Pexels footage at `public/videos/hero-720p.mp4`, with a 21 KB WebP still frame. Its Pexels source credit stays in `media.sourceUrl`. The video is requested after the initial page load during browser idle time, is omitted for reduced motion, Save-Data, or reported 2G/3G connections, and pauses off-screen or in a hidden tab. The original downloaded footage is retained in the ignored `.media-source/` directory, outside the deployed `out/` folder.
+
+The portrait uses responsive AVIF/WebP variants (480, 640, 768, and 1024 pixels); its original PNG is preserved but is no longer requested by the page. The project image also has responsive WebP variants.
+
+`npm start` loads `serve.json`: hashed Next.js assets cache for one year, images/video for 30 days, and HTML revalidates. Configure equivalent response headers on your deployment host; this local server configuration is not automatically applied by other hosts. Rename media files and update their URLs when replacing cached assets.
+
+Lighthouse reports and media checks are in `audits/`, with the environment, results, and remaining limitations in `audits/README.md`.
+
+## Architecture
+
+```text
+src/
+  app/                     Route composition, fonts, metadata, global styles
+  components/
+    common/                Native button/link, video and surface primitives
+    features/              Portfolio boundary, header, approach and hero modules
+  hooks/                   Media state and reduced-motion preference
+  types/                   Lean content and provider contracts
+  config/                  Replaceable local content adapter
+```
+
+- **SRP:** media behavior lives in `useBackgroundVideo`; media, copy, toolkit and composition each have their own component. The async server boundary loads content.
+- **OCP:** Hero accepts children; primitives accept children; repeated content is data driven. Extend theme tokens without editing features.
+- **LSP:** Button, ButtonLink and VideoPlayer forward native element attributes and refs. Anchors remain anchors. GlassCard preserves native div attributes.
+- **ISP:** leaf components receive small contracts or primitive fields instead of the whole portfolio.
+- **DIP:** PortfolioPage receives a PortfolioProvider interface. Only app/page.tsx chooses the local adapter. Swap for a CMS adapter implementing getPortfolio without editing presentation components. With static export, providers run at build time; dynamic content requires rebuilding or changing the hosting model.
+
+## Accessibility and media
+
+Keyboard focus, a skip link, semantic headings, responsive type, readable overlay, and explicit motion controls are included. Reduced-motion users do not load the video. Autoplay is muted and inline; blocked autoplay retains a play control when media is ready. Failed media leaves the gradient/grid fallback intact. Motion CSS also respects reduced-motion preferences. Decorative video is hidden from assistive technology.
+
+## Theme
+
+RGB color values live in `src/app/globals.css`, are exposed through `tailwind.config.js`, and support Tailwind opacity modifiers. `next/font/google` exposes Space Grotesk and JetBrains Mono as CSS variables. Utilities include `glass-panel`, `radial-grid` and `shadow-neon-cyan`.
+
+## References
+
+- https://nextjs.org/docs/app/api-reference/components/font
+- https://nextjs.org/docs/app/guides/static-exports
+- https://www.pexels.com/video/a-computer-screen-with-the-word-target-on-it-6037155/

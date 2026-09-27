@@ -1,0 +1,25 @@
+import { SocialLinks } from "@/components/common/SocialLinks";
+import type { HeroCopy } from "@/types/portfolio";
+
+export function HeroPortrait({ src, alt, socials, avifSrcSet, webpSrcSet }: NonNullable<HeroCopy["portrait"]>) {
+  return <div className="relative z-10 mx-auto w-full max-w-[440px] lg:max-w-none">
+    <div className="relative">
+    <div aria-hidden="true" className="absolute -inset-6 rounded-full bg-cyber-cyan/10 blur-3xl" />
+    <div aria-hidden="true" className="absolute -inset-3 rotate-3 rounded-[2.25rem] border border-cyber-cyan/25" />
+    <figure className="relative overflow-hidden rounded-[1.75rem] border border-cyber-border/20 bg-cyber-surface shadow-[0_24px_80px_-24px_rgb(var(--cyber-cyan)/0.3)]">
+      <picture>
+        {avifSrcSet && <source type="image/avif" srcSet={avifSrcSet} sizes="(min-width: 1440px) 553px, (min-width: 1024px) 40vw, (min-width: 488px) 440px, calc(100vw - 48px)" />}
+        <img src={src} srcSet={webpSrcSet} sizes="(min-width: 1440px) 553px, (min-width: 1024px) 40vw, (min-width: 488px) 440px, calc(100vw - 48px)" alt={alt} width={1024} height={1024} fetchPriority="high" decoding="async"
+          className="aspect-square w-full object-cover" />
+      </picture>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-inset ring-white/10" />
+    </figure>
+    </div>
+    <div className="relative mx-4 -mt-5 sm:mx-6">
+    <span className="inline-block rounded-xl border border-cyber-border/15 bg-cyber-surface/95 px-4 py-3 font-mono text-xs text-cyber-text shadow-lg backdrop-blur-md">
+      <span className="mr-2 text-cyber-cyan">//</span> dhomhafiz.dev
+    </span>
+    {socials && socials.length > 0 && <SocialLinks links={socials} />}
+    </div>
+  </div>;
+}

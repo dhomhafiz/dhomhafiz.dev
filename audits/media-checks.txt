@@ -1,0 +1,1 @@
+PASS: reduced motion, Save-Data, slow connection (no MP4 requests); responsive AVIF selection; desktop overflow; off-screen pause/resume; live reduced-motion change.
