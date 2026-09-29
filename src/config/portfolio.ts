@@ -1,5 +1,9 @@
 import { assetPath, assetSrcSet } from "@/lib/assetPath";
 import type { PortfolioContent, PortfolioProvider } from "@/types/portfolio";
+import { FaJava } from "react-icons/fa6";
+import { SiApachemaven, SiHibernate, SiNextdotjs, SiNodedotjs, SiPostman, SiReact, SiSpringboot, SiTailwindcss, SiTypescript } from "react-icons/si";
+import { TbAiAgent } from "react-icons/tb";
+import { VscVscode } from "react-icons/vsc";
 
 // SRP: editable sample content lives outside rendering and interaction code.
 const content: PortfolioContent = {
@@ -28,7 +32,20 @@ const content: PortfolioContent = {
     poster: assetPath("/images/hero-poster.webp"),
     sourceUrl: "https://www.pexels.com/video/a-computer-screen-with-the-word-target-on-it-6037155/",
   },
-  technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+  technologies: [
+    { name: "Next.js", icon: SiNextdotjs },
+    { name: "React", icon: SiReact },
+    { name: "TypeScript", icon: SiTypescript },
+    { name: "Tailwind CSS", icon: SiTailwindcss },
+    { name: "Java", icon: FaJava },
+    { name: "Spring Boot", icon: SiSpringboot },
+    { name: "Hibernate", icon: SiHibernate },
+    { name: "Maven", icon: SiApachemaven },
+    { name: "Postman", icon: SiPostman },
+    { name: "Agentic AI", icon: TbAiAgent },
+    { name: "VS Code", icon: VscVscode },
+    { name: "Node.js", icon: SiNodedotjs },
+  ],
   services: {
     tiers: [
       {

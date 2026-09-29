@@ -1,3 +1,5 @@
+import type { IconType } from "react-icons";
+
 // ISP: small domain contracts prevent primitives from depending on an entire page.
 export interface HeroCopy {
   eyebrow: string;
@@ -7,6 +9,7 @@ export interface HeroCopy {
   portrait?: { src: string; alt: string; avifSrcSet?: string; webpSrcSet?: string; socials?: readonly SocialLink[] };
 }
 export interface SocialLink { platform: "github" | "linkedin"; href: string }
+export interface ToolkitTechnology { name: string; icon: IconType }
 export interface VideoSource {
   src: string;
   type: string;
@@ -49,7 +52,7 @@ export interface PortfolioContent {
   contactEmail: string;
   hero: HeroCopy;
   media: HeroMedia;
-  technologies: readonly string[];
+  technologies: readonly ToolkitTechnology[];
   capabilities: readonly Capability[];
   projects: readonly PersonalProject[];
   services: ServiceOffer;
