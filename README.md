@@ -57,7 +57,7 @@ src/
 
 Keyboard focus, a skip link, semantic headings, responsive type, readable overlay, and explicit motion controls are included. Reduced-motion users do not load the video. Autoplay is muted and inline; blocked autoplay retains a play control when media is ready. Failed media leaves the gradient/grid fallback intact. Motion CSS also respects reduced-motion preferences. Decorative video is hidden from assistive technology.
 
-## Theme
+## Themes
 
 RGB color values live in `src/app/globals.css`, are exposed through `tailwind.config.js`, and support Tailwind opacity modifiers. `next/font/google` exposes Space Grotesk and JetBrains Mono as CSS variables. Utilities include `glass-panel`, `radial-grid` and `shadow-neon-cyan`.
 
