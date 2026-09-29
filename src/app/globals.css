@@ -15,7 +15,7 @@
     --cyber-border: 255 255 255;
     --cyber-on-accent: 5 10 17;
     --cyber-hover: 255 255 255;
-    --hero-video-opacity: .45;
+    --hero-video-opacity: .8;
   }
   :root[data-theme="light"] {
     color-scheme: light;
@@ -43,7 +43,7 @@
   .hero-fallback {
     background: radial-gradient(ellipse at 80% 42%, rgb(var(--cyber-cyan) / .14), transparent 46%), radial-gradient(ellipse at 95% 75%, rgb(var(--cyber-purple) / .16), transparent 48%), rgb(var(--cyber-dark));
   }
-  .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .95) 0%, rgb(var(--cyber-dark) / .78) 48%, rgb(var(--cyber-dark) / .28)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 50%); }
+  .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .9) 0%, rgb(var(--cyber-dark) / .68) 48%, rgb(var(--cyber-dark) / .18)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 50%); }
   :root[data-theme="light"] .hero-scrim { background: linear-gradient(180deg, rgb(var(--cyber-dark) / .86), rgb(var(--cyber-dark) / .82) 48%, rgb(var(--cyber-dark) / .35) 75%), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
   @media (min-width: 1024px) {
     :root[data-theme="light"] .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .82), rgb(var(--cyber-dark) / .72) 45%, rgb(var(--cyber-dark) / .18)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
