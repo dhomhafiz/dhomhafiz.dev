@@ -18,9 +18,9 @@ npm start
 
 ## GitHub Pages deployment
 
-The `.github/workflows/nextjs.yml` workflow builds and publishes `out/`. Its Configure Pages step provides `base_path` to the build as `NEXT_PUBLIC_BASE_PATH`, so Next.js scripts, images, responsive image candidates, video, poster, and favicon all use the same prefix. For the project site this is `/dhomhafiz.dev`; for a root-domain site it is empty. Do not use `assetPrefix` alone for public media.
+The `.github/workflows/nextjs.yml` workflow builds and publishes `out/` for the root custom domain `dhomhafiz.dev`. Next.js `basePath` is empty, and public assets use root-relative paths. Do not set `NEXT_PUBLIC_BASE_PATH` for this deployment.
 
-Local development leaves `NEXT_PUBLIC_BASE_PATH` unset. To reproduce the project deployment in PowerShell, run `$env:NEXT_PUBLIC_BASE_PATH='/dhomhafiz.dev'` followed by `npm.cmd run build`, and serve the export under that subpath. Rebuild without that variable for a root-path preview. Ensure the workflow, `src/lib/assetPath.ts`, `next.config.ts`, updated content/layout, and the tracked files in `public/` are included in your commit.
+Build locally with `npm.cmd run build` and serve the export from the domain root. Ensure the workflow, `src/lib/assetPath.ts`, `next.config.ts`, updated content/layout, and the tracked files in `public/` are included in your commit.
 
 ## Edit your content
 
