@@ -10,9 +10,9 @@ export async function sendContactMessage(values: ContactMessage) {
       headers: { "Content-Type": "application/json" },
       signal: controller.signal,
       body: JSON.stringify({
-        service_id: "service_risqb4l",
-        template_id: "template_tin4wnb",
-        user_id: "g9X929W5sDIxOlaoW",
+        service_id: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        template_id: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        user_id: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
         template_params: { name: values.name, email: values.email, message: values.message },
       }),
     });
