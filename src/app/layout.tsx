@@ -11,6 +11,30 @@ export const metadata: Metadata = {
   title: "Mohd Hafiz Abd Rahim",
   description: "Thoughtful web experiences, built with precision. Independent frontend development with React, Next.js, and TypeScript.",
   icons: { icon: assetPath("/favicon.svg") },
+  metadataBase: new URL("https://dhomhafiz.dev"),
+  alternates: { canonical: "/" },
+  keywords: [
+    "Mohd Hafiz Abd Rahim",
+    "dhomhafiz",
+    "dhomhafiz.dev",
+    "Freelance Web Developer Malaysia",
+    "Next.js Developer Malaysia",
+    "Java Spring Boot Developer",
+    "AI Developer Kuala Lumpur",
+  ],
+  openGraph: {
+    title: "Mohd Hafiz Abd Rahim | Independent Frontend Developer",
+    description: "Thoughtful web experiences, built with precision. Independent frontend development with React, Next.js, and TypeScript.",
+    url: "https://dhomhafiz.dev",
+    siteName: "dhomhafiz.dev",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mohd Hafiz Abd Rahim | Independent Frontend Developer",
+    description: "Thoughtful web experiences, built with precision.",
+  },
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" suppressHydrationWarning className={`${display.variable} ${body.variable}`}>
