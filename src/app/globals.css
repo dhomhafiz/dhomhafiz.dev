@@ -16,6 +16,8 @@
     --cyber-on-accent: 5 10 17;
     --cyber-hover: 255 255 255;
     --hero-video-opacity: .8;
+    --hero-portrait-filter: saturate(.78) brightness(.88) contrast(1.03);
+    --hero-portrait-edge-opacity: .3;
   }
   :root[data-theme="light"] {
     color-scheme: light;
@@ -29,6 +31,8 @@
     --cyber-on-accent: 255 255 255;
     --cyber-hover: 0 80 75;
     --hero-video-opacity: .85;
+    --hero-portrait-filter: saturate(.7) brightness(1.06) contrast(.92);
+    --hero-portrait-edge-opacity: .2;
   }
   html { scroll-behavior: smooth; scroll-padding-top: 10rem; }
   body { margin: 0; }
@@ -40,6 +44,16 @@
 @layer components {
   /* SRP: decorative surfaces remain independent of content and media availability. */
   .glass-panel { border: 1px solid rgb(var(--cyber-border) / .16); background: rgb(var(--cyber-surface) / .55); backdrop-filter: blur(12px); }
+  /* Theme-owned color grading keeps the portrait component independent of theme logic. */
+  .hero-portrait img { filter: var(--hero-portrait-filter); }
+  .hero-portrait::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 50% 42%, transparent 40%, rgb(var(--cyber-dark) / var(--hero-portrait-edge-opacity)) 100%);
+  }
   .hero-fallback {
     background: radial-gradient(ellipse at 80% 42%, rgb(var(--cyber-cyan) / .14), transparent 46%), radial-gradient(ellipse at 95% 75%, rgb(var(--cyber-purple) / .16), transparent 48%), rgb(var(--cyber-dark));
   }
