@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1200, initial-scale=1">
+  <title>dhomhafiz.dev — social banner</title>
+  <style>
+    @font-face { font-family: "Space Grotesk"; src: url("./space-grotesk-latin.woff2") format("woff2"); font-weight: 300 700; font-style: normal; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #050a11; }
+    .banner {
+      width: 1200px; height: 630px; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: "Space Grotesk", sans-serif; color: #f1f5f9;
+      background: radial-gradient(ellipse at 88% 12%, #63ecdc13, transparent 52%),
+        radial-gradient(ellipse at 10% 100%, #8f73eb0c, transparent 50%), #050a11;
+    }
+    .banner::before {
+      content: ""; position: absolute; inset: 0;
+      background-image: linear-gradient(#63ecdc08 1px, transparent 1px), linear-gradient(90deg, #63ecdc08 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: linear-gradient(120deg, #0008, transparent 48%, #000);
+    }
+    .frame { position: absolute; inset: 30px; border: 1px solid #ffffff10; border-radius: 20px; }
+    .frame::before, .frame::after { content: ""; position: absolute; width: 36px; height: 3px; background: #63ecdc; }
+    .frame::before { top: -1px; left: 42px; }
+    .frame::after { bottom: -1px; right: 42px; }
+    .content { position: relative; text-align: center; transform: translateY(-3px); }
+    h1 { display: flex; justify-content: center; align-items: baseline; gap: 24px; margin: 0; font-size: 88px; line-height: 1.2; font-weight: 600; letter-spacing: -4px; }
+    .slashes { color: #63ecdc; font-weight: 500; letter-spacing: -7px; padding-right: 7px; }
+    p { margin: 28px 0 0; color: #a8b7c4; font-size: 25px; line-height: 1.5; letter-spacing: -.3px; }
+    .accent { width: 44px; height: 3px; border-radius: 2px; background: #63ecdc; margin: 38px auto 0; }
+  </style>
+</head>
+<body>
+  <main class="banner">
+    <div class="frame" aria-hidden="true"></div>
+    <div class="content">
+      <h1><span class="slashes">//</span><span>dhomhafiz.dev</span></h1>
+      <p>Thoughtful web experiences, built with precision.</p>
+      <div class="accent" aria-hidden="true"></div>
+    </div>
+  </main>
+</body>
+</html>
