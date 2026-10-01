@@ -55,7 +55,7 @@ export function Contact({ contactEmail, packages }: { contactEmail: string; pack
         <p className="mt-6 max-w-md text-sm leading-7 text-cyber-muted">Tell me about your project, your goals, and what you have in mind. A rough idea is a great place to start.</p>
         <a href={`mailto:${contactEmail}`} className="mt-7 inline-flex min-h-11 items-center break-all text-sm text-cyber-cyan underline decoration-cyber-cyan/30 underline-offset-4">{contactEmail}</a>
       </div>
-      <form id="contact-form" aria-label="Website project enquiry" onSubmit={submit} className="min-w-0 scroll-mt-4 rounded-2xl border border-cyber-border/15 bg-cyber-surface/60 p-5 sm:p-6 md:p-8" aria-busy={status === "sending"}>
+      <form id="contact-form" tabIndex={-1} aria-label="Website project enquiry" onSubmit={submit} className="min-w-0 scroll-mt-4 rounded-2xl border border-cyber-border/15 bg-cyber-surface/60 p-5 sm:p-6 md:p-8" aria-busy={status === "sending"}>
         <fieldset disabled={status === "sending"} className="min-w-0 space-y-5">
           <legend className="sr-only">Send Hafiz a message</legend>
           <div>

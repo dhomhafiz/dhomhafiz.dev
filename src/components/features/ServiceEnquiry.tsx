@@ -35,7 +35,9 @@ export function PackageEnquiryLink({ id, title, recommended, children }: {
         if (!form) return;
         event.preventDefault();
         setPackageId(id);
-        document.getElementById("contact-package")?.focus({ preventScroll: true });
+        // Focus the form, not the select: mobile browsers may open a native
+        // picker when a select receives focus during a user-triggered action.
+        form.focus({ preventScroll: true });
         // Start scrolling after focus and the selected package have been applied.
         // Focusing a control during a smooth scroll can cancel it in some browsers.
         requestAnimationFrame(() => {
