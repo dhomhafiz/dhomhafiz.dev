@@ -1,0 +1,6 @@
+.dental-site { font-family: Arial, Helvetica, sans-serif; color-scheme: light; }
+.dental-site .dental-display { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
+.dental-site :focus-visible { outline: 3px solid #247769; outline-offset: 4px; }
+.dental-site ::selection { background: #c7e0d2; color: #183f39; }
+.dental-site input, .dental-site select { color-scheme: light; }
+.dental-site section[id] { scroll-margin-top: 5rem; }

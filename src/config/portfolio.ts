@@ -114,6 +114,8 @@ const content: PortfolioContent = {
   projects: [
     {
       id: "netflix-squid-game-2",
+      category: "enterprise",
+      context: "Client Experiential Marketing Installation",
       title: "Netflix Squid Game 2 Interactive Poll System",
       description: "Engineered a Python-based interactive installation for Netflix’s promotional event at Ampang Park MRT Station, KL. Integrated physical hardware inputs (Blue for Continue, Red for Withdraw) to replicate the show's iconic voting mechanic, delivering an immersive experiential marketing activation for the public.",
       location: "Ampang Park MRT Station, Kuala Lumpur",
@@ -127,6 +129,29 @@ const content: PortfolioContent = {
         sourceUrl: "https://www.therakyatpost.com/wp-content/webp-express/webp-images/uploads/2024/12/image-77-1024x768.png.webp",
         credit: "The Rakyat Post",
       },
+    },
+    {
+      id: "dental-project",
+      category: "template",
+      presentation: "dental",
+      context: "High-Conversion Niche Blueprint",
+      title: "🩺 Dental Clinic Website Demo",
+      description: "Help local patients explore your services, understand your pricing, and take the next step towards a visit. Preview a welcoming, mobile-friendly clinic website with an easy-to-use appointment booking demo.",
+      location: "Web experience / Healthcare",
+      technologies: ["Next.js", "Tailwind CSS", "TypeScript", "Static Site Generation (SSG)"],
+      image: {
+        src: assetPath("/images/dental/studio.svg"),
+        alt: "Still Dental concept illustration: a sage green dental chair in a calm studio with an arched window and plants",
+        width: 640,
+        height: 720,
+      },
+      demoHref: assetPath("/demo-dental/"),
+      lighthouseScores: [
+        { label: "Performance", score: 98 },
+        { label: "Accessibility", score: 100 },
+        { label: "Best Practices", score: 100 },
+        { label: "SEO", score: 100 },
+      ],
     },
   ],
   capabilities: [

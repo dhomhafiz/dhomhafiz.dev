@@ -38,14 +38,26 @@ export interface ServiceOffer {
   tiers: readonly ServiceTier[];
 }
 export interface FAQItem { question: string; answer: string }
-export interface PersonalProject {
+export type ProjectCategory = "enterprise" | "template";
+interface ProjectBase {
   id: string;
+  category: ProjectCategory;
+  context: string;
   title: string;
   description: string;
   location: string;
   technologies: readonly string[];
-  image: { src: string; srcSet?: string; alt: string; width: number; height: number; sourceUrl: string; credit: string };
+  image: { src: string; srcSet?: string; alt: string; width: number; height: number; sourceUrl?: string; credit?: string };
 }
+export interface EnterpriseProject extends ProjectBase { category: "enterprise" }
+export interface TemplateProject extends ProjectBase {
+  category: "template";
+  presentation?: "dental";
+  demoHref: string;
+  sourceHref?: string;
+  lighthouseScores?: readonly { label: string; score: number }[];
+}
+export type PersonalProject = EnterpriseProject | TemplateProject;
 export interface PortfolioContent {
   brand: string;
   availability: string;

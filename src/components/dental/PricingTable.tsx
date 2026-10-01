@@ -1,0 +1,14 @@
+"use client";
+
+import { useState } from "react";
+import { treatments, type Treatment } from "./content";
+import { Arrow, Container, Eyebrow } from "./ui";
+
+export function PricingTable({ selectedId, onSelect }: { selectedId: string; onSelect: (treatment: Treatment) => void }) {
+  const [category, setCategory] = useState<Treatment["category"]>("essentials");
+  return <section id="pricing" aria-labelledby="pricing-heading" className="bg-[#eff1e9] py-16 sm:py-20"><Container>
+    <div className="text-center"><Eyebrow>Clear from the start</Eyebrow><h2 id="pricing-heading" className="dental-display text-4xl tracking-tight sm:text-5xl">Good care. No guesswork.</h2><p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-[#5a6b61]">Explore sample treatments and choose your first step.<br />Illustrative prices in MYR. Final care and costs require an assessment.</p></div>
+    <div role="group" aria-label="Filter treatments" className="mx-auto my-8 flex w-fit max-w-full gap-1 rounded-full border border-[#183f39]/15 bg-[#faf9f6] p-1">{(["essentials", "cosmetic"] as const).map(value => <button key={value} type="button" aria-pressed={category === value} onClick={() => setCategory(value)} className={`min-h-11 rounded-full px-5 text-sm font-medium transition-colors ${category === value ? "bg-[#183f39] text-white" : "text-[#183f39] hover:bg-[#e3e9dc]"}`}>{value === "essentials" ? "Everyday care" : "Smile goals"}</button>)}</div>
+    <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-2">{treatments.filter(t => t.category === category).map(treatment => <article key={treatment.id} className={`flex flex-col rounded-2xl border bg-[#fffdf8] p-6 sm:p-8 ${selectedId === treatment.id ? "border-[#638570] ring-1 ring-[#638570]" : "border-[#183f39]/15"}`}><div className="flex items-start justify-between gap-3"><h3 className="dental-display text-2xl">{treatment.name}</h3><span className="shrink-0 rounded-full bg-[#eff1e9] px-3 py-1 text-[11px]">{treatment.duration}</span></div><p className="mt-2 text-sm text-[#5a6b61]">{treatment.description}</p><p className="my-6 flex items-baseline gap-2"><span className="text-sm">From RM</span><span className="dental-display text-5xl">{treatment.price}</span><span className="text-xs text-[#5a6b61]">/ visit</span></p><ul className="mb-8 space-y-3 text-sm text-[#5a6b61]">{treatment.included.map(item => <li key={item} className="flex gap-3"><span aria-hidden="true" className="text-[#407158]">✓</span>{item}</li>)}</ul><button type="button" onClick={() => onSelect(treatment)} className="mt-auto flex min-h-12 items-center justify-between gap-3 rounded-xl border border-[#183f39]/20 px-4 py-3 text-left text-sm font-semibold transition-colors hover:bg-[#183f39] hover:text-white">Choose {treatment.name.toLowerCase()}<Arrow /></button></article>)}</div>
+  </Container></section>;
+}
