@@ -1,7 +1,6 @@
 import type { PortfolioProvider } from "@/types/portfolio";
 import { SiteHeader } from "./SiteHeader";
 import { Hero } from "./hero/Hero";
-import { TechnologyStrip } from "./hero/TechnologyStrip";
 import { Approach } from "./Approach";
 import { PersonalProjects } from "./PersonalProjects";
 import { Services } from "./Services";
@@ -16,9 +15,7 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
   return <>
     <SiteHeader brand={content.brand} />
     <main id="main">
-      <Hero copy={content.hero} sources={content.media.sources} poster={content.media.poster} contactEmail={content.contactEmail}>
-        <TechnologyStrip items={content.technologies} />
-      </Hero>
+      <Hero copy={content.hero} sources={content.media.sources} poster={content.media.poster} contactEmail={content.contactEmail} />
       <PersonalProjects projects={content.projects} />
       <Services offer={content.services} contactEmail={content.contactEmail} />
       <FAQ items={content.faqs} />

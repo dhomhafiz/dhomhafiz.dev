@@ -1,13 +1,12 @@
-import type { ReactNode } from "react";
 import { HeroBackdrop } from "./HeroBackdrop";
 import { HeroCopy } from "./HeroCopy";
 import { HeroPortrait } from "./HeroPortrait";
 import type { HeroCopy as HeroCopyModel, VideoSource } from "@/types/portfolio";
 
-interface HeroProps { copy: HeroCopyModel; sources: readonly VideoSource[]; poster?: string; contactEmail: string; children?: ReactNode }
+interface HeroProps { copy: HeroCopyModel; sources: readonly VideoSource[]; poster?: string; contactEmail: string }
 
-// SRP: composition only. OCP: its lower slot supports new content without modifying Hero.
-export function Hero({ copy, sources, poster, contactEmail, children }: HeroProps) {
+// Compose the introduction, backdrop, and portrait.
+export function Hero({ copy, sources, poster, contactEmail }: HeroProps) {
   return <section aria-label="Introduction" className="relative isolate overflow-hidden border-b border-cyber-border/10">
     <HeroBackdrop sources={sources} poster={poster} />
     <div className="relative mx-auto flex min-h-[min(850px,calc(100svh-88px))] max-w-[1440px] flex-col justify-center px-6 pb-28 pt-20 md:px-12 lg:px-20 lg:pt-28">
@@ -15,7 +14,6 @@ export function Hero({ copy, sources, poster, contactEmail, children }: HeroProp
         <HeroCopy {...copy} contactEmail={contactEmail} />
         {copy.portrait && <HeroPortrait {...copy.portrait} />}
       </div>
-      <div className="relative z-10 mt-16 lg:mt-24">{children}</div>
     </div>
   </section>;
 }

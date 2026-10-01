@@ -15,13 +15,13 @@ const content: PortfolioContent = {
     heading: "Human ideas.",
     highlight: "Digital futures.",
     portrait: {
+      socials: [
+        { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/?isSelfProfile=true" },
+        { platform: "instagram", href: "https://www.instagram.com/frantickill/" },
+      ],
       src: assetPath("/images/minime-fisheye-3-768.webp"),
       avifSrcSet: assetSrcSet("/images/minime-fisheye-3-480.avif 480w, /images/minime-fisheye-3-560.avif 560w, /images/minime-fisheye-3-640.avif 640w, /images/minime-fisheye-3-768.avif 768w, /images/minime-fisheye-3-1024.avif 1024w, /images/minime-fisheye-3-1254.avif 1254w"),
       webpSrcSet: assetSrcSet("/images/minime-fisheye-3-480.webp 480w, /images/minime-fisheye-3-560.webp 560w, /images/minime-fisheye-3-640.webp 640w, /images/minime-fisheye-3-768.webp 768w, /images/minime-fisheye-3-1024.webp 1024w, /images/minime-fisheye-3-1254.webp 1254w"),
-      socials: [
-        { platform: "github", href: "https://github.com/dhomhafiz" },
-        { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/" },
-      ],
       alt: "Hafiz smiling with arms crossed in a neon-lit coding workspace, surrounded by miniature cartoon versions of himself.",
     },
     description: "I turn ambitious ideas into fast, thoughtful web experiences. Built with precision. Designed to feel effortless.",
