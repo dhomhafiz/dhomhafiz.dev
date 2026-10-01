@@ -11,9 +11,11 @@ const content: PortfolioContent = {
   availability: "Available for select projects",
   contactEmail: "dhomhafiz@gmail.com",
   hero: {
-    eyebrow: "INDEPENDENT FULLSTACK DEVELOPER",
-    heading: "Human ideas.",
-    highlight: "Digital futures.",
+    eyebrow: "WEBSITES FOR LOCAL BUSINESSES",
+    heading: "I build ultra-fast landing pages",
+    highlight: "to grow your sales & bookings.",
+    hostingHighlight: "RM0 Free Lifetime Hosting",
+    hostingNote: "For eligible static sites on a free hosting plan, subject to provider limits and continued availability. Domain renewals and paid services are separate.",
     portrait: {
       socials: [
         { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/?isSelfProfile=true" },
@@ -24,7 +26,7 @@ const content: PortfolioContent = {
       webpSrcSet: assetSrcSet("/images/minime-fisheye-3-480.webp 480w, /images/minime-fisheye-3-560.webp 560w, /images/minime-fisheye-3-640.webp 640w, /images/minime-fisheye-3-768.webp 768w, /images/minime-fisheye-3-1024.webp 1024w, /images/minime-fisheye-3-1254.webp 1254w"),
       alt: "Hafiz smiling with arms crossed in a neon-lit coding workspace, surrounded by miniature cartoon versions of himself.",
     },
-    description: "I turn ambitious ideas into fast, thoughtful web experiences. Built with precision. Designed to feel effortless.",
+    description: "Turn local visitors into your next customers. Give them a fast, mobile-friendly website that makes your services clear and contacting you easy.",
   },
   media: {
     // Compressed local copy of the credited Pexels footage.
@@ -61,6 +63,7 @@ const content: PortfolioContent = {
           "One contact form with spam protection and email notification setup",
           "On-page SEO: page title, meta description, headings, and local business details",
           "Performance-focused delivery for fast mobile loading",
+          "RM0 static hosting setup on an eligible free plan",
           "Two revision rounds",
         ],
         scopeNote: "Excludes custom databases, advanced product filters, and custom interactive animations.",
@@ -81,6 +84,7 @@ const content: PortfolioContent = {
           "Contact form and clear enquiry journey with a thank-you state",
           "Refined micro-interactions and smooth transitions",
           "On-page SEO and performance-focused development",
+          "RM0 hosting for eligible static pages; paid integrations quoted separately",
           "Two revision rounds",
         ],
         scopeNote: "Targets 90+ Lighthouse performance under agreed test conditions.",
@@ -107,7 +111,7 @@ const content: PortfolioContent = {
   },
   faqs: [
     { question: "When does the delivery timeline start?", answer: "Delivery starts after scope approval and receipt of your copy, images, brand assets, and required access. Feedback delays may shift the timeline." },
-    { question: "Are hosting, domain, and running costs included?", answer: "Domain, hosting, and paid third-party services are separate. Any recurring costs are confirmed before you commit." },
+    { question: "What does RM0 Free Lifetime Hosting include?", answer: "Eligible static websites are set up on a free hosting plan, with no recurring hosting fee while the site stays within that plan’s limits and the provider continues to offer it. Domain registration and renewals, paid services, databases, and backend hosting are separate. Any expected recurring costs are confirmed in your proposal." },
     { question: "What is covered by revisions and support?", answer: "Revisions cover the agreed scope. Extra features and ongoing maintenance are quoted separately; post-launch bug-fix support is defined in your proposal." },
     { question: "How do payments and performance targets work?", answer: "Deposit and payment milestones are agreed before work starts. Lighthouse targets use an agreed device profile and test setup; third-party scripts and later content changes can affect results." },
   ],

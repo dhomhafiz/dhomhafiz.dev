@@ -6,6 +6,8 @@ export interface HeroCopy {
   heading: string;
   highlight: string;
   description: string;
+  hostingHighlight?: string;
+  hostingNote?: string;
   portrait?: { src: string; alt: string; avifSrcSet?: string; webpSrcSet?: string; socials?: readonly SocialLink[] };
 }
 export interface SocialLink { platform: "github" | "linkedin" | "instagram"; href: string }

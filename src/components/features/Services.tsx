@@ -1,13 +1,15 @@
-import { ButtonLink } from "@/components/common/Button";
+import { PackageEnquiryLink } from "./ServiceEnquiry";
+import { WebsiteComparison } from "./WebsiteComparison";
 import type { ServiceOffer } from "@/types/portfolio";
 
-export function Services({ offer, contactEmail }: { offer: ServiceOffer; contactEmail: string }) {
+export function Services({ offer }: { offer: ServiceOffer }) {
   return <section id="services" aria-labelledby="services-title" className="mx-auto max-w-[1440px] scroll-mt-8 px-6 py-16 md:px-12 lg:px-20">
     <div className="mb-4 flex flex-wrap items-baseline justify-between gap-4">
       <h2 id="services-title" className="font-mono text-3xl tracking-tight">My Services</h2>
       <p className="text-xs uppercase tracking-[0.15em] text-cyber-muted">Built for your next step / 02</p>
     </div>
     <p className="mb-10 max-w-2xl text-sm leading-7 text-cyber-muted">From your first landing page to a custom business website. Choose a starting point, and we’ll shape the details together.</p>
+    <WebsiteComparison />
     <div className="grid gap-6 lg:grid-cols-3">
       {offer.tiers.map((tier, index) => <article key={tier.id} aria-labelledby={tier.comingSoon ? `service-${tier.id}-status` : `service-${tier.id}`} className={`relative flex min-w-0 flex-col overflow-hidden rounded-2xl border p-6 md:p-8 lg:p-6 xl:p-8 ${tier.recommended ? "border-cyber-cyan/60 bg-cyber-surface shadow-neon-cyan" : "border-cyber-border/15 bg-cyber-surface/55"}`}>
         <div inert={tier.comingSoon || undefined} aria-hidden={tier.comingSoon || undefined} className={`flex flex-1 flex-col ${tier.comingSoon ? "pointer-events-none select-none opacity-40 blur-[7px]" : ""}`}>
@@ -34,9 +36,9 @@ export function Services({ offer, contactEmail }: { offer: ServiceOffer; contact
         </ul>
         <div className="mt-auto pt-7">
           <p className="mb-6 text-xs leading-6 text-cyber-muted">{tier.scopeNote}</p>
-          {tier.comingSoon ? <span className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-cyber-border/20 px-5 py-3 text-sm">{tier.cta}</span> : <ButtonLink variant={tier.recommended ? "primary" : "secondary"} className="w-full" href={`mailto:${contactEmail}?subject=${encodeURIComponent(`Project enquiry: ${tier.title}`)}`} aria-label={`${tier.cta} — enquire about ${tier.title} by email`}>
-            {tier.cta}<span aria-hidden="true">↗</span>
-          </ButtonLink>}
+          {tier.comingSoon ? <span className="inline-flex min-h-12 w-full items-center justify-center rounded-md border border-cyber-border/20 px-5 py-3 text-sm">{tier.cta}</span> : <PackageEnquiryLink id={tier.id} title={tier.title} recommended={tier.recommended}>
+            {tier.cta}
+          </PackageEnquiryLink>}
         </div>
         </div>
         {tier.comingSoon && <div className="absolute inset-0 flex flex-col items-center justify-center bg-cyber-surface/20 px-6 text-center">

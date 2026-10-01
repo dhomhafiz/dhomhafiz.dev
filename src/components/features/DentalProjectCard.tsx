@@ -11,8 +11,8 @@ export function DentalProjectCard({ project }: { project: TemplateProject }) {
         <div className="flex justify-end border-b border-cyber-border/10 px-4 py-3 sm:px-6">
           <ProjectBadge category={project.category} />
         </div>
-        <div className="grid lg:grid-cols-2">
-          <figure className="flex min-w-0 flex-col border-b border-cyber-border/10 bg-cyber-surface/60 lg:border-b-0 lg:border-r">
+        <div className="grid">
+          <figure className="flex min-w-0 flex-col border-b border-cyber-border/10 bg-cyber-surface/60">
             <div className="flex items-center justify-between gap-3 border-b border-cyber-border/10 px-6 py-4 text-[10px] text-cyber-muted">
               <span aria-hidden="true" className="flex gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-cyber-border/25" />
@@ -22,10 +22,11 @@ export function DentalProjectCard({ project }: { project: TemplateProject }) {
               <span>{project.demoHref}</span>
               <span className="uppercase tracking-wider">Preview</span>
             </div>
-            <div className="flex flex-1 items-center justify-center px-6 py-10 md:px-10">
-              <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#faf9f6] p-6 shadow-2xl transition-transform duration-500 motion-safe:group-hover:scale-[1.015]">
+            <div className="flex flex-1 items-center justify-center bg-[radial-gradient(ellipse_at_center,rgb(var(--cyber-cyan)/0.10),transparent_70%)] px-5 py-10 md:px-10">
+              <div className="relative w-full max-w-[300px] rounded-[2.25rem] border-[6px] border-zinc-800 bg-[#faf9f6] px-4 pb-6 pt-8 shadow-2xl transition-transform duration-500 motion-safe:group-hover:scale-[1.015]">
+                <div aria-hidden="true" className="absolute left-1/2 top-2 h-2 w-16 -translate-x-1/2 rounded-full bg-zinc-800" />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#4e6d60]">Still Dental</p>
-                <p className="mt-3 font-serif text-3xl leading-tight tracking-tight text-[#183f39]">
+                <p className="mt-3 font-serif text-2xl leading-tight tracking-tight text-[#183f39]">
                   A little more care.<br />
                   <span className="italic text-[#638570]">A lot more smile.</span>
                 </p>
@@ -35,16 +36,17 @@ export function DentalProjectCard({ project }: { project: TemplateProject }) {
                     alt={project.image.alt}
                     width={project.image.width}
                     height={project.image.height}
-                    sizes="(max-width: 767px) calc(100vw - 144px), 334px"
+                    sizes="(max-width: 400px) calc(100vw - 132px), 256px"
                     unoptimized
                     className="aspect-[4/3] w-full object-cover object-center"
                   />
                 </div>
                 <p className="mt-4 text-center font-sans text-xs text-[#4e6d60]">Thoughtful care. A calmer experience.</p>
+                <div aria-hidden="true" className="mt-4 rounded-full bg-[#183f39] px-3 py-2 text-center font-sans text-xs text-white">Find your appointment</div>
               </div>
             </div>
             <figcaption className="border-t border-cyber-border/10 px-6 py-3 text-xs leading-5 text-cyber-muted">
-              Clinic landing page / Interactive booking preview
+              Mobile website preview / Explore the appointment experience below
             </figcaption>
           </figure>
 
