@@ -16,6 +16,7 @@
     --cyber-on-accent: 5 10 17;
     --cyber-hover: 255 255 255;
     --hero-video-opacity: .8;
+    --hero-heading-accent: 34 211 238;
     --hero-portrait-filter: saturate(.78) brightness(.88) contrast(1.03);
     --hero-portrait-edge-opacity: .3;
   }
@@ -31,6 +32,7 @@
     --cyber-on-accent: 255 255 255;
     --cyber-hover: 0 80 75;
     --hero-video-opacity: .85;
+    --hero-heading-accent: var(--cyber-cyan);
     --hero-portrait-filter: saturate(.7) brightness(1.06) contrast(.92);
     --hero-portrait-edge-opacity: .2;
   }
@@ -42,6 +44,7 @@
 }
 
 @layer components {
+  .hero-heading-accent { color: rgb(var(--hero-heading-accent)); }
   /* Native sticky pinning plus a short scroll-scrubbed frame pullback. */
   .cinematic-page { isolation: isolate; }
   .hero-stage { position: relative; height: 200vh; height: 200dvh; }

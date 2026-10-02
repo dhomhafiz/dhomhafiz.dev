@@ -12,8 +12,8 @@ const content: PortfolioContent = {
   contactEmail: "dhomhafiz@gmail.com",
   hero: {
     eyebrow: "WEBSITES FOR LOCAL BUSINESSES",
-    heading: "I build ultra-fast landing pages",
-    highlight: "to grow your sales & bookings.",
+    heading: "Ultra-fast landing pages",
+    highlight: "built to grow your sales.",
     hostingHighlight: "RM0 Free Lifetime Hosting",
     hostingNote: "For eligible static sites on a free hosting plan, subject to provider limits and continued availability. Domain renewals and paid services are separate.",
     portrait: {

@@ -9,7 +9,7 @@ export function HeroCopy({ eyebrow, heading, highlight, description, portrait, h
     </p>
     <h1 className={`font-display ${portrait ? "text-[clamp(2rem,4.6vw,3.6rem)]" : "text-[clamp(2.25rem,6vw,5rem)]"} font-medium leading-[1.12] tracking-[-0.045em]`}>
       <span className="block">{heading}</span>
-      <span className="block text-cyber-cyan">{highlight}</span>
+      <span className="hero-heading-accent block">{highlight}</span>
     </h1>
     <p className="mt-8 max-w-xl text-base leading-8 text-cyber-muted">{description}</p>
     {hostingHighlight && <div className="mt-6 max-w-xl rounded-xl border border-cyber-cyan/25 bg-cyber-dark/75 p-4">
