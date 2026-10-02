@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/common/Button";
+import { getDocumentTop } from "@/lib/sectionNavigation";
 
 const EnquiryContext = createContext<{
   packageId: string;
@@ -43,7 +44,7 @@ export function PackageEnquiryLink({ id, title, recommended, children }: {
         requestAnimationFrame(() => {
           const headerHeight = document.querySelector("body > header")?.getBoundingClientRect().height ?? 0;
           window.scrollTo({
-            top: window.scrollY + form.getBoundingClientRect().top - headerHeight - 24,
+            top: getDocumentTop(form) - headerHeight - 24,
             behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
           });
         });

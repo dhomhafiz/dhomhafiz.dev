@@ -23,6 +23,7 @@ export function useHeroScrub() {
     let coverStart = 0;
     let mobile = false;
     let topClearance = 0;
+    let overlayHeight = 0;
     let lastProgress = -1;
 
     const render = () => {
@@ -35,7 +36,16 @@ export function useHeroScrub() {
         // Bring the top edge below the fixed navigation so its rounded corners
         // are visible while the foreground continues covering the bottom edge.
         const topOffset = topClearance * clamp(progress / 0.3);
-        frame.style.transform = progress === 0 ? "none" : `translate3d(0, ${topOffset}px, 0) scale(${1 - (1 - endScale) * progress})`;
+        const transform = progress === 0 ? "none" : `translate3d(0, ${topOffset}px, 0) scale(${1 - (1 - endScale) * progress})`;
+        frame.style.transform = transform;
+        // Mobile reads the tall introduction first, then pins its visible tail.
+        // Keep the content attached to the shrinking backdrop during coverage.
+        const scale = 1 - (1 - endScale) * progress;
+        overlay.style.transform = mobile && progress > 0 ? `scale(${scale})` : "none";
+        overlay.style.clipPath = mobile && progress > 0
+          ? `inset(${(Math.max(0, overlayHeight - distance) + topOffset) / scale}px 0 0)`
+          : "none";
+        overlay.style.willChange = mobile && progress > 0 && progress < 1 ? "transform" : "auto";
         // Convert radius to local pixels so the final visible radius matches the target.
         frame.style.borderRadius = `${radius * progress / (1 - (1 - endScale) * progress)}px`;
         frame.style.willChange = progress > 0 && progress < 1 ? "transform" : "auto";
@@ -50,6 +60,8 @@ export function useHeroScrub() {
       topClearance = (document.querySelector<HTMLElement>(".cinematic-header")?.offsetHeight ?? 0) + 8;
       start = window.scrollY + stage.getBoundingClientRect().top;
       distance = window.innerHeight;
+      overlayHeight = overlay.offsetHeight;
+      hero.style.setProperty("--hero-pin-top", `${mobile ? Math.min(0, distance - overlayHeight) : 0}px`);
       // Use the actual foreground edge so shrink and cover start together,
       // including the longer portrait-first mobile intro and viewport resizing.
       const content = stage.parentElement?.querySelector<HTMLElement>(".portfolio-content");
@@ -73,6 +85,10 @@ export function useHeroScrub() {
       frame.style.removeProperty("transform");
       frame.style.removeProperty("border-radius");
       frame.style.removeProperty("will-change");
+      overlay.style.removeProperty("transform");
+      overlay.style.removeProperty("clip-path");
+      overlay.style.removeProperty("will-change");
+      hero.style.removeProperty("--hero-pin-top");
     };
   }, []);
 

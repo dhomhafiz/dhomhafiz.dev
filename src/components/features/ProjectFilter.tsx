@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import type { ProjectCategory } from "@/types/portfolio";
+import { getDocumentTop } from "@/lib/sectionNavigation";
 
 type ProjectFilterValue = "all" | ProjectCategory;
 const filters: readonly { value: ProjectFilterValue; label: string }[] = [
@@ -39,7 +40,7 @@ export function ProjectFilter({ items }: {
       target.focus({ preventScroll: true });
       const headerHeight = document.querySelector("body > header")?.getBoundingClientRect().height ?? 0;
       window.scrollTo({
-        top: window.scrollY + target.getBoundingClientRect().top - headerHeight - 24,
+        top: getDocumentTop(target) - headerHeight - 24,
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
       });
     });

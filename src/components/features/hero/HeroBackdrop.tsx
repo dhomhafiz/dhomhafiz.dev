@@ -1,7 +1,6 @@
 "use client";
 
 import { VideoPlayer } from "@/components/common/VideoPlayer";
-import { Button } from "@/components/common/Button";
 import { useBackgroundVideo } from "@/hooks/useBackgroundVideo";
 import { useHeroScrub } from "@/hooks/useHeroScrub";
 import type { VideoSource } from "@/types/portfolio";
@@ -21,12 +20,6 @@ export function HeroBackdrop({ sources, poster }: { sources: readonly VideoSourc
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${playback.ready ? "opacity-[var(--hero-video-opacity)]" : "opacity-0"}`}
       />}
       <div className="hero-scrim absolute inset-0" />
-      <div className="radial-grid absolute inset-0 opacity-30" />
     </div>
-    {playback.allowed && !playback.failed && playback.ready && <Button
-      variant="secondary" onClick={playback.toggle}
-      aria-label={playback.playing ? "Pause motion — background video" : "Play motion — background video"}
-      className="pointer-events-auto absolute bottom-6 right-6 z-20 !min-h-11 !px-3 !py-2 text-xs backdrop-blur-md md:right-12"
-    ><span aria-hidden="true">{playback.playing ? "Ⅱ" : "▷"}</span> {playback.playing ? "Pause motion" : "Play motion"}</Button>}
   </div>;
 }

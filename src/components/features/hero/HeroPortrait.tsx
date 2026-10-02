@@ -2,7 +2,7 @@ import type { HeroCopy } from "@/types/portfolio";
 import { SocialLinks } from "@/components/common/SocialLinks";
 
 // Match Hero's grid, gutters, and the portrait's mobile width cap.
-const portraitSizes = "(min-width: 1440px) 553px, (min-width: 1280px) calc((100vw - 224px) / 2.2), (min-width: 1024px) calc((100vw - 208px) / 2.2), (min-width: 488px) 440px, calc(100vw - 48px)";
+const portraitSizes = "(min-width: 1440px) 553px, (min-width: 1280px) calc((100vw - 224px) / 2.2), (min-width: 1024px) calc((100vw - 208px) / 2.2), 220px";
 
 export function HeroPortrait({ src, alt, socials, avifSrcSet, webpSrcSet }: NonNullable<HeroCopy["portrait"]>) {
   return <div className="hero-profile relative z-10 mx-auto w-full">
