@@ -3,7 +3,7 @@ import type { HeroCopy as HeroCopyModel } from "@/types/portfolio";
 
 // SRP/ISP: copy rendering depends only on its small content contract and destination.
 export function HeroCopy({ eyebrow, heading, highlight, description, portrait, hostingHighlight, hostingNote }: HeroCopyModel) {
-  return <div className="relative z-10 max-w-5xl motion-safe:animate-reveal">
+  return <div className="hero-copy relative z-10 max-w-5xl motion-safe:animate-reveal">
     <p className="mb-8 flex items-center gap-3 text-xs tracking-[0.18em] text-cyber-cyan md:text-sm">
       <span className="h-px w-8 bg-cyber-cyan" aria-hidden="true" />{eyebrow}
     </p>

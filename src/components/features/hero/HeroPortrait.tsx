@@ -5,7 +5,7 @@ import { SocialLinks } from "@/components/common/SocialLinks";
 const portraitSizes = "(min-width: 1440px) 553px, (min-width: 1280px) calc((100vw - 224px) / 2.2), (min-width: 1024px) calc((100vw - 208px) / 2.2), (min-width: 488px) 440px, calc(100vw - 48px)";
 
 export function HeroPortrait({ src, alt, socials, avifSrcSet, webpSrcSet }: NonNullable<HeroCopy["portrait"]>) {
-  return <div className="relative z-10 mx-auto w-full max-w-[440px] lg:max-w-none">
+  return <div className="hero-profile relative z-10 mx-auto w-full">
     <div className="relative">
     <div aria-hidden="true" className="absolute -inset-6 rounded-full bg-cyber-cyan/10 blur-3xl" />
     <div aria-hidden="true" className="absolute -inset-3 rotate-3 rounded-[2.25rem] border border-cyber-cyan/25" />

@@ -14,15 +14,20 @@ import { ServiceEnquiryProvider } from "./ServiceEnquiry";
 export async function PortfolioPage({ provider }: { provider: PortfolioProvider }) {
   const content = await provider.getPortfolio();
   return <>
-    <SiteHeader brand={content.brand} />
+    <SiteHeader brand={content.brand} overlay />
     <ServiceEnquiryProvider>
-    <main id="main">
-      <Hero copy={content.hero} sources={content.media.sources} poster={content.media.poster} />
-      <PersonalProjects projects={content.projects} />
-      <Services offer={content.services} />
-      <FAQ items={content.faqs} />
-      <Approach items={content.capabilities} />
-      <Contact contactEmail={content.contactEmail} packages={content.services.tiers.filter(tier => !tier.comingSoon).map(({ id, title }) => ({ id, title }))} />
+    <main id="main" className="cinematic-page">
+      <div className="hero-stage">
+        <div data-hero-visibility aria-hidden="true" className="hero-visibility" />
+        <Hero copy={content.hero} sources={content.media.sources} poster={content.media.poster} />
+      </div>
+      <div className="portfolio-content">
+        <PersonalProjects projects={content.projects} />
+        <Services offer={content.services} />
+        <FAQ items={content.faqs} />
+        <Approach items={content.capabilities} />
+        <Contact contactEmail={content.contactEmail} packages={content.services.tiers.filter(tier => !tier.comingSoon).map(({ id, title }) => ({ id, title }))} />
+      </div>
     </main>
     </ServiceEnquiryProvider>
     <footer className="mx-auto flex max-w-[1440px] flex-wrap justify-between gap-4 border-t border-cyber-border/10 px-6 py-7 text-xs text-cyber-muted md:px-12 lg:px-20">

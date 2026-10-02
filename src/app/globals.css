@@ -42,6 +42,65 @@
 }
 
 @layer components {
+  /* A two-viewport runway pins the hero for exactly one viewport of scroll.
+     The content starts halfway through the runway and covers it in native flow.
+     No per-frame JS, video transforms, or animated layout dimensions are needed. */
+  .cinematic-page { isolation: isolate; }
+  .hero-stage { position: relative; height: 200vh; height: 200dvh; }
+  .hero-visibility { position: absolute; top: 0; width: 1px; height: 100vh; height: 100dvh; pointer-events: none; }
+  .cinematic-hero { position: sticky; top: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
+  .hero-media { position: absolute; inset: 0; }
+  .portfolio-content {
+    position: relative;
+    z-index: 1;
+    margin-top: -100vh;
+    margin-top: -100dvh;
+    background: rgb(var(--cyber-dark));
+    border-top: 1px solid rgb(var(--cyber-border) / .15);
+  }
+  .hero-overlay { width: calc(100% - 3rem); max-width: 1392px; padding-top: 10rem; padding-bottom: 5.5rem; overflow-x: hidden; overflow-y: auto; }
+  .hero-composition { margin-block: auto; flex-shrink: 0; min-width: 0; }
+  .hero-profile { max-width: 440px; }
+  @media (min-width: 640px) {
+    .hero-overlay { padding-top: 7rem; }
+  }
+  @media (min-width: 768px) {
+    .hero-overlay { width: calc(100% - 6rem); max-width: 1344px; }
+  }
+  @media (min-width: 1024px) {
+    .hero-overlay { width: calc(100% - 10rem); max-width: 1280px; }
+    .hero-profile { max-width: none; }
+  }
+  @media (min-width: 1024px) and (max-height: 800px) {
+    .hero-copy h1 { font-size: clamp(1.875rem, 4.3vh, 3rem); }
+    .hero-copy > p:first-child { margin-top: 0; margin-bottom: 1rem; }
+    .hero-copy > p, .hero-copy > div { margin-top: 1rem; }
+    .hero-copy > p { font-size: .875rem; line-height: 1.65; }
+    .hero-copy > div:not(:last-child) { padding: .75rem; }
+    .hero-copy > div:not(:last-child) p:last-child { line-height: 1.65; }
+    .hero-profile { max-width: min(440px, 52vh); }
+  }
+  /* Keep every existing element reachable on short viewports and at text zoom. */
+  @media (max-width: 1023px) {
+    .hero-overlay { padding-bottom: 5rem; }
+    .hero-copy > p:first-child { margin-top: 0; margin-bottom: 1rem; }
+    .hero-copy > p { margin-top: 1rem; font-size: .875rem; line-height: 1.65; }
+    .hero-copy > div { margin-top: 1rem; }
+    .hero-profile { max-width: 220px; }
+    .hero-profile nav { gap: .5rem; }
+    .hero-profile nav a { padding: .5rem; font-size: .75rem; gap: .5rem; }
+    .hero-profile nav svg { width: 1.125rem; height: 1.125rem; }
+  }
+  /* Mobile uses one page scroll: the copy flows over a pinned video instead of
+     consuming swipes inside a nested scroll area before the cover can begin. */
+  @media (max-width: 767px) {
+    .hero-stage { height: auto; }
+    .cinematic-hero { position: relative; height: auto; overflow: visible; }
+    .cinematic-hero::after { content: ""; display: block; height: 100vh; height: 100dvh; }
+    .hero-media { position: sticky; top: 0; height: 100vh; height: 100dvh; margin-bottom: -100vh; margin-bottom: -100dvh; }
+    .hero-overlay { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; }
+    .hero-visibility { height: calc(100% - 100vh); height: calc(100% - 100dvh); }
+  }
   /* SRP: decorative surfaces remain independent of content and media availability. */
   .glass-panel { border: 1px solid rgb(var(--cyber-border) / .16); background: rgb(var(--cyber-surface) / .55); backdrop-filter: blur(12px); }
   /* Theme-owned color grading keeps the portrait component independent of theme logic. */
@@ -71,6 +130,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-stage { height: auto; }
+  .cinematic-hero { position: relative; height: auto; min-height: 100vh; min-height: 100dvh; padding-bottom: 0; }
+  .hero-media { position: absolute; inset: 0; height: auto; margin-bottom: 0; }
+  .cinematic-hero::after { display: none; }
+  .hero-overlay { height: auto; overflow: visible; }
+  .portfolio-content { margin-top: 0; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

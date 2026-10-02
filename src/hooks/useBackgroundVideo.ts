@@ -54,16 +54,21 @@ export function useBackgroundVideo() {
   useEffect(() => {
     const video = videoRef.current;
     if (!allowed || !video) return;
+    // Sources are attached after load/idle; the fullscreen video element exists from SSR.
+    video.load();
     let inView = true;
     const syncPlayback = () => {
       if (!inView || document.hidden || userPaused.current) video.pause();
       else void video.play().catch(() => setPlaying(false));
     };
     const observer = new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting;
+      inView = entry.isIntersecting && entry.intersectionRatio > 0;
       syncPlayback();
-    });
-    observer.observe(video);
+    }, { threshold: 0.001 });
+    // The non-sticky marker leaves the viewport when the foreground covers the
+    // pinned hero, so hidden footage does not keep decoding behind the content.
+    const visibilityTarget = video.closest(".hero-stage")?.querySelector("[data-hero-visibility]") ?? video;
+    observer.observe(visibilityTarget);
     document.addEventListener("visibilitychange", syncPlayback);
     return () => {
       observer.disconnect();
