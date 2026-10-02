@@ -3,12 +3,14 @@
 import { VideoPlayer } from "@/components/common/VideoPlayer";
 import { Button } from "@/components/common/Button";
 import { useBackgroundVideo } from "@/hooks/useBackgroundVideo";
+import { useHeroScrub } from "@/hooks/useHeroScrub";
 import type { VideoSource } from "@/types/portfolio";
 
 // DIP/ISP: receives only a media contract; never imports the local content adapter.
 export function HeroBackdrop({ sources, poster }: { sources: readonly VideoSource[]; poster?: string }) {
   const playback = useBackgroundVideo();
-  return <div className="hero-media pointer-events-none">
+  const frameRef = useHeroScrub();
+  return <div ref={frameRef} className="hero-media pointer-events-none">
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div className="hero-fallback absolute inset-0" />
       {poster && <img src={poster} alt="" width={1280} height={676} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover opacity-[var(--hero-video-opacity)]" />}
