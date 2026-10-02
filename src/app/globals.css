@@ -94,6 +94,7 @@
   /* Mobile uses one page scroll: the copy flows over a pinned video instead of
      consuming swipes inside a nested scroll area before the cover can begin. */
   @media (max-width: 767px) {
+    .cinematic-hero .hero-profile { order: -1; }
     .hero-stage { height: auto; }
     .cinematic-hero { position: relative; height: auto; overflow: visible; }
     .cinematic-hero::after { content: ""; display: block; height: 100vh; height: 100dvh; }
