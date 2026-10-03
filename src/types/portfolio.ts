@@ -27,6 +27,10 @@ export interface ServiceTier {
   title: string;
   audience: string;
   price: string;
+  promotionEnabled: boolean;
+  promotionalPrice?: number;
+  /** Inclusive end date in the visitor's local calendar, formatted YYYY-MM-DD. */
+  promotionEndDate?: string;
   pricePrefix?: string;
   priceSuffix?: string;
   delivery: string;

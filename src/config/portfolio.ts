@@ -55,6 +55,9 @@ const content: PortfolioContent = {
         title: "Essential Landing Page",
         audience: "For local startups, service professionals, and single-product launches that need a clear, fast web presence.",
         price: "RM 799",
+        promotionEnabled: false,
+        promotionalPrice: 399,
+        promotionEndDate: "2026-10-31",
         priceSuffix: "/ project",
         delivery: "3–5 working days",
         features: [
@@ -75,6 +78,9 @@ const content: PortfolioContent = {
         audience: "For growing SMEs that need a distinctive website to support campaigns and turn interest into enquiries.",
         pricePrefix: "From",
         price: "RM 2,499",
+        promotionEnabled: false,
+        promotionalPrice: 2199,
+        promotionEndDate: "2026-10-31",
         priceSuffix: "/ project",
         delivery: "1–2 weeks",
         recommended: true,
@@ -96,6 +102,7 @@ const content: PortfolioContent = {
         title: "Custom Web Application",
         audience: "For businesses that need purpose-built tools, connected systems, or workflows beyond a standard website.",
         price: "Custom quote",
+        promotionEnabled: false,
         delivery: "Timeline based on scope",
         features: [
           "Discovery and a defined project specification",

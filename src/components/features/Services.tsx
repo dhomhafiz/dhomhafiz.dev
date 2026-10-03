@@ -1,5 +1,6 @@
 import { PackageEnquiryLink } from "./ServiceEnquiry";
 import { WebsiteComparison } from "./WebsiteComparison";
+import { ServicePrice } from "./ServicePrice";
 import type { ServiceOffer } from "@/types/portfolio";
 
 export function Services({ offer }: { offer: ServiceOffer }) {
@@ -21,7 +22,7 @@ export function Services({ offer }: { offer: ServiceOffer }) {
         <p className="mt-4 text-sm leading-7 text-cyber-muted lg:min-h-[8.75rem]">{tier.audience}</p>
         <div className="my-7">
           <p className="min-h-5 text-xs text-cyber-muted">{tier.pricePrefix || <span aria-hidden="true">&nbsp;</span>}</p>
-          <p className="mt-1 font-display text-3xl font-semibold tracking-tight xl:text-4xl">{tier.price}</p>
+          <ServicePrice tier={tier} />
           <p className="mt-2 min-h-5 text-xs text-cyber-muted">{tier.priceSuffix || "Scoped around your requirements"}</p>
           <p className="mt-5 flex items-center gap-2 text-xs leading-5 text-cyber-text">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 text-cyber-cyan"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>

@@ -34,6 +34,42 @@ The portrait uses responsive AVIF/WebP variants (480, 640, 768, and 1024 pixels)
 
 Lighthouse reports and media checks are in `audits/`, with the environment, results, and remaining limitations in `audits/README.md`.
 
+## Configure Service Tier promotional pricing
+
+1. Open `src/config/portfolio.ts` and find the tier you want to promote in `services.tiers`. For Tier 1, look for `id: "essential"`.
+2. Keep `price` as the original/base price. Set `promotionEnabled` to `true`, then add `promotionalPrice` and `promotionEndDate` if they are missing. These two fields are optional, so they may not already appear in the configuration.
+3. Enter the promotional price as a number without `RM` or commas, and the end date as a string in `YYYY-MM-DD` format.
+
+Example for Tier 1: original price **RM799**, promotional price **RM399**, ending on **31 October 2026**. Set the following fields in the existing `essential` tier object and keep all other fields unchanged:
+
+```ts
+price: "RM 799",
+promotionEnabled: true,
+promotionalPrice: 399,
+promotionEndDate: "2026-10-31",
+```
+
+The correct date field name is `promotionEndDate`, not `promotionalEndDate`. The promotional price is configured manually; the system does not calculate discount percentages.
+
+When a promotion is active, the website displays the original price with strikethrough, the promotional price below it, and the text `Promo until 31 October 2026`. The promotion remains active throughout the end date in the visitor's local timezone. After that date, the original price returns automatically without changing the configuration or rebuilding. The display refreshes at local midnight, when the tab becomes visible again, and when the window receives focus.
+
+To disable a promotion before its end date, set:
+
+```ts
+promotionEnabled: false,
+```
+
+Each tier is controlled independently. Changing Tier 1 does not enable promotions for other tiers. The promotional price must be a finite number, at least `0`, and lower than the original price. Incomplete configurations, invalid dates, expired promotions, and `Custom quote` prices fall back to the normal price display.
+
+After changing the configuration, save the file and run:
+
+```sh
+npm run typecheck
+npm run build
+```
+
+Deploy the changes through the existing GitHub Pages workflow so the new settings appear on the live website. In Windows PowerShell, use `npm.cmd` if the execution policy blocks `npm`.
+
 ## Architecture
 
 ```text
