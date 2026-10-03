@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getActivePromotion } from "@/lib/servicePricing";
+import { formatServicePrice, getActivePromotion } from "@/lib/servicePricing";
 import type { ServiceTier } from "@/types/portfolio";
 
 export function ServicePrice({ tier }: { tier: ServiceTier }) {
@@ -27,12 +27,14 @@ export function ServicePrice({ tier }: { tier: ServiceTier }) {
     };
   }, []);
   const promotion = now ? getActivePromotion(tier, now) : null;
+  const originalPrice = formatServicePrice(tier.price);
 
-  if (!promotion) return <p className="mt-1 font-display text-3xl font-semibold tracking-tight xl:text-4xl">{tier.price}</p>;
+  if (!promotion) return <p className="mt-1 font-display text-3xl font-semibold tracking-tight xl:text-4xl">{originalPrice}</p>;
 
   return <>
-    <p className="mt-1 font-display text-lg text-cyber-muted"><span className="sr-only">Original price: </span><s>{tier.price}</s></p>
+    <p className="mt-1 font-display text-lg text-cyber-muted"><span className="sr-only">Original price: </span><s>{originalPrice}</s></p>
     <p className="mt-1 break-words font-display text-3xl font-semibold tracking-tight xl:text-4xl"><span className="sr-only">Promotional price: </span>{promotion.price}</p>
+    {promotion.discountPercent !== undefined && <p className="mt-2 text-xs font-semibold tracking-wide text-cyber-cyan">{promotion.discountPercent}% OFF</p>}
     <p className="mt-2 text-xs leading-5 text-cyber-cyan">Promo until <time dateTime={promotion.endDate}>{promotion.endLabel}</time></p>
   </>;
 }

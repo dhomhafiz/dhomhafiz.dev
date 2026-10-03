@@ -22,13 +22,17 @@ export interface HeroMedia {
   sourceUrl: string;
 }
 export interface Capability { label: string; description: string }
+export type PromotionType = "fixed" | "percentage";
 export interface ServiceTier {
   id: string;
   title: string;
   audience: string;
-  price: string;
+  /** Numeric MYR price, or a display label such as "Custom quote". */
+  price: number | string;
   promotionEnabled: boolean;
+  promotionType?: PromotionType;
   promotionalPrice?: number;
+  discountPercent?: number;
   /** Inclusive end date in the visitor's local calendar, formatted YYYY-MM-DD. */
   promotionEndDate?: string;
   pricePrefix?: string;

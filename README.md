@@ -37,19 +37,40 @@ Lighthouse reports and media checks are in `audits/`, with the environment, resu
 ## Configure Service Tier promotional pricing
 
 1. Open `src/config/portfolio.ts` and find the tier you want to promote in `services.tiers`. For Tier 1, look for `id: "essential"`.
-2. Keep `price` as the original/base price. Set `promotionEnabled` to `true`, then add `promotionalPrice` and `promotionEndDate` if they are missing. These two fields are optional, so they may not already appear in the configuration.
-3. Enter the promotional price as a number without `RM` or commas, and the end date as a string in `YYYY-MM-DD` format.
+2. Keep `price` as the original/base price. Numeric MYR prices are recommended (`799`, without quotes, `RM`, or commas). Existing formatted RM strings remain supported; `"Custom quote"` remains a display label without promotions.
+3. Set `promotionEnabled` to `true`, choose `promotionType: "fixed"` or `promotionType: "percentage"`, and add the relevant price field and `promotionEndDate` if missing. Configure each tier independently; no React component changes are needed.
+
+### Fixed promotional price
 
 Example for Tier 1: original price **RM799**, promotional price **RM399**, ending on **31 October 2026**. Set the following fields in the existing `essential` tier object and keep all other fields unchanged:
 
 ```ts
-price: "RM 799",
+price: 799,
 promotionEnabled: true,
+promotionType: "fixed",
 promotionalPrice: 399,
 promotionEndDate: "2026-10-31",
 ```
 
-The correct date field name is `promotionEndDate`, not `promotionalEndDate`. The promotional price is configured manually; the system does not calculate discount percentages.
+In fixed mode, `promotionalPrice` is the exact selling price, entered as a number. For example, `399.5` displays as `RM 399.50`. No percentage badge is calculated for fixed promotions.
+
+### Percentage discount
+
+For example, to give the existing Business tier (base price RM2,499) a 20% discount, use:
+
+```ts
+price: 2499,
+promotionEnabled: true,
+promotionType: "percentage",
+discountPercent: 20,
+promotionEndDate: "2026-11-30",
+```
+
+The system calculates `price * (1 - discountPercent / 100)`, rounds to cents, and displays **RM 1,999.20**, a supporting **20% OFF** label, and the expiry date. Changing `discountPercent` to `30` automatically recalculates the price to **RM 1,749.30**. Do not store a calculated `promotionalPrice` in percentage mode; that field is ignored. Likewise, fixed mode ignores `discountPercent`.
+
+### Validation, expiry, and manual control
+
+The correct date field name is `promotionEndDate`, not `promotionalEndDate`. Use a real calendar date in `YYYY-MM-DD` format.
 
 When a promotion is active, the website displays the original price with strikethrough, the promotional price below it, and the text `Promo until 31 October 2026`. The promotion remains active throughout the end date in the visitor's local timezone. After that date, the original price returns automatically without changing the configuration or rebuilding. The display refreshes at local midnight, when the tab becomes visible again, and when the window receives focus.
 
@@ -59,12 +80,21 @@ To disable a promotion before its end date, set:
 promotionEnabled: false,
 ```
 
-Each tier is controlled independently. Changing Tier 1 does not enable promotions for other tiers. The promotional price must be a finite number, at least `0`, and lower than the original price. Incomplete configurations, invalid dates, expired promotions, and `Custom quote` prices fall back to the normal price display.
+Each tier is controlled independently. Changing Tier 1 does not enable promotions for other tiers. Both modes require a finite, positive base price and a valid, unexpired end date.
+
+- **Fixed:** `promotionalPrice` must be a finite number, at least `0`, and lower than the base price.
+- **Percentage:** `discountPercent` must be a finite number strictly greater than `0` and less than `100`. Values such as `0`, `-20`, `100`, or `120` are invalid.
+- **Currency:** amounts are rounded to cents. Whole Ringgit values display without decimals; fractional amounts display two decimals (for example, `RM 399.50` or `RM 1,039.20`). A discount that rounds back to the base price is not shown as a promotion.
+- **Fallback:** incomplete configurations, unknown promotion types, invalid dates, expired promotions, and `Custom quote` prices display the normal price with no promotion label or reserved promotion spacing.
+- **Compatibility:** omitting `promotionType` uses fixed mode so older fixed-price configurations continue to work. Set the type explicitly for new promotions.
+
+### Check and publish changes
 
 After changing the configuration, save the file and run:
 
 ```sh
 npm run typecheck
+npm test
 npm run build
 ```
 
