@@ -1,6 +1,7 @@
 import { PackageEnquiryLink } from "./ServiceEnquiry";
 import { WebsiteComparison } from "./WebsiteComparison";
 import { ServicePrice } from "./ServicePrice";
+import { InfoTooltip } from "@/components/common/InfoTooltip";
 import type { ServiceOffer } from "@/types/portfolio";
 
 export function Services({ offer }: { offer: ServiceOffer }) {
@@ -30,9 +31,9 @@ export function Services({ offer }: { offer: ServiceOffer }) {
             {tier.delivery}
           </p>
         <ul className="space-y-4 border-t border-cyber-border/10 pt-6">
-          {tier.features.map(feature => <li key={feature} className="flex items-start gap-3 text-sm leading-6">
+          {tier.features.map(feature => <li key={typeof feature === "string" ? feature : feature.label} className="flex items-start gap-3 text-sm leading-6">
             <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" className="mt-1 h-4 w-4 shrink-0 text-cyber-cyan"><path d="m4 10 4 4 8-8" /></svg>
-            <span>{feature}</span>
+            <span>{typeof feature === "string" ? feature : <>{feature.label}{"\u00a0"}<InfoTooltip label={feature.infoLabel} text={feature.tooltip} /></>}</span>
           </li>)}
         </ul>
         <div className="mt-auto pt-7">

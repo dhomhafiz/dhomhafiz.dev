@@ -94,7 +94,11 @@ const content: PortfolioContent = {
         features: [
           "Everything in Essential Landing Page, plus:",
           "Up to three responsive pages with a more customised multi-page experience",
-          "One agreed interactive feature",
+          {
+            label: "One agreed interactive feature",
+            tooltip: "Examples include a product showcase, booking embed, or service calculator.",
+            infoLabel: "More information about interactive feature",
+          },
           "Refined micro-interactions and smooth transitions",
           "Advanced scroll-driven animations and custom transitions",
           "Enhanced performance optimisation",

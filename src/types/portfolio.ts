@@ -23,6 +23,7 @@ export interface HeroMedia {
 }
 export interface Capability { label: string; description: string }
 export type PromotionType = "fixed" | "percentage";
+export type ServiceFeature = string | { label: string; tooltip: string; infoLabel: string };
 export interface ServiceTier {
   id: string;
   title: string;
@@ -38,7 +39,7 @@ export interface ServiceTier {
   pricePrefix?: string;
   priceSuffix?: string;
   delivery: string;
-  features: readonly string[];
+  features: readonly ServiceFeature[];
   scopeNote: string;
   cta: string;
   recommended?: boolean;
