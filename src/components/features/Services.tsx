@@ -11,24 +11,24 @@ export function Services({ offer }: { offer: ServiceOffer }) {
     </div>
     <p className="mb-10 max-w-2xl text-sm leading-7 text-cyber-muted">From your first landing page to a custom business website. Choose a starting point, and we’ll shape the details together.</p>
     <WebsiteComparison />
-    <div className="grid gap-6 lg:grid-cols-3">
-      {offer.tiers.map((tier, index) => <article key={tier.id} aria-labelledby={tier.comingSoon ? `service-${tier.id}-status` : `service-${tier.id}`} className={`relative flex min-w-0 flex-col overflow-hidden rounded-2xl border p-6 md:p-8 lg:p-6 xl:p-8 ${tier.recommended ? "border-cyber-cyan/60 bg-cyber-surface shadow-neon-cyan" : "border-cyber-border/15 bg-cyber-surface/55"}`}>
-        <div inert={tier.comingSoon || undefined} aria-hidden={tier.comingSoon || undefined} className={`flex flex-1 flex-col ${tier.comingSoon ? "pointer-events-none select-none opacity-40 blur-[7px]" : ""}`}>
+    <div className="service-tier-grid grid gap-6 lg:grid-cols-3">
+      {offer.tiers.map((tier, index) => <article key={tier.id} aria-labelledby={tier.comingSoon ? `service-${tier.id}-status` : `service-${tier.id}`} className={`service-tier-card relative flex min-w-0 flex-col overflow-hidden rounded-2xl border p-6 md:p-8 lg:p-6 xl:p-8 ${tier.recommended ? "border-cyber-cyan/60 bg-cyber-surface shadow-neon-cyan" : "border-cyber-border/15 bg-cyber-surface/55"}`}>
+        <div inert={tier.comingSoon || undefined} aria-hidden={tier.comingSoon || undefined} className={`service-tier-content flex flex-1 flex-col ${tier.comingSoon ? "pointer-events-none select-none opacity-40 blur-[7px]" : ""}`}>
         <div className="mb-7 flex min-h-7 items-center justify-between gap-3">
           <span aria-hidden="true" className="text-xs text-cyber-cyan">0{index + 1} /</span>
           {tier.recommended && <span className="rounded-full bg-cyber-cyan px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-cyber-on-accent">Recommended</span>}
         </div>
         <h3 id={`service-${tier.id}`} className="font-display text-2xl leading-tight lg:min-h-[3.75rem]">{tier.title}</h3>
         <p className="mt-4 text-sm leading-7 text-cyber-muted lg:min-h-[8.75rem]">{tier.audience}</p>
-        <div className="my-7">
-          <p className="min-h-5 text-xs text-cyber-muted">{tier.pricePrefix || <span aria-hidden="true">&nbsp;</span>}</p>
+        <div className="service-tier-pricing mt-7 flex min-w-0 flex-col">
+          {tier.pricePrefix && <p className="service-price-prefix min-h-5 text-xs text-cyber-muted">{tier.pricePrefix}</p>}
           <ServicePrice tier={tier} />
-          <p className="mt-2 min-h-5 text-xs text-cyber-muted">{tier.priceSuffix || "Scoped around your requirements"}</p>
-          <p className="mt-5 flex items-center gap-2 text-xs leading-5 text-cyber-text">
+          <p className="service-price-suffix min-h-5 pt-2 text-xs text-cyber-muted">{tier.priceSuffix || "Scoped around your requirements"}</p>
+        </div>
+          <p className="mb-7 mt-5 flex items-center gap-2 text-xs leading-5 text-cyber-text">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-4 w-4 shrink-0 text-cyber-cyan"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
             {tier.delivery}
           </p>
-        </div>
         <ul className="space-y-4 border-t border-cyber-border/10 pt-6">
           {tier.features.map(feature => <li key={feature} className="flex items-start gap-3 text-sm leading-6">
             <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" className="mt-1 h-4 w-4 shrink-0 text-cyber-cyan"><path d="m4 10 4 4 8-8" /></svg>

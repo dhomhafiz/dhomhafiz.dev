@@ -142,6 +142,40 @@
   .skip-link:focus { transform: translateY(0); }
 }
 
+/* Shared desktop tracks include prefix, old price, main price, promotion details,
+   and suffix, so normal and promotional prices use the same main-price baseline. */
+@media (min-width: 1024px) {
+  .service-tier-grid { row-gap: 0; }
+  .service-tier-card {
+    display: grid;
+    grid-row: span 11;
+    grid-template-rows: subgrid;
+  }
+  .service-tier-content {
+    display: grid;
+    grid-row: 1 / -1;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .service-tier-pricing {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .service-price-prefix { grid-row: 1; }
+  .service-price-display {
+    display: grid;
+    grid-row: 2 / span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+  .service-price-original { grid-row: 1; }
+  .service-price-main { grid-row: 2; align-self: baseline; }
+  .service-price-details { grid-row: 3; }
+  .service-price-suffix { grid-row: 5; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .section-transition-frame, .section-transition-footer { min-height: 0; }
   .section-transition-stage[data-transition-ready]::after { display: none; }
