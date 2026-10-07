@@ -72,7 +72,7 @@ The system calculates `price * (1 - discountPercent / 100)`, rounds to cents, an
 
 The correct date field name is `promotionEndDate`, not `promotionalEndDate`. Use a real calendar date in `YYYY-MM-DD` format.
 
-When a promotion is active, the website displays the original price with strikethrough, the promotional price below it, and the text `Promo until 31 October 2026`. The promotion remains active throughout the end date in the visitor's local timezone. After that date, the original price returns automatically without changing the configuration or rebuilding. The display refreshes at local midnight, when the tab becomes visible again, and when the window receives focus.
+When a promotion is active, the website displays the original price with strikethrough, the promotional price below it, and the text `Valid until 31 October 2026`. The promotion remains active throughout the end date in the visitor's local timezone. After that date, the original price returns automatically without changing the configuration or rebuilding. The display refreshes at local midnight, when the tab becomes visible again, and when the window receives focus.
 
 To disable a promotion before its end date, set:
 

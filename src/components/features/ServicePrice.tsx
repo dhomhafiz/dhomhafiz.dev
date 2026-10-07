@@ -36,7 +36,7 @@ export function ServicePrice({ tier }: { tier: ServiceTier }) {
     <p className="service-price-main mt-1 break-words font-display text-3xl font-semibold tracking-tight xl:text-4xl"><span className="sr-only">Promotional price: </span>{promotion.price}</p>
     <div className="service-price-details">
     {promotion.discountPercent !== undefined && <p className="mt-2 text-xs font-semibold tracking-wide text-cyber-cyan">{promotion.discountPercent}% OFF</p>}
-    <p className="mt-2 text-xs leading-5 text-cyber-cyan">Promo until <time dateTime={promotion.endDate}>{promotion.endLabel}</time></p>
+    <p className="mt-2 text-xs leading-5 text-cyber-cyan">Valid until <time dateTime={promotion.endDate}>{promotion.endLabel}</time></p>
     </div>
   </div>;
 }

@@ -89,7 +89,7 @@ const percentageMarkup = render(percentage);
 equal(percentageMarkup.includes('RM 639.20'), true);
 equal(percentageMarkup.includes('20% OFF'), true);
 equal(percentageMarkup.indexOf('<s>') < percentageMarkup.indexOf('RM 639.20'), true);
-equal(percentageMarkup.indexOf('RM 639.20') < percentageMarkup.indexOf('Promo until'), true);
+equal(percentageMarkup.indexOf('RM 639.20') < percentageMarkup.indexOf('Valid until'), true);
 for (const config of [
   { ...fixed, promotionEnabled: false },
   { ...percentage, discountPercent: 120 },
@@ -97,10 +97,10 @@ for (const config of [
 ]) {
   const markup = render(config);
   equal(markup.includes('RM 799'), true);
-  equal(/<s>|Promo until|% OFF/.test(markup), false);
+  equal(/<s>|Valid until|% OFF/.test(markup), false);
 }
 visitorDate = new Date(2026, 10, 1);
-equal(render(percentage).includes('Promo until'), false);
+equal(render(percentage).includes('Valid until'), false);
 visitorDate = null;
 equal(render(percentage).includes('<s>'), false);
 console.log(`${checks + 3} promotion checks passed (${Intl.DateTimeFormat().resolvedOptions().timeZone}).`);

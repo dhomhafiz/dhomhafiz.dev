@@ -16,8 +16,11 @@ export function InfoTooltip({ label, text }: { label: string; text: string }) {
     const place = () => {
       if (!button.current || !tooltip.current) return;
       const anchor = button.current.getBoundingClientRect();
-      const bubble = tooltip.current.getBoundingClientRect();
       const viewport = window.visualViewport;
+      // Size against the visible viewport before measuring, including pinch zoom.
+      tooltip.current.style.maxWidth = `${Math.max(0, (viewport?.width ?? document.documentElement.clientWidth) - 16)}px`;
+      tooltip.current.style.maxHeight = `${Math.max(0, (viewport?.height ?? window.innerHeight) - 16)}px`;
+      const bubble = tooltip.current.getBoundingClientRect();
       const leftEdge = (viewport?.offsetLeft ?? 0) + 8;
       const topEdge = (viewport?.offsetTop ?? 0) + 8;
       const rightEdge = leftEdge + (viewport?.width ?? document.documentElement.clientWidth) - 16;
