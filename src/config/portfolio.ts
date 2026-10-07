@@ -19,7 +19,8 @@ const content: PortfolioContent = {
     portrait: {
       socials: [
         { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/?isSelfProfile=true" },
-        { platform: "instagram", href: "https://www.instagram.com/frantickill/" },
+        { platform: "facebook", href: "https://www.facebook.com/profile.php?id=100064737337327" },
+        { platform: "instagram", href: "https://www.instagram.com/dhomhafiz/" },
       ],
       src: assetPath("/images/minime-fisheye-3-768.webp"),
       avifSrcSet: assetSrcSet("/images/minime-fisheye-3-480.avif 480w, /images/minime-fisheye-3-560.avif 560w, /images/minime-fisheye-3-640.avif 640w, /images/minime-fisheye-3-768.avif 768w, /images/minime-fisheye-3-1024.avif 1024w, /images/minime-fisheye-3-1254.avif 1254w"),

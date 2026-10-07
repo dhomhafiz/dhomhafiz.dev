@@ -1,6 +1,10 @@
 import type { SocialLink } from "@/types/portfolio";
 
 const platforms = {
+  facebook: {
+    label: "Facebook",
+    path: "M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.019 4.388 11.015 10.125 11.888v-8.408H7.078v-3.48h3.047V9.42c0-3.017 1.792-4.687 4.533-4.687 1.312 0 2.686.236 2.686.236v2.953h-1.513c-1.491 0-1.956.93-1.956 1.884v2.267h3.328l-.532 3.48h-2.796v8.408C19.612 23.088 24 18.092 24 12.073Z",
+  },
   instagram: {
     label: "Instagram",
     path: "M7 2a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H7Zm0 2h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Zm10.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z",
@@ -19,7 +23,7 @@ export function SocialLinks({ links }: { links: readonly SocialLink[] }) {
   return <nav aria-label="Social profiles" className="mt-4 flex flex-wrap gap-3">
     {links.map(({ platform, href }) => <a key={platform} href={href} target="_blank" rel="noopener noreferrer"
       className="group inline-flex min-h-12 items-center gap-3 rounded-xl border border-cyber-border/15 bg-cyber-surface/90 px-4 py-3 text-sm text-cyber-text shadow-sm backdrop-blur-md transition-colors hover:border-cyber-cyan/50 hover:bg-cyber-surface hover:text-cyber-cyan">
-      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={`h-6 w-6 shrink-0 ${platform === "linkedin" ? "text-[#0a66c2]" : ""}`}>
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" className={`h-6 w-6 shrink-0 ${platform === "linkedin" ? "text-[#0a66c2]" : platform === "facebook" ? "text-[#1877f2]" : ""}`}>
         <path d={platforms[platform].path} />
       </svg>
       <span>{platforms[platform].label}</span>
