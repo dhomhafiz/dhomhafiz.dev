@@ -20,7 +20,7 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
     <main id="main" className="cinematic-page">
       <div className="hero-stage">
         <div data-hero-visibility aria-hidden="true" className="hero-visibility" />
-        <Hero copy={content.hero} sources={content.media.sources} poster={content.media.poster} />
+        <Hero copy={content.hero} />
       </div>
       <div className="portfolio-content">
         <SectionTransition order={1} bottomSpace><PersonalProjects projects={content.projects} /></SectionTransition>
@@ -31,7 +31,7 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
         <div className="section-transition-footer">
           <footer className="mx-auto flex max-w-[1440px] flex-wrap justify-between gap-4 border-t border-cyber-border/10 px-6 py-7 text-xs text-cyber-muted md:px-12 lg:px-20">
             <span>© 2026 {content.brand} / Independent by design.</span>
-            <a href={content.media.sourceUrl} target="_blank" rel="noreferrer" className="underline decoration-cyber-border/20 underline-offset-4 hover:text-cyber-cyan">Background footage / Pexels ↗</a>
+            <a href="#main" className="underline underline-offset-4 hover:text-cyber-cyan">Back to the beginning ↑</a>
           </footer>
         </div>
       </div>

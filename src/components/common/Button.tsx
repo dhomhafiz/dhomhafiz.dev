@@ -1,12 +1,12 @@
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
 
 const variants = {
-  primary: "border-cyber-cyan bg-cyber-cyan text-cyber-on-accent hover:bg-cyber-hover hover:border-cyber-hover shadow-neon-cyan",
+  primary: "border-cyber-cyan bg-cyber-cyan text-cyber-on-accent hover:bg-cyber-hover hover:border-cyber-hover",
   secondary: "border-cyber-border/20 bg-cyber-border/5 text-cyber-text hover:bg-cyber-border/10 hover:border-cyber-border/40",
 };
 type Variant = keyof typeof variants;
 function classes(variant: Variant, className = "") {
-  return `inline-flex min-h-12 items-center justify-center gap-3 rounded-md border px-5 py-3 text-sm font-medium transition-colors ${variants[variant]} ${className}`;
+  return `inline-flex min-h-12 items-center justify-center gap-3 rounded-md border px-5 py-3 font-display text-lg font-semibold transition-colors ${variants[variant]} ${className}`;
 }
 // LSP/ISP: native button semantics, attributes, event handlers and refs are preserved.
 export const Button = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<"button"> & { variant?: Variant }>(

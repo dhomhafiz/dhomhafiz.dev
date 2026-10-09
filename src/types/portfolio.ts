@@ -2,12 +2,9 @@ import type { IconType } from "react-icons";
 
 // ISP: small domain contracts prevent primitives from depending on an entire page.
 export interface HeroCopy {
-  eyebrow: string;
   heading: string;
   highlight: string;
   description: string;
-  hostingHighlight?: string;
-  hostingNote?: string;
   portrait?: { src: string; alt: string; avifSrcSet?: string; webpSrcSet?: string; socials?: readonly SocialLink[] };
 }
 export interface SocialLink { platform: "github" | "linkedin" | "instagram" | "facebook"; href: string }
@@ -15,11 +12,6 @@ export interface ToolkitTechnology { name: string; icon: IconType }
 export interface VideoSource {
   src: string;
   type: string;
-}
-export interface HeroMedia {
-  sources: readonly VideoSource[];
-  poster?: string;
-  sourceUrl: string;
 }
 export interface Capability { label: string; description: string }
 export type PromotionType = "fixed" | "percentage";
@@ -74,7 +66,6 @@ export interface PortfolioContent {
   availability: string;
   contactEmail: string;
   hero: HeroCopy;
-  media: HeroMedia;
   technologies: readonly ToolkitTechnology[];
   capabilities: readonly Capability[];
   projects: readonly PersonalProject[];

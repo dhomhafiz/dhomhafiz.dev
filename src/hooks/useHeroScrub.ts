@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createHeroContentExit } from "@/lib/heroContentExit";
+import { createHeroLetterTumble } from "@/lib/heroLetterTumble";
 
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 
-// Native scroll drives only frame transform/radius while content covers the hero.
+// One native scroll progress drives the frame and independent content exit.
 // No React state updates, smoothing tail, or continuously running RAF loop.
 export function useHeroScrub() {
   const frameRef = useRef<HTMLDivElement>(null);
@@ -17,6 +19,9 @@ export function useHeroScrub() {
     if (!frame || !hero || !overlay || !stage) return;
 
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const contentExit = createHeroContentExit(overlay);
+    const letterTumble = createHeroLetterTumble(overlay);
+    let disposed = false;
     let request = 0;
     let start = 0;
     let distance = 1;
@@ -31,6 +36,8 @@ export function useHeroScrub() {
       const scroll = window.scrollY - start;
       const progress = preference.matches ? 0 : clamp((scroll - coverStart) / distance);
       if (progress !== lastProgress) {
+        contentExit.render(progress, window.innerWidth);
+        letterTumble.render(progress, window.innerWidth);
         const endScale = mobile ? 0.94 : 0.9;
         const radius = mobile ? 24 : 40;
         // Bring the top edge below the fixed navigation so its rounded corners
@@ -66,6 +73,7 @@ export function useHeroScrub() {
       // including the longer portrait-first mobile intro and viewport resizing.
       const content = stage.parentElement?.querySelector<HTMLElement>(".portfolio-content");
       coverStart = content ? window.scrollY + content.getBoundingClientRect().top - start - distance : 0;
+      letterTumble.measure();
       lastProgress = -1;
       schedule();
     };
@@ -75,8 +83,12 @@ export function useHeroScrub() {
     window.addEventListener("resize", measure);
     preference.addEventListener("change", measure);
     measure();
+    document.fonts.ready.then(() => { if (!disposed) measure(); });
 
     return () => {
+      disposed = true;
+      letterTumble.destroy();
+      contentExit.destroy();
       cancelAnimationFrame(request);
       observer.disconnect();
       window.removeEventListener("scroll", schedule);

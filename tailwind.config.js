@@ -5,8 +5,8 @@ module.exports = {
     // OCP: extend the design system through tokens without editing components.
     extend: {
       fontFamily: {
-        display: ["var(--font-space-grotesk)", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "monospace"],
+        display: ["var(--font-display)", "sans-serif"],
+        mono: ["var(--font-body)", "sans-serif"],
       },
       colors: {
         cyber: {

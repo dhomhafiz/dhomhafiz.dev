@@ -6,35 +6,29 @@
   /* OCP: shared RGB tokens support Tailwind opacity modifiers and future themes. */
   :root {
     color-scheme: dark;
-    --cyber-dark: 5 10 17;
-    --cyber-surface: 14 22 33;
-    --cyber-text: 241 245 249;
-    --cyber-muted: 168 183 196;
-    --cyber-cyan: 99 236 220;
-    --cyber-purple: 143 115 235;
+    --cyber-dark: 11 11 11;
+    --cyber-surface: 23 23 23;
+    --cyber-text: 245 245 245;
+    --cyber-muted: 163 163 163;
+    --cyber-cyan: 245 245 245;
+    --cyber-purple: 163 163 163;
     --cyber-border: 255 255 255;
-    --cyber-on-accent: 5 10 17;
+    --cyber-on-accent: 11 11 11;
     --cyber-hover: 255 255 255;
-    --hero-video-opacity: .8;
-    --hero-heading-accent: 34 211 238;
-    --hero-portrait-filter: saturate(.78) brightness(.88) contrast(1.03);
-    --hero-portrait-edge-opacity: .3;
+    --hero-heading-accent: 245 245 245;
   }
   :root[data-theme="light"] {
     color-scheme: light;
-    --cyber-dark: 247 250 252;
+    --cyber-dark: 245 245 245;
     --cyber-surface: 255 255 255;
-    --cyber-text: 18 32 47;
-    --cyber-muted: 70 88 106;
-    --cyber-cyan: 0 105 98;
-    --cyber-purple: 101 69 170;
-    --cyber-border: 32 55 72;
+    --cyber-text: 11 11 11;
+    --cyber-muted: 82 82 82;
+    --cyber-cyan: 23 23 23;
+    --cyber-purple: 82 82 82;
+    --cyber-border: 48 48 48;
     --cyber-on-accent: 255 255 255;
-    --cyber-hover: 0 80 75;
-    --hero-video-opacity: .85;
+    --cyber-hover: 64 64 64;
     --hero-heading-accent: var(--cyber-cyan);
-    --hero-portrait-filter: saturate(.7) brightness(1.06) contrast(.92);
-    --hero-portrait-edge-opacity: .2;
   }
   html { scroll-behavior: smooth; scroll-padding-top: 10rem; }
   body { margin: 0; }
@@ -77,7 +71,6 @@
   .section-transition-footer { position: relative; z-index: 6; background: rgb(var(--cyber-dark)); }
   .section-transition-footer > footer { width: 100%; }
   .hero-composition { margin-block: auto; flex-shrink: 0; min-width: 0; }
-  .hero-profile { max-width: 440px; }
   @media (min-width: 640px) {
     .hero-overlay { padding-top: 7rem; }
   }
@@ -86,7 +79,6 @@
   }
   @media (min-width: 1024px) {
     .hero-overlay { width: calc(100% - 10rem); max-width: 1280px; }
-    .hero-profile { max-width: none; }
   }
   @media (min-width: 1024px) and (max-height: 800px) {
     .hero-copy h1 { font-size: clamp(1.875rem, 4.3vh, 3rem); }
@@ -95,7 +87,6 @@
     .hero-copy > p { font-size: .875rem; line-height: 1.65; }
     .hero-copy > div:not(:last-child) { padding: .75rem; }
     .hero-copy > div:not(:last-child) p:last-child { line-height: 1.65; }
-    .hero-profile { max-width: min(440px, 52vh); }
   }
   /* Keep every existing element reachable on short viewports and at text zoom. */
   @media (max-width: 1023px) {
@@ -103,15 +94,10 @@
     .hero-copy > p:first-child { margin-top: 0; margin-bottom: 1rem; }
     .hero-copy > p { margin-top: 1rem; font-size: .875rem; line-height: 1.65; }
     .hero-copy > div { margin-top: 1rem; }
-    .hero-profile { max-width: 220px; }
-    .hero-profile nav { gap: .5rem; }
-    .hero-profile nav a { padding: .5rem; font-size: .75rem; gap: .5rem; }
-    .hero-profile nav svg { width: 1.125rem; height: 1.125rem; }
   }
-  /* Mobile uses one page scroll: the copy flows over a pinned video instead of
+  /* Mobile uses one page scroll: the copy flows over a pinned portrait instead of
      consuming swipes inside a nested scroll area before the cover can begin. */
   @media (max-width: 767px) {
-    .cinematic-hero .hero-profile { order: -1; }
     .hero-stage { height: auto; }
     .cinematic-hero { position: sticky; top: var(--hero-pin-top, 0px); height: auto; overflow: visible; }
     .hero-stage::after { content: ""; display: block; height: 100vh; height: 100dvh; }
@@ -120,24 +106,6 @@
   }
   /* SRP: decorative surfaces remain independent of content and media availability. */
   .glass-panel { border: 1px solid rgb(var(--cyber-border) / .16); background: rgb(var(--cyber-surface) / .55); backdrop-filter: blur(12px); }
-  /* Theme-owned color grading keeps the portrait component independent of theme logic. */
-  .hero-portrait img { filter: var(--hero-portrait-filter); }
-  .hero-portrait::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    background: radial-gradient(ellipse at 50% 42%, transparent 40%, rgb(var(--cyber-dark) / var(--hero-portrait-edge-opacity)) 100%);
-  }
-  .hero-fallback {
-    background: radial-gradient(ellipse at 80% 42%, rgb(var(--cyber-cyan) / .14), transparent 46%), radial-gradient(ellipse at 95% 75%, rgb(var(--cyber-purple) / .16), transparent 48%), rgb(var(--cyber-dark));
-  }
-  .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .9) 0%, rgb(var(--cyber-dark) / .68) 48%, rgb(var(--cyber-dark) / .18)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 50%); }
-  :root[data-theme="light"] .hero-scrim { background: linear-gradient(180deg, rgb(var(--cyber-dark) / .86), rgb(var(--cyber-dark) / .82) 48%, rgb(var(--cyber-dark) / .35) 75%), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
-  @media (min-width: 1024px) {
-    :root[data-theme="light"] .hero-scrim { background: linear-gradient(90deg, rgb(var(--cyber-dark) / .82), rgb(var(--cyber-dark) / .72) 45%, rgb(var(--cyber-dark) / .18)), linear-gradient(0deg, rgb(var(--cyber-dark)), transparent 30%); }
-  }
   .skip-link { position: fixed; top: 1rem; left: 1rem; z-index: 100; transform: translateY(-200%); padding: .8rem 1rem; background: rgb(var(--cyber-cyan)); color: rgb(var(--cyber-on-accent)); }
   .skip-link:focus { transform: translateY(0); }
 }
@@ -195,4 +163,67 @@
   .portfolio-content { margin-top: 0; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Editorial identity; scroll controllers and their frame geometry stay intact. */
+@layer components {
+  h2, h3, summary, .cinematic-header { font-family: var(--font-display), sans-serif; }
+  h2 { font-size: clamp(2.5rem, 4.5vw, 4.5rem) !important; font-weight: 800; line-height: 1.05; }
+  h3 { font-weight: 600; }
+  .font-display { font-weight: 800; }
+  .glass-panel { background: rgb(var(--cyber-surface)); backdrop-filter: none; border-radius: .75rem; }
+  .shadow-neon-cyan { box-shadow: none; }
+  .hero-media { background: #0b0b0b; }
+  .hero-photograph { position: absolute; right: 0; top: 86px; width: 58%; height: calc(100% - 86px); object-fit: contain; object-position: center top; }
+  .hero-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, #0b0b0b 32%, transparent 67%); }
+  .hero-overlay { color: #f5f5f5; padding-top: 8rem; padding-bottom: 3rem; }
+  .hero-copy { max-width: 48%; }
+  .hero-title { font-size: clamp(4rem, 7.8vw, 9rem); line-height: .9; letter-spacing: -.035em; }
+  .hero-role { margin-top: 1.5rem; font-size: clamp(1.2rem, 1.8vw, 1.65rem); font-weight: 600; line-height: 1.25; letter-spacing: .01em; color: #a3a3a3; }
+  .hero-copy > p { color: #a3a3a3; }
+  .hero-copy > p:first-child { color: #f5f5f5; }
+  .hero-copy > div:not(:last-child) { border-radius: .5rem; }
+  .hero-copy nav { margin-top: 1.5rem; }
+  .hero-copy nav a { padding: .5rem; min-height: 44px; font-size: .75rem; border-color: #303030; background: #171717; color: #f5f5f5; }
+  .hero-copy nav svg { width: 1rem; height: 1rem; }
+  :root[data-theme="light"] .hero-overlay { --cyber-text: 245 245 245; --cyber-muted: 163 163 163; --cyber-cyan: 245 245 245; --cyber-dark: 11 11 11; --cyber-on-accent: 11 11 11; --cyber-hover: 210 210 210; --hero-heading-accent: 245 245 245; }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-photograph { width: 65%; right: -8%; }
+    .hero-copy { max-width: 54%; }
+    .hero-title { font-size: clamp(4rem, 8vw, 6rem); }
+  }
+  @media (min-width: 768px) and (max-height: 800px) {
+    .hero-copy h1 { font-size: clamp(3rem, 9vh, 6rem); }
+    .hero-role { margin-top: 1rem; }
+    .hero-copy nav { margin-top: 1rem; }
+  }
+  @media (max-width: 767px) {
+    .cinematic-header > div { flex-wrap: nowrap; padding: 1rem; gap: .5rem; }
+    .cinematic-header #site-home { font-size: 1.25rem; gap: .375rem; }
+    .cinematic-header > div > div { gap: .375rem; }
+    .cinematic-header button { padding: .5rem; }
+    .cinematic-header a[href="#contact"] { padding-inline: .625rem !important; font-size: 1rem; }
+    .hero-photograph { top: 80px; width: 100%; height: 360px; object-fit: cover; object-position: center 18%; }
+    .hero-scrim { background: linear-gradient(180deg, transparent 260px, #0b0b0b 440px); }
+    .hero-overlay { padding-top: 430px; padding-bottom: 3rem; }
+    .hero-copy { max-width: 100%; }
+    .hero-title { font-size: clamp(3.75rem, 15vw, 6rem); }
+    .hero-role { margin-top: 1rem; font-size: 1.25rem; }
+    .hero-copy nav { flex-wrap: wrap; }
+  }
+}
+
+/* The hidden layout text keeps original kerning and wraps; letters overlay its glyph positions. */
+.hero-tumble-heading { position: relative; perspective: 1100px; transform-style: preserve-3d; }
+.hero-letter-stage { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; visibility: hidden; }
+.hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: hidden; }
+.hero-tumble-heading[data-letters-ready] .hero-letter-stage { visibility: visible; }
+.hero-letter { position: absolute; display: block; transform-origin: 50% 65%; transform-style: preserve-3d; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: visible; }
+  .hero-letter-stage { display: none; }
+}
+@media (scripting: none) {
+  .hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: visible; }
+  .hero-letter-stage { display: none; }
 }
