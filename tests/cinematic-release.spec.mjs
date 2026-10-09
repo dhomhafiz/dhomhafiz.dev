@@ -35,7 +35,10 @@ for (const width of [360, 390, 768, 1024, 1440, 1920]) {
     await expect(page.locator('.hero-copy')).not.toContainText('Independent web developer');
     await expect(page.locator('.hero-copy')).not.toContainText('RM0 Free Lifetime Hosting');
     await expect(page.locator('.cinematic-hero video')).toHaveCount(0);
-    expect(await page.locator('.hero-title').evaluate(node => getComputedStyle(node).fontFamily)).toContain('localFont');
+    expect(await page.locator('.hero-title').evaluate(node => {
+      const family = getComputedStyle(node).fontFamily.split(',')[0].trim().replaceAll('"', '');
+      return [...document.fonts].some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded');
+    })).toBe(true);
     const bounds = await page.locator('.portfolio-content').evaluate(node => ({ start: scrollY + node.getBoundingClientRect().top - innerHeight, height: innerHeight }));
     const states = new Map();
     for (const progress of [0, .15, .3, .5, .7, .85, 1, .85, .7, .5, .3, .15, 0]) {
