@@ -1,0 +1,62 @@
+name: Validate cinematic portfolio
+
+on:
+  push:
+    branches: [feature/cinematic-portfolio-redesign]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cinematic-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      # Test-only public placeholders; all email requests are mocked in the browser.
+      NEXT_PUBLIC_EMAILJS_SERVICE_ID: validation-service
+      NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: validation-template
+      NEXT_PUBLIC_EMAILJS_PUBLIC_KEY: validation-public-key
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Record isolated runner
+        run: |
+          uname -a
+          node --version
+          npm --version
+      - run: npm ci
+      - name: Review dependency audit
+        run: node scripts/check-security-audit.mjs
+      - name: Production static build
+        run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check exported routes and assets
+        run: node scripts/check-static-export.mjs
+      - name: Install validation browser
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Validate rendered export and contact flow
+        run: npm run test:release
+      - name: Save validation evidence (never a Pages artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-validation-${{ github.run_id }}
+          path: |
+            artifacts/
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: warn

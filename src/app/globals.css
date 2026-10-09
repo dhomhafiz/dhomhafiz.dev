@@ -212,3 +212,18 @@
     .hero-copy nav { flex-wrap: wrap; }
   }
 }
+
+/* The hidden layout text keeps original kerning and wraps; letters overlay its glyph positions. */
+.hero-tumble-heading { position: relative; perspective: 1100px; transform-style: preserve-3d; }
+.hero-letter-stage { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; visibility: hidden; }
+.hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: hidden; }
+.hero-tumble-heading[data-letters-ready] .hero-letter-stage { visibility: visible; }
+.hero-letter { position: absolute; display: block; transform-origin: 50% 65%; transform-style: preserve-3d; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: visible; }
+  .hero-letter-stage { display: none; }
+}
+@media (scripting: none) {
+  .hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: visible; }
+  .hero-letter-stage { display: none; }
+}

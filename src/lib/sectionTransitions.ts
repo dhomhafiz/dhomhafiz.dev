@@ -1,4 +1,4 @@
-import { getDocumentTop } from "./sectionNavigation";
+import { navigateToSection } from "./sectionNavigation";
 
 export interface SectionTransitionProfile {
   desktopScale: number;
@@ -40,7 +40,7 @@ export function createSectionTransitionController() {
     // Feature components retain ownership of their internal anchor behaviors.
     const entry = [...entries].find(item => item.frame.firstElementChild === target);
     if (!entry) return false;
-    window.scrollTo({ top: getDocumentTop(target) - clearance - 16, behavior });
+    navigateToSection(target, behavior);
     return true;
   }
   function navigate(event: MouseEvent) {

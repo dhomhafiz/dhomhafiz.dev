@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import type { ProjectCategory } from "@/types/portfolio";
-import { getDocumentTop } from "@/lib/sectionNavigation";
+import { navigateToSection } from "@/lib/sectionNavigation";
 
 type ProjectFilterValue = "all" | ProjectCategory;
 const filters: readonly { value: ProjectFilterValue; label: string }[] = [
@@ -26,9 +26,21 @@ export function ProjectFilter({ items }: {
       setActive("template");
       setDemoNavigation(value => value + 1);
     };
+    const onDemoLink = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element)?.closest<HTMLAnchorElement>('a[href="#live-demo"]');
+      if (!link) return;
+      event.preventDefault();
+      if (window.location.hash !== "#live-demo") window.history.pushState(window.history.state, "", link.hash);
+      navigateToDemo();
+    };
     navigateToDemo();
     window.addEventListener("hashchange", navigateToDemo);
-    return () => window.removeEventListener("hashchange", navigateToDemo);
+    document.addEventListener("click", onDemoLink);
+    return () => {
+      window.removeEventListener("hashchange", navigateToDemo);
+      document.removeEventListener("click", onDemoLink);
+    };
   }, []);
 
   // Wait for the filtered cards to commit before measuring their new positions.
@@ -37,12 +49,7 @@ export function ProjectFilter({ items }: {
     const frame = requestAnimationFrame(() => {
       const target = document.getElementById("live-demo") ?? document.getElementById("project-results");
       if (!target) return;
-      target.focus({ preventScroll: true });
-      const headerHeight = document.querySelector("body > header")?.getBoundingClientRect().height ?? 0;
-      window.scrollTo({
-        top: getDocumentTop(target) - headerHeight - 24,
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-      });
+      navigateToSection(target);
     });
     return () => cancelAnimationFrame(frame);
   }, [demoNavigation]);

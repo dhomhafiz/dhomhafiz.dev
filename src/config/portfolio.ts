@@ -11,11 +11,8 @@ const content: PortfolioContent = {
   availability: "Available for select projects",
   contactEmail: "dhomhafiz@gmail.com",
   hero: {
-    eyebrow: "Independent web developer",
     heading: "MOHD HAFIZ",
-    highlight: "Web Developer / Software Engineer",
-    hostingHighlight: "RM0 Free Lifetime Hosting",
-    hostingNote: "For eligible static sites on a free hosting plan, subject to provider limits and continued availability. Domain renewals and paid services are separate.",
+    highlight: "Freelance Web Designer Malaysia",
     portrait: {
       socials: [
         { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/?isSelfProfile=true" },

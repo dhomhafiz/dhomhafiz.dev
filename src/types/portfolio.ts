@@ -2,12 +2,9 @@ import type { IconType } from "react-icons";
 
 // ISP: small domain contracts prevent primitives from depending on an entire page.
 export interface HeroCopy {
-  eyebrow: string;
   heading: string;
   highlight: string;
   description: string;
-  hostingHighlight?: string;
-  hostingNote?: string;
   portrait?: { src: string; alt: string; avifSrcSet?: string; webpSrcSet?: string; socials?: readonly SocialLink[] };
 }
 export interface SocialLink { platform: "github" | "linkedin" | "instagram" | "facebook"; href: string }

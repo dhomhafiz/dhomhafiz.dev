@@ -7,3 +7,6 @@ out/
 .sites-runtime/
 .media-source/
 .audit-tools/
+artifacts/
+playwright-report/
+test-results/

@@ -5,7 +5,7 @@ import { InfoTooltip } from "@/components/common/InfoTooltip";
 import type { ServiceOffer } from "@/types/portfolio";
 
 export function Services({ offer }: { offer: ServiceOffer }) {
-  return <section id="services" aria-labelledby="services-title" className="mx-auto max-w-[1440px] scroll-mt-8 px-6 py-16 md:px-12 lg:px-20">
+  return <section id="services" tabIndex={-1} aria-labelledby="services-title" className="mx-auto max-w-[1440px] scroll-mt-8 px-6 py-16 md:px-12 lg:px-20">
     <div className="mb-4 flex flex-wrap items-baseline justify-between gap-4">
       <h2 id="services-title" className="font-mono text-3xl tracking-tight">My Services</h2>
       <p className="text-xs uppercase tracking-[0.15em] text-cyber-muted">Built for your next step / 02</p>
