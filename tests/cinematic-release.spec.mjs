@@ -39,6 +39,9 @@ for (const width of [360, 390, 768, 1024, 1440, 1920]) {
       const family = getComputedStyle(node).fontFamily.split(',')[0].trim().replaceAll('"', '');
       return [...document.fonts].some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded');
     })).toBe(true);
+    await page.locator('.hero-copy').evaluate(node => Promise.all(node.getAnimations().map(animation => animation.finished)));
+    fs.mkdirSync('artifacts', { recursive: true });
+    if (width === 390 || width === 1440) await page.screenshot({ path: `artifacts/hero-${width}.png`, fullPage: false });
     const bounds = await page.locator('.portfolio-content').evaluate(node => ({ start: scrollY + node.getBoundingClientRect().top - innerHeight, height: innerHeight }));
     const states = new Map();
     for (const progress of [0, .15, .3, .5, .7, .85, 1, .85, .7, .5, .3, .15, 0]) {
@@ -57,8 +60,10 @@ for (const width of [360, 390, 768, 1024, 1440, 1920]) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
     await scrollTo(page, 0);
-    for (const theme of ['light', 'dark']) {
-      await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
+    const initialTheme = await page.locator('html').getAttribute('data-theme');
+    for (let toggle = 0; toggle < 2; toggle++) {
+      await page.getByRole('button', { name: /^Switch to (light|dark) theme$/ }).click();
+      await expect(page.locator('html')).toHaveAttribute('data-theme', toggle === 0 ? (initialTheme === 'dark' ? 'light' : 'dark') : initialTheme);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
     for (let index = 0; index < 4; index++) {
@@ -70,8 +75,6 @@ for (const width of [360, 390, 768, 1024, 1440, 1920]) {
       }
     }
     await scrollTo(page, 0);
-    fs.mkdirSync('artifacts', { recursive: true });
-    if (width === 390 || width === 1440) await page.screenshot({ path: `artifacts/hero-${width}.png`, fullPage: false });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await scrollTo(page, bounds.start + bounds.height * .7);
     await expect.poll(() => page.locator('.hero-media').evaluate(node => getComputedStyle(node).transform)).toBe('none');
