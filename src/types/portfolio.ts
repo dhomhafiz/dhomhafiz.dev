@@ -16,11 +16,6 @@ export interface VideoSource {
   src: string;
   type: string;
 }
-export interface HeroMedia {
-  sources: readonly VideoSource[];
-  poster?: string;
-  sourceUrl: string;
-}
 export interface Capability { label: string; description: string }
 export type PromotionType = "fixed" | "percentage";
 export type ServiceFeature = string | { label: string; tooltip: string; infoLabel: string };
@@ -74,7 +69,6 @@ export interface PortfolioContent {
   availability: string;
   contactEmail: string;
   hero: HeroCopy;
-  media: HeroMedia;
   technologies: readonly ToolkitTechnology[];
   capabilities: readonly Capability[];
   projects: readonly PersonalProject[];

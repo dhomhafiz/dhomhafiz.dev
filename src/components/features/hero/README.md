@@ -1,17 +1,11 @@
-﻿# Coordinated frame shrink and rising content
+﻿# Cinematic hero
 
-The video begins fullscreen and edge-to-edge, with no scale or rounded corners. HeroBackdrop attaches useHeroScrub to .hero-media. The video uses 100% dimensions and object-fit: cover; it has no independent transform. Its wrapper owns scale, progressive radius, and overflow: hidden clipping. During the first 30% of zoom-out it also translates downward just enough to expose the rounded top corners below the fixed header. The clearance is measured on resize; no layout dimensions are animated.
+HeroBackdrop owns the existing useHeroScrub frame and composes HeroPortrait inside it. HeroCopy owns content, offer, links and socials. The static portrait replaces all hero playback logic. Other video components remain available.
 
-During the same scroll interval, the frame pulls back and Personal Projects rises over it. Hero text, portrait, social links, and navigation stay visible: there is no scroll-driven opacity fade or disabling of hero controls. Foreground stacking naturally hides the hero as the content covers it.
+Motion is unchanged: desktop/tablet scale 1 → .90, radius 0 → 40px; mobile scale 1 → .94, radius 0 → 24px. Clearance develops over the first 30% of progress. Scroll reverses exactly. SectionTransition retains .96/.98 scale and 32/20px radius. Existing 800ms entrance reveal and hover timings remain intact. Reduced motion removes pinning and transforms.
 
-The desktop/tablet 200dvh runway pins a 100dvh hero. The foreground has a -100dvh margin, so it starts at the viewport bottom and rises immediately with scrolling. Over one viewport of scroll the frame scales from 1 to 0.90 with a 40px radius, while the foreground moves from the bottom to the top. Once covered, normal scrolling continues.
+Desktop keeps the full portrait beside the copy, with header clearance. Tablet narrows the copy and positions the portrait to the right. Mobile reserves 360px below the header for the face and arms; copy flows below it. The existing mobile one-page scroll and cover sequence remain.
 
-Mobile keeps the portrait and social links above the copy, and uses one page scroll without a nested hero scroller. The video alone is sticky. The long intro remains readable in natural flow, followed by a viewport spacer overlapped by the foreground. Frame shrinking starts exactly when that foreground reaches the viewport edge, so both effects progress together. The mobile frame finishes at scale 0.94 with a 24px radius.
+Three WebP sources preserve image proportions, without editing the face: 560, 840, 1122px. Explicit dimensions, eager loading, high fetch priority and responsive sizes support static export without an image service.
 
-Native sticky positioning handles pinning. A passive scroll listener schedules at most one requestAnimationFrame, updating only frame transform and border radius. No scroll-driven React state, fixed-duration animation, or continuously running RAF loop is used. Stopping freezes progress; reversing retraces it. Width, height, top, margin, and padding are not animated. Cleanup removes listeners, ResizeObserver, pending RAF, and frame styles; will-change is used only during the transition.
-
-Reduced motion resets the frame and removes pinning and overlap, giving normal document flow. The existing video download policies and poster remain intact. Video pauses when fully covered or when the page is hidden, and resumes when exposed unless manually paused.
-
-Validation: npm.cmd run build includes TypeScript; no lint script is configured. node .audit-tools/check-cinematic-hero.mjs verifies coordinated cover geometry, constant hero opacity, frame interpolation, reverse and stop behavior, unchanged layout dimensions, no footage transform, overflow, reduced motion, resize, playback, no-JavaScript fallback, and constrained-network policies across five viewport sizes. node .audit-tools/check-demo-navigation.mjs checks project filtering and demo links at 320px and 1440px. Screenshots are saved under audits/inset-hero-*.png.
-
-Run locally with npm.cmd run dev. These checks do not establish a Lighthouse score or guarantee 60fps on every device.
+Fonts use next/font/local: OFL-licensed Barlow Condensed 600/800 and Space Grotesk for readable paragraphs. Futura can replace the centralized display font when licensed files are supplied.

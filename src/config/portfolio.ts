@@ -11,9 +11,9 @@ const content: PortfolioContent = {
   availability: "Available for select projects",
   contactEmail: "dhomhafiz@gmail.com",
   hero: {
-    eyebrow: "WEBSITES FOR LOCAL BUSINESSES",
-    heading: "Ultra-fast landing pages",
-    highlight: "built to grow your sales.",
+    eyebrow: "Independent web developer",
+    heading: "MOHD HAFIZ",
+    highlight: "Web Developer / Software Engineer",
     hostingHighlight: "RM0 Free Lifetime Hosting",
     hostingNote: "For eligible static sites on a free hosting plan, subject to provider limits and continued availability. Domain renewals and paid services are separate.",
     portrait: {
@@ -22,18 +22,11 @@ const content: PortfolioContent = {
         { platform: "facebook", href: "https://www.facebook.com/profile.php?id=100064737337327" },
         { platform: "instagram", href: "https://www.instagram.com/dhomhafiz/" },
       ],
-      src: assetPath("/images/minime-fisheye-3-768.webp"),
-      avifSrcSet: assetSrcSet("/images/minime-fisheye-3-480.avif 480w, /images/minime-fisheye-3-560.avif 560w, /images/minime-fisheye-3-640.avif 640w, /images/minime-fisheye-3-768.avif 768w, /images/minime-fisheye-3-1024.avif 1024w, /images/minime-fisheye-3-1254.avif 1254w"),
-      webpSrcSet: assetSrcSet("/images/minime-fisheye-3-480.webp 480w, /images/minime-fisheye-3-560.webp 560w, /images/minime-fisheye-3-640.webp 640w, /images/minime-fisheye-3-768.webp 768w, /images/minime-fisheye-3-1024.webp 1024w, /images/minime-fisheye-3-1254.webp 1254w"),
-      alt: "Hafiz smiling with arms crossed in a neon-lit coding workspace, surrounded by miniature cartoon versions of himself.",
+      src: assetPath("/images/hafiz-cinematic-1122.webp"),
+      webpSrcSet: assetSrcSet("/images/hafiz-cinematic-560.webp 560w, /images/hafiz-cinematic-840.webp 840w, /images/hafiz-cinematic-1122.webp 1122w"),
+      alt: "Mohd Hafiz smiling in a cap and glasses, with arms crossed in a monochrome studio portrait.",
     },
     description: "Turn local visitors into your next customers. Give them a fast, mobile-friendly website that makes your services clear and contacting you easy.",
-  },
-  media: {
-    // Compressed local copy of the credited Pexels footage.
-    sources: [{ src: assetPath("/videos/hero-720p.mp4"), type: "video/mp4" }],
-    poster: assetPath("/images/hero-poster.webp"),
-    sourceUrl: "https://www.pexels.com/video/a-computer-screen-with-the-word-target-on-it-6037155/",
   },
   technologies: [
     { name: "Next.js", icon: SiNextdotjs },

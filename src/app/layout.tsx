@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { themeInitScript } from "@/config/theme";
 import { assetPath } from "@/lib/assetPath";
 
 // SRP: optimized fonts and document-wide metadata are owned by the root layout.
-const display = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk", display: "swap" });
-const body = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono", display: "swap" });
+const display = localFont({ src: [{ path: "./fonts/BarlowCondensed-SemiBold.ttf", weight: "600" }, { path: "./fonts/BarlowCondensed-ExtraBold.ttf", weight: "800" }], variable: "--font-display", display: "swap" });
+const body = localFont({ src: "./fonts/space-grotesk-latin.woff2", variable: "--font-body", display: "swap" });
 export const metadata: Metadata = {
   title: "Mohd Hafiz Abd Rahim",
   description: "Thoughtful web experiences, built with precision. Independent frontend development with React, Next.js, and TypeScript.",
