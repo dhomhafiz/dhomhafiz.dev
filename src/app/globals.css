@@ -227,3 +227,99 @@
   .hero-tumble-heading[data-letters-ready] .hero-letter-layout { visibility: visible; }
   .hero-letter-stage { display: none; }
 }
+
+/* Only the opening pair travels horizontally; later sections retain their flow. */
+@layer components {
+  :root { --font-display: var(--font-body); --font-monojet: var(--font-body), sans-serif; }
+  .cinematic-page :is(h2, h3, h4, summary),
+  .cinematic-page .font-display, .cinematic-header,
+  .cinematic-header .font-display,
+  .cinematic-page :is(.text-xs.uppercase, .intro-label) {
+    font-family: var(--font-monojet);
+  }
+  .cinematic-hero .font-display { font-family: var(--font-display), sans-serif; }
+  .hero-stage { height: auto; }
+  .hero-stage::after { display: none; }
+  .hero-visibility { display: none; }
+  .hero-intro-viewport { position: relative; }
+  .hero-intro-track { display: block; }
+  .cinematic-hero { position: relative; top: auto; }
+  .portfolio-content { margin-top: 0; }
+  .introduction { background: rgb(var(--cyber-surface)); min-height: 100dvh; display: flex; align-items: center; }
+  .introduction-inner { width: 100%; max-width: 1440px; margin: auto; padding: 8rem 1.5rem 4rem; }
+  .intro-label { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--cyber-muted)); margin-bottom: 2.5rem; }
+  .introduction h2 { font-size: clamp(2rem, 5vw, 5rem) !important; line-height: 1.15; overflow-wrap: anywhere; }
+  .introduction-copy { max-width: 34rem; margin-top: 2.5rem; font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.8; }
+  .introduction-copy p + p { margin-top: 1.5rem; }
+  @media (min-width: 768px) {
+    .introduction-inner { padding-inline: 3rem; }
+    .introduction-copy { margin-left: auto; }
+  }
+  @media (min-width: 1024px) { .introduction-inner { padding-inline: 5rem; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-stage[data-horizontal-ready] { height: calc(var(--opening-height) + var(--opening-distance)); }
+    .hero-stage[data-horizontal-ready] .hero-intro-viewport { position: sticky; top: var(--opening-pin-top); height: var(--opening-height); overflow: clip; }
+    .hero-stage[data-horizontal-ready] .hero-intro-track { display: flex; height: 100%; will-change: transform; }
+    .hero-stage[data-horizontal-ready] .cinematic-hero { flex: 0 0 100%; height: 100%; overflow: hidden; }
+    .hero-stage[data-horizontal-ready] .introduction { flex: 0 0 100%; align-self: end; }
+    .hero-stage[data-horizontal-ready] .hero-overlay { overflow: visible; }
+    .hero-stage[data-horizontal-ready] .hero-media { position: absolute; inset: 0; height: 100%; margin: 0; }
+  }
+}
+
+@media (max-width: 767px) {
+  .cinematic-header #site-home { font-size: 1rem; }
+  .cinematic-header a[href="#contact"] { font-size: .75rem; white-space: nowrap; }
+}
+
+/* The opening Hero fits one viewport before the horizontal scrub begins. */
+@layer components {
+  .cinematic-hero { height: 100vh; height: 100dvh; min-height: 0; }
+  .hero-overlay { min-height: 0; height: 100%; overflow: visible; }
+  @media (max-width: 767px) {
+    .hero-photograph { height: clamp(100px, 28dvh, 280px); }
+    .hero-scrim { background: linear-gradient(180deg, transparent calc(80px + 18dvh), #0b0b0b calc(80px + 28dvh)); }
+    .hero-overlay { padding-top: calc(80px + clamp(100px, 28dvh, 280px)); padding-bottom: 1.5rem; }
+    .hero-title { font-size: clamp(3rem, 13vw, 5rem); }
+    .hero-copy > div { margin-top: 1rem; }
+    .hero-copy nav { margin-top: 1rem; }
+  }
+  @media (max-height: 700px) {
+    .hero-overlay { padding-bottom: 1rem; }
+    .hero-copy > p { margin-top: .75rem; line-height: 1.5; }
+    .hero-copy > div, .hero-copy nav { margin-top: .75rem; }
+    .hero-role { margin-top: .75rem; }
+  }
+}
+@media (max-width: 767px) {
+  .hero-copy nav { gap: .375rem; }
+  .hero-copy nav a { padding-inline: .375rem; gap: .375rem; font-size: .65rem; }
+  .hero-copy nav a > span[aria-hidden] { margin-left: 0; }
+}
+@media (max-width: 380px) {
+  .cinematic-header #site-home { font-size: .875rem; }
+  .cinematic-header button { font-size: .625rem; padding-inline: .375rem; }
+  .cinematic-header a[href="#contact"] { padding-inline: .5rem !important; font-size: .625rem; gap: .375rem; }
+}
+
+/* Keep the portrait and its copy within the full-screen introduction. */
+@layer components {
+  .introduction-inner { padding-block: 6.5rem 2rem; }
+  .intro-label { margin-bottom: 1.5rem; }
+  .introduction-copy { margin-top: 1.25rem; font-size: 1rem; line-height: 1.65; }
+  .introduction-copy p + p { margin-top: 1rem; }
+  .introduction-portrait { display: block; width: auto; height: clamp(120px, 19dvh, 180px); max-width: 100%; object-fit: contain; border-radius: .5rem; margin-bottom: 1.25rem; }
+  @media (min-width: 768px) {
+    .introduction-inner { display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .intro-label { grid-column: 1 / -1; margin-bottom: 2rem; }
+    .introduction-copy { margin: 0; font-size: clamp(1rem, 1.3vw, 1.2rem); }
+    .introduction-portrait { height: clamp(180px, 34dvh, 340px); margin-bottom: 1.5rem; }
+  }
+  @media (max-height: 700px) and (max-width: 767px) {
+    .introduction-inner { padding-block: 6rem 1.25rem; }
+    .intro-label { margin-bottom: 1rem; }
+    .introduction h2 { font-size: 1.75rem !important; line-height: 1.1; }
+    .introduction-copy { font-size: .875rem; line-height: 1.5; margin-top: 1rem; }
+    .introduction-portrait { height: 110px; margin-bottom: 1rem; }
+  }
+}

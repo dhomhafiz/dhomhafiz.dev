@@ -1,5 +1,6 @@
 import type { PortfolioProvider } from "@/types/portfolio";
 import { SiteHeader } from "./SiteHeader";
+import { Introduction } from "./Introduction";
 import { Hero } from "./hero/Hero";
 import { Approach } from "./Approach";
 import { PersonalProjects } from "./PersonalProjects";
@@ -20,7 +21,7 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
     <main id="main" className="cinematic-page">
       <div className="hero-stage">
         <div data-hero-visibility aria-hidden="true" className="hero-visibility" />
-        <Hero copy={content.hero} />
+        <div className="hero-intro-viewport"><div className="hero-intro-track"><Hero copy={content.hero} /><Introduction /></div></div>
       </div>
       <div className="portfolio-content">
         <SectionTransition order={1} bottomSpace><PersonalProjects projects={content.projects} /></SectionTransition>
@@ -30,8 +31,8 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
         <SectionTransition order={5} bottomSpace exit="flow"><Contact contactEmail={content.contactEmail} packages={content.services.tiers.filter(tier => !tier.comingSoon).map(({ id, title }) => ({ id, title }))} /></SectionTransition>
         <div className="section-transition-footer">
           <footer className="mx-auto flex max-w-[1440px] flex-wrap justify-between gap-4 border-t border-cyber-border/10 px-6 py-7 text-xs text-cyber-muted md:px-12 lg:px-20">
-            <span>© 2026 {content.brand} / Independent by design.</span>
-            <a href="#main" className="underline underline-offset-4 hover:text-cyber-cyan">Back to the beginning ↑</a>
+            <span>&copy; 2026 {content.brand} / Independent by design.</span>
+            <a href="#main" className="underline underline-offset-4 hover:text-cyber-cyan">Back to the beginning &uarr;</a>
           </footer>
         </div>
       </div>

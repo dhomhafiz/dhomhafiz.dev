@@ -23,66 +23,7 @@ async function expectBelowHeader(page, selector) {
   }, selector)).toBe(true);
 }
 
-for (const width of [360, 390, 768, 1024, 1440, 1920]) {
-  test(`cinematic hero and reversible motion at ${width}px`, async ({ page }) => {
-    const errors = captureErrors(page);
-    await page.setViewportSize({ width, height: 900 });
-    expect((await page.goto('/', { waitUntil: 'networkidle' })).status()).toBe(200);
-    await page.evaluate(() => document.fonts.ready);
-    await expect(page.locator('[data-letters-ready]')).toHaveAttribute('data-letters-ready', 'true');
-    await expect(page.locator('[data-hero-letter]')).toHaveCount(9);
-    expect(await page.locator('.hero-photograph').evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
-    await expect(page.locator('.hero-copy')).not.toContainText('Independent web developer');
-    await expect(page.locator('.hero-copy')).not.toContainText('RM0 Free Lifetime Hosting');
-    await expect(page.locator('.cinematic-hero video')).toHaveCount(0);
-    expect(await page.locator('.hero-title').evaluate(node => {
-      const family = getComputedStyle(node).fontFamily.split(',')[0].trim().replaceAll('"', '');
-      return [...document.fonts].some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded');
-    })).toBe(true);
-    await page.locator('.hero-copy').evaluate(node => Promise.all(node.getAnimations().map(animation => animation.finished)));
-    fs.mkdirSync('artifacts', { recursive: true });
-    if (width === 390 || width === 1440) await page.screenshot({ path: `artifacts/hero-${width}.png`, fullPage: false });
-    const bounds = await page.locator('.portfolio-content').evaluate(node => ({ start: scrollY + node.getBoundingClientRect().top - innerHeight, height: innerHeight }));
-    const states = new Map();
-    for (const progress of [0, .15, .3, .5, .7, .85, 1, .85, .7, .5, .3, .15, 0]) {
-      await scrollTo(page, bounds.start + bounds.height * progress);
-      const state = await page.evaluate(() => {
-        const frame = getComputedStyle(document.querySelector('.hero-media'));
-        return { scale: frame.transform === 'none' ? 1 : new DOMMatrix(frame.transform).a, radius: parseFloat(frame.borderRadius), letters: [...document.querySelectorAll('[data-hero-letter]')].map(node => ({ transform: node.style.transform, opacity: +node.style.opacity })), layoutHeight: document.querySelector('[data-hero-letter-layout]').offsetHeight };
-      });
-      expect(state.scale).toBeCloseTo(1 - (width < 768 ? .06 : .1) * progress, 3);
-      expect(state.radius * state.scale).toBeCloseTo((width < 768 ? 24 : 40) * progress, 1);
-      if (states.has(progress)) expect(state).toEqual(states.get(progress)); else states.set(progress, state);
-      if (progress <= .15) expect(state.letters.every(letter => letter.transform === 'none' && letter.opacity > .999)).toBe(true);
-      if (progress === .5) expect(new Set(state.letters.map(letter => letter.transform)).size).toBe(9);
-      if (progress >= .85) expect(state.letters.every(letter => letter.opacity < .001)).toBe(true);
-      expect(state.layoutHeight).toBe(states.get(0).layoutHeight);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    }
-    await scrollTo(page, 0);
-    const initialTheme = await page.locator('html').getAttribute('data-theme');
-    for (let toggle = 0; toggle < 2; toggle++) {
-      await page.getByRole('button', { name: /^Switch to (light|dark) theme$/ }).click();
-      await expect(page.locator('html')).toHaveAttribute('data-theme', toggle === 0 ? (initialTheme === 'dark' ? 'light' : 'dark') : initialTheme);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    }
-    for (let index = 0; index < 4; index++) {
-      const geometry = await page.locator('.section-transition-stage').nth(index).evaluate(node => ({ start: scrollY + node.getBoundingClientRect().top, height: node.querySelector('.section-transition-frame').offsetHeight }));
-      for (const progress of [0, .4, .8, .4, 0]) {
-        await scrollTo(page, geometry.start + geometry.height - bounds.height + bounds.height * progress);
-        const scale = await page.locator('.section-transition-frame').nth(index).evaluate(node => { const transform = getComputedStyle(node).transform; return transform === 'none' ? 1 : new DOMMatrix(transform).a; });
-        expect(scale).toBeCloseTo(1 - (width < 768 ? .02 : .04) * progress, 3);
-      }
-    }
-    await scrollTo(page, 0);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await scrollTo(page, bounds.start + bounds.height * .7);
-    await expect.poll(() => page.locator('.hero-media').evaluate(node => getComputedStyle(node).transform)).toBe('none');
-    expect(await page.locator('[data-hero-letter]').evaluateAll(nodes => nodes.every(node => node.style.transform === 'none' && +node.style.opacity === 1))).toBe(true);
-    expect(await page.locator('.hero-letter-stage').evaluate(node => getComputedStyle(node).display)).toBe('none');
-    expect(errors).toEqual([]);
-  });
-}
+// Opening scrub coverage lives in introduction.spec.mjs.
 
 for (const width of [390, 768, 1440]) {
   test(`hero CTAs, category activation and contact at ${width}px`, async ({ page }) => {

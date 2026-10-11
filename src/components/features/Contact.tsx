@@ -47,7 +47,7 @@ export function Contact({ contactEmail, packages }: { contactEmail: string; pack
   return <section id="contact" aria-labelledby="contact-title" className="mx-auto max-w-[1440px] px-6 py-16 md:px-12 lg:px-20">
     <div className="mb-9 flex flex-wrap items-baseline justify-between gap-4">
       <h2 id="contact-title" className="font-mono text-3xl tracking-tight">Contact Us</h2>
-      <p className="text-xs uppercase tracking-[0.15em] text-cyber-muted">Let’s make it happen / 05</p>
+      <p className="text-xs uppercase tracking-[0.15em] text-cyber-muted">Contact / 06</p>
     </div>
     <div className="grid gap-10 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
       <div>
