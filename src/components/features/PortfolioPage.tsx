@@ -19,10 +19,12 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
     <SiteHeader brand={content.brand} overlay />
     <ServiceEnquiryProvider>
     <main id="main" className="cinematic-page">
+      <SectionTransition order={0}>
       <div className="hero-stage">
         <div data-hero-visibility aria-hidden="true" className="hero-visibility" />
         <div className="hero-intro-viewport"><div className="hero-intro-track"><Hero copy={content.hero} /><Introduction /></div></div>
       </div>
+      </SectionTransition>
       <div className="portfolio-content">
         <SectionTransition order={1} bottomSpace><PersonalProjects projects={content.projects} /></SectionTransition>
         <SectionTransition order={2} bottomSpace><Services offer={content.services} /></SectionTransition>
