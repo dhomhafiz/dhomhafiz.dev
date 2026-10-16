@@ -153,8 +153,8 @@ const content: PortfolioContent = {
       location: "Web experience / Healthcare",
       technologies: ["Next.js", "Tailwind CSS", "TypeScript", "Static Site Generation (SSG)"],
       image: {
-        src: assetPath("/images/dental/studio.svg"),
-        alt: "Still Dental concept illustration: a sage green dental chair in a calm studio with an arched window and plants",
+        src: assetPath("/images/dental/doctor-patient-15688027.webp"),
+        alt: "A dentist performing a dental procedure on a patient in a clinic",
         width: 640,
         height: 720,
       },

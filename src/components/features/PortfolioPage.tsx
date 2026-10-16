@@ -1,45 +1,17 @@
 import type { PortfolioProvider } from "@/types/portfolio";
-import { SiteHeader } from "./SiteHeader";
-import { Introduction } from "./Introduction";
-import { Hero } from "./hero/Hero";
-import { Approach } from "./Approach";
-import { PersonalProjects } from "./PersonalProjects";
-import { Services } from "./Services";
-import { FAQ } from "./FAQ";
-import { Contact } from "./Contact";
-import { BackToTop } from "@/components/common/BackToTop";
-import { ServiceEnquiryProvider } from "./ServiceEnquiry";
-import { SectionTransition } from "@/components/common/SectionTransition";
+import { HeroVideo } from "./editorial/HeroVideo";
+import { SelectedWork } from "./editorial/SelectedWork";
+import { EditorialServices } from "./editorial/EditorialServices";
+import { HireMe } from "./editorial/HireMe";
 
-// DIP: this server-side boundary accepts any provider implementing the interface.
-// SRP: fetching occurs here, while the feature components only render their inputs.
+import { assetPath } from "@/lib/assetPath";
+import "./editorial/editorial.css";
+
 export async function PortfolioPage({ provider }: { provider: PortfolioProvider }) {
   const content = await provider.getPortfolio();
-  return <>
-    <SiteHeader brand={content.brand} overlay />
-    <ServiceEnquiryProvider>
-    <main id="main" className="cinematic-page">
-      <SectionTransition order={0}>
-      <div className="hero-stage">
-        <div data-hero-visibility aria-hidden="true" className="hero-visibility" />
-        <div className="hero-intro-viewport"><div className="hero-intro-track"><Hero copy={content.hero} /><Introduction /></div></div>
-      </div>
-      </SectionTransition>
-      <div className="portfolio-content">
-        <SectionTransition order={1} bottomSpace><PersonalProjects projects={content.projects} /></SectionTransition>
-        <SectionTransition order={2} bottomSpace><Services offer={content.services} /></SectionTransition>
-        <SectionTransition order={3}><FAQ items={content.faqs} /></SectionTransition>
-        <SectionTransition order={4}><Approach items={content.capabilities} /></SectionTransition>
-        <SectionTransition order={5} bottomSpace exit="flow"><Contact contactEmail={content.contactEmail} packages={content.services.tiers.filter(tier => !tier.comingSoon).map(({ id, title }) => ({ id, title }))} /></SectionTransition>
-        <div className="section-transition-footer">
-          <footer className="mx-auto flex max-w-[1440px] flex-wrap justify-between gap-4 border-t border-cyber-border/10 px-6 py-7 text-xs text-cyber-muted md:px-12 lg:px-20">
-            <span>&copy; 2026 {content.brand} / Independent by design.</span>
-            <a href="#main" className="underline underline-offset-4 hover:text-cyber-cyan">Back to the beginning &uarr;</a>
-          </footer>
-        </div>
-      </div>
-    </main>
-    </ServiceEnquiryProvider>
-    <BackToTop />
-  </>;
+  return <div className="editorial-page" id="top">
+    <header className="editorial-header"><a className="editorial-brand" href="#top"><img src={assetPath("/images/hafiz-cinematic-560.webp")} width={48} height={48} alt="Dhom Hafiz" /><span>{content.brand}<small>©2026</small></span></a><nav aria-label="Main navigation"><a href="#works">Projects</a><a href="#contact">Contact</a></nav></header>
+    <main id="main"><section className="editorial-hero" aria-labelledby="intro-heading"><HeroVideo /><div className="hero-copy-block"><div className="intro-label"><span>Independent webdesigner</span><span>Kuala Lumpur, MY</span></div><h1 id="intro-heading">I’m Mohd Hafiz, a webdesigner based in Klang Valley. <span>I build Fast Landing Pages for businesses ready for their next chapter.</span></h1></div><a className="hero-scroll-arrow" href="#works" aria-label="Scroll to Selected Work"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 5v22M7 18l9 9 9-9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></a></section><SelectedWork projects={content.projects} /><EditorialServices /><HireMe email={content.contactEmail} /></main>
+    <footer className="editorial-footer"><a href="#top">{content.brand}</a><span>© 2026 · Designed with intention.</span><a href="#top">Back to top ↑</a></footer>
+  </div>;
 }

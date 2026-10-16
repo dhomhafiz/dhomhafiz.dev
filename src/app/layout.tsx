@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { themeInitScript } from "@/config/theme";
+
 import { assetPath } from "@/lib/assetPath";
 
 // SRP: optimized fonts and document-wide metadata are owned by the root layout.
-const body = localFont({ src: "./fonts/space-grotesk-latin.woff2", variable: "--font-body", display: "swap" });
+const body = localFont({ src: "./fonts/InterVariable.woff2", weight: "100 900", variable: "--font-body", display: "swap" });
 export const metadata: Metadata = {
-  title: "Mohd Hafiz Abd Rahim",
+  title: "Dhom Hafiz | Webdesigner in Kuala Lumpur",
   description: "Thoughtful web experiences, built with precision. Independent frontend development with React, Next.js, and TypeScript.",
   icons: { icon: assetPath("/favicon.svg") },
   metadataBase: new URL("https://dhomhafiz.dev"),
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
 };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" suppressHydrationWarning className={`${body.variable}`}>
-    <head><script dangerouslySetInnerHTML={{ __html: themeInitScript }} /></head>
-    <body className="bg-cyber-dark font-mono text-cyber-text antialiased">
+
+    <body className="font-mono antialiased">
       <a href="#main" className="skip-link">Skip to content</a>{children}
     </body>
   </html>;
