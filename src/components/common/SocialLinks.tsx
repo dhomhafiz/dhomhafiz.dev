@@ -19,8 +19,14 @@ const platforms = {
   },
 };
 
-export function SocialLinks({ links, appearance = "default" }: { links: readonly SocialLink[]; appearance?: "default" | "icons" }) {
-  if (appearance === "icons") return <nav aria-label="Social profiles" className="contact-social-links">
+export function SocialLinks({ links, appearance = "default", email }: { links: readonly SocialLink[]; appearance?: "default" | "icons"; email?: string }) {
+  if (appearance === "icons") return <nav aria-label={email ? "Contact links" : "Social profiles"} className="contact-social-links">
+    {email && <a href={`mailto:${email}`} aria-label={`Email ${email}`}>
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m3 7 9 6 9-6" />
+      </svg>
+    </a>}
     {links.map(({ platform, href }) => <a key={platform} href={href} target="_blank" rel="noopener noreferrer" aria-label={`${platforms[platform].label} (opens in a new tab)`}>
       <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d={platforms[platform].path} /></svg>
     </a>)}
