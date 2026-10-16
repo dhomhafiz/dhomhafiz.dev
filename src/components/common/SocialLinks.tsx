@@ -19,7 +19,12 @@ const platforms = {
   },
 };
 
-export function SocialLinks({ links }: { links: readonly SocialLink[] }) {
+export function SocialLinks({ links, appearance = "default" }: { links: readonly SocialLink[]; appearance?: "default" | "icons" }) {
+  if (appearance === "icons") return <nav aria-label="Social profiles" className="contact-social-links">
+    {links.map(({ platform, href }) => <a key={platform} href={href} target="_blank" rel="noopener noreferrer" aria-label={`${platforms[platform].label} (opens in a new tab)`}>
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d={platforms[platform].path} /></svg>
+    </a>)}
+  </nav>;
   return <nav aria-label="Social profiles" className="mt-4 flex flex-wrap gap-3">
     {links.map(({ platform, href }) => <a key={platform} href={href} target="_blank" rel="noopener noreferrer"
       className="group inline-flex min-h-12 items-center gap-3 rounded-xl border border-cyber-border/15 bg-cyber-surface/90 px-4 py-3 text-sm text-cyber-text shadow-sm backdrop-blur-md transition-colors hover:border-cyber-cyan/50 hover:bg-cyber-surface hover:text-cyber-cyan">
