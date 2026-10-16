@@ -9,9 +9,9 @@ export const site = {
 export const pageSeo = {
   home: {
     path: "/",
-    title: "I Build Fast Landing Pages | Mohd Hafiz, Klang Valley",
-    description: "I build fast landing pages for businesses. Mohd Hafiz, a webdesigner in Klang Valley, Malaysia, focused on responsive design and easy WhatsApp enquiries.",
-    keywords: ["Mohd Hafiz Abd Rahim", "Dhom Hafiz", "dhomhafiz.dev", "webdesigner Klang Valley", "landing page design Malaysia", "fast landing pages", "responsive web design", "business landing pages"],
+    title: "I Build Fast Landing Pages | Mohd Hafiz, Kuala Lumpur",
+    description: "I build fast landing pages for businesses. Mohd Hafiz, a webdesigner in Kuala Lumpur, Malaysia, focused on responsive design and easy WhatsApp enquiries.",
+    keywords: ["Mohd Hafiz Abd Rahim", "Dhom Hafiz", "dhomhafiz.dev", "webdesigner Kuala Lumpur", "landing page design Malaysia", "fast landing pages", "responsive web design", "business landing pages"],
     lastModified: "2026-10-17",
   },
   dental: {

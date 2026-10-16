@@ -32,7 +32,7 @@ Browser tests cover 320, 390, 768, 1440 and 1920px, actual video decoding/time a
 
 ## SEO
 
-`src/config/seo.ts` is the shared public identity and page metadata source. Home targets Mohd Hafiz's landing page design in Klang Valley, Malaysia. `/demo-dental/` has its own title, description, canonical URL and social text and explicitly describes a fictional demo. Site text is English; social locale is `en_MY`.
+`src/config/seo.ts` is the shared public identity and page metadata source. Home targets Mohd Hafiz's landing page design in Kuala Lumpur, Malaysia. `/demo-dental/` has its own title, description, canonical URL and social text and explicitly describes a fictional demo. Site text is English; social locale is `en_MY`.
 
 Root metadata is composed in `src/app/layout.tsx`; dental metadata is in `src/app/demo-dental/page.tsx`. Existing `src/app/opengraph-image.jpg` and `src/app/opengraph-image.alt.txt` are retained unchanged and used by both routes. `src/app/robots.ts` exports robots.txt with the public sitemap URL. `src/app/sitemap.ts` includes the two canonical routes with trailing slashes. Update each `pageSeo.*.lastModified` date when its page changes substantively; a build alone should not refresh these dates.
 

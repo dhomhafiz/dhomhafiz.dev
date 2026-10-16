@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const origin = 'https://dhomhafiz.dev';
 const imageAlt = fs.readFileSync('src/app/opengraph-image.alt.txt', 'utf8').trim();
 const pages = [
-  { path: '/', title: 'I Build Fast Landing Pages | Mohd Hafiz, Klang Valley', description: 'I build fast landing pages for businesses. Mohd Hafiz, a webdesigner in Klang Valley, Malaysia, focused on responsive design and easy WhatsApp enquiries.' },
+  { path: '/', title: 'I Build Fast Landing Pages | Mohd Hafiz, Kuala Lumpur', description: 'I build fast landing pages for businesses. Mohd Hafiz, a webdesigner in Kuala Lumpur, Malaysia, focused on responsive design and easy WhatsApp enquiries.' },
   { path: '/demo-dental/', title: 'Still Dental | Dental Website Demo by Mohd Hafiz', description: 'Explore Still Dental, a fictional dental clinic website demo by Mohd Hafiz. Preview responsive design, sample treatments, pricing and appointment booking.' },
 ];
 for (const entry of pages) test(`SEO metadata for ${entry.path}`, async ({ page, request }) => {
