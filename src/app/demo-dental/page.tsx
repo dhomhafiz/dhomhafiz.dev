@@ -25,15 +25,18 @@ export default function DentalDemoPage() {
     <div className="dental-site bg-[#faf9f6] text-[#183f39]">
       <nav
         aria-label="Portfolio navigation"
-        className="sticky top-0 z-50 border-b border-white/10 bg-zinc-950/95 px-3 py-1.5 backdrop-blur-md sm:px-5"
+        className="sticky top-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-b border-white/10 bg-zinc-950/95 px-3 py-1.5 backdrop-blur-md sm:px-5"
       >
         <Link
           href="/"
-          className="group inline-flex min-h-11 max-w-full items-center gap-2 rounded-md px-3 font-mono text-xs text-zinc-400 transition-colors duration-200 hover:bg-white/5 hover:text-white focus-visible:text-white sm:text-sm"
+          aria-label="Back to dhomhafiz.dev"
+          className="group col-start-1 row-start-1 inline-flex min-h-11 max-w-full items-center gap-2 justify-self-start rounded-md px-3 font-mono text-xs text-zinc-400 transition-colors duration-200 hover:bg-white/5 hover:text-white focus-visible:text-white sm:text-sm"
         >
           <span aria-hidden="true" className="transition-transform duration-200 motion-safe:group-hover:-translate-x-0.5">←</span>
-          <span>Back to dhomhafiz.dev</span>
+          <span className="sm:hidden">Back</span>
+          <span className="hidden sm:inline">Back to dhomhafiz.dev</span>
         </Link>
+        <span className="col-start-2 row-start-1 whitespace-nowrap font-mono text-xs text-zinc-400 sm:text-sm">This is a demo website</span>
       </nav>
       <DentalHeader />
       <main id="main">

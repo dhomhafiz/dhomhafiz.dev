@@ -279,6 +279,7 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   color: #fff;
 }
 .editorial-hero .hero-scroll-arrow:focus-visible { outline-color: #fff; }
+.hire-section { border-radius: 16px; }
 @media (max-width: 700px) {
   .editorial-hero {
     min-height: calc(100svh - var(--header-height));
