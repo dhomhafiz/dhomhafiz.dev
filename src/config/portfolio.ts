@@ -139,7 +139,7 @@ const content: PortfolioContent = {
         alt: "Squid Game 2 promotional installation with a voting console between two costumed guards at Ampang Park MRT Station.",
         width: 1024,
         height: 768,
-        sourceUrl: "https://www.therakyatpost.com/wp-content/webp-express/webp-images/uploads/2024/12/image-77-1024x768.png.webp",
+        sourceUrl: "https://www.therakyatpost.com/fun/2024/12/20/come-and-play-ddakji-squid-game-takes-over-mrt-ampang-park/#gsc.tab=0",
         credit: "The Rakyat Post",
       },
     },

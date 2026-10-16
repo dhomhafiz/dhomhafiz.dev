@@ -12,7 +12,7 @@ export function SelectedWork({ projects }: { projects: readonly PersonalProject[
         <div className="work-overlay">
           <p className="work-overlay-category">Concept Project · Healthcare</p>
           <h3>Still Dental</h3><p>A calmer kind of care, from first click to appointment.</p>
-          <a className="work-overlay-link" href={assetPath("/demo-dental/")} aria-label="Explore Still Dental interactive website demo">Explore interactive demo ↗</a>
+          <a className="work-overlay-link" href={assetPath("/demo-dental/")} aria-label="Explore Still Dental interactive website demo">Explore interactive demo</a>
         </div>
       </WorkCard>
       {netflix && <WorkCard className="netflix-work" label={netflix.title}>
