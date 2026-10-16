@@ -31,3 +31,9 @@ Latest UI adjustment: visible video controls removed at the user's request. The 
 User-selected photo: https://www.pexels.com/photo/doctor-and-patient-during-medical-procedure-15688027/
 Photographer: Jonathan Borba. Source: https://images.pexels.com/photos/15688027/pexels-photo-15688027.jpeg
 License verified: https://www.pexels.com/license/ (free website use and modification; no endorsement implied). Original retained in ignored `.media-source/dental-15688027.jpg`. Converted to a 640 × 720 WebP for the existing demo hero frame. The fictional demo status remains unchanged. Portfolio card screenshot refreshed to show the same image.
+
+## Performance asset update
+
+The same Pexels workspace video now has a 640px/24fps H.264 mobile rendition at CRF29 and a 768px WebP poster. The existing 1120px desktop media stays intact. An avatar thumbnail is derived from the existing hafiz-cinematic photo.
+
+Inter Latin variable WOFF2 (weights 100–900), officially served by Google Fonts: https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2 . Source stylesheet: https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap . Self-hosted at src/app/fonts/inter-latin-variable.woff2 with the existing Inter SIL OFL license. The original full font is retained but is not preloaded. No Open Graph image or alt changes.

@@ -37,3 +37,9 @@ Browser tests cover 320, 390, 768, 1440 and 1920px, actual video decoding/time a
 Root metadata is composed in `src/app/layout.tsx`; dental metadata is in `src/app/demo-dental/page.tsx`. Existing `src/app/opengraph-image.jpg` and `src/app/opengraph-image.alt.txt` are retained unchanged and used by both routes. `src/app/robots.ts` exports robots.txt with the public sitemap URL. `src/app/sitemap.ts` includes the two canonical routes with trailing slashes. Update each `pageSeo.*.lastModified` date when its page changes substantively; a build alone should not refresh these dates.
 
 `tests/seo.spec.mjs` verifies emitted production metadata, canonical URLs, inherited OG image and alt, robots.txt and sitemap. These are local checks; production deployment and search-engine recrawling are separate steps. Reference: https://developers.google.com/search/docs/fundamentals/get-started-developers and https://nextjs.org/docs/app/getting-started/metadata-and-og-images .
+
+## Performance validation, 17 October 2026
+
+Current hero uses a high-priority responsive poster and starts optional video after initial rendering and browser idle time. Mobile video and poster are separate lighter assets; reduced motion and Save-Data keep the still image. There are no visible playback controls. Inter uses a self-hosted variable Latin subset. Service content is server-rendered and its animation module is imported near the section. Preview commands now apply serve.json cache headers.
+
+Latest measurements and before/after comparison: [optimised Lighthouse report](audits/2026-10-17-optimized-lighthouse.md). Mobile Performance 94; desktop 100; Accessibility, Best Practices and SEO 100 in both local profiles. Hosting cache headers must be verified separately on the production domain. Media/cache/animation coverage is in tests/media-loading.spec.mjs.

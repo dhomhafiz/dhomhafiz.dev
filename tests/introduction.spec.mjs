@@ -4,7 +4,7 @@ for(const width of [320,390,768,1440,1920]) {
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.setViewportSize({width,height:1000});await page.goto('/');await page.evaluate(()=>document.fonts.ready);
   await expect.poll(()=>page.locator('video').evaluate(v=>v.currentTime)).toBeGreaterThan(0);
-  expect(await page.locator('video').evaluate(v=>({muted:v.muted,inline:v.playsInline,w:v.videoWidth}))).toMatchObject({muted:true,inline:true,w:1120});
+  expect(await page.locator('video').evaluate(v=>({muted:v.muted,inline:v.playsInline,w:v.videoWidth}))).toMatchObject({muted:true,inline:true,w:width<=700?640:1120});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   expect(await page.evaluate(()=>document.querySelector('video').getBoundingClientRect().bottom<document.querySelector('h1').getBoundingClientRect().top)).toBe(true);
   expect(await page.evaluate(()=>[...document.fonts].some(f=>f.status==='loaded'&&!f.family.includes('Fallback')))).toBe(true);

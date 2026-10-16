@@ -6,7 +6,7 @@ import { assetPath } from "@/lib/assetPath";
 import { pageSeo, site } from "@/config/seo";
 
 // SRP: optimized fonts and document-wide metadata are owned by the root layout.
-const body = localFont({ src: "./fonts/InterVariable.woff2", weight: "100 900", variable: "--font-body", display: "swap" });
+const body = localFont({ src: "./fonts/inter-latin-variable.woff2", weight: "100 900", variable: "--font-body", display: "swap" });
 export const metadata: Metadata = {
   title: pageSeo.home.title,
   description: pageSeo.home.description,

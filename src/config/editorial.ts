@@ -8,7 +8,9 @@ export function whatsappHref(number = contact.whatsappNumber) {
 export const heroVideo = {
   title: "Modern programmer workspace with code display",
   src: assetPath("/videos/workspace-34279733.mp4"),
+  mobileSrc: assetPath("/videos/workspace-34279733-mobile.mp4"),
   poster: assetPath("/images/workspace-34279733.webp"),
+  mobilePoster: assetPath("/images/workspace-34279733-mobile.webp"),
 } as const;
 export const editorialServices = [
   { title: "Landing page design", text: "A clear story, considered typography and a visual direction that feels like your business." },
