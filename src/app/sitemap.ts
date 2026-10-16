@@ -1,27 +1,12 @@
-export const dynamic = 'force-static';
+﻿import type { MetadataRoute } from "next";
+import { pageSeo, site } from "@/config/seo";
 
-import type { MetadataRoute } from "next";
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: "https://dhomhafiz.dev",
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1.0,
-    },
-    // Add future project pages as additional entries, for example:
-    {
-      url: "https://dhomhafiz.dev/demo-dental",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    // {
-    //   url: "https://dhomhafiz.dev/cafe-demo",
-    //   lastModified: new Date(),
-    //   changeFrequency: "monthly",
-    //   priority: 0.8,
-    // },
-  ];
+  return Object.values(pageSeo).map(page => ({
+    url: new URL(page.path, site.url).href,
+    // Update with substantive page edits; rebuilding alone does not change this date.
+    lastModified: page.lastModified,
+  }));
 }

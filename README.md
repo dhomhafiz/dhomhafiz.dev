@@ -29,3 +29,11 @@ See [media sources](design/editorial-media-sources.md). Inter is self-hosted wit
 ## Verification
 
 Browser tests cover 320, 390, 768, 1440 and 1920px, actual video decoding/time advancement, playback controls, blocked autoplay, media errors, reduced motion, loaded local font, anchor navigation, WhatsApp placeholder state, and the dental booking interaction. Screenshots are generated at `artifacts/editorial-*.png`. Previous cinematic tests were replaced to reflect the current homepage; pricing regression checks are retained.
+
+## SEO
+
+`src/config/seo.ts` is the shared public identity and page metadata source. Home targets Mohd Hafiz's landing page design in Klang Valley, Malaysia. `/demo-dental/` has its own title, description, canonical URL and social text and explicitly describes a fictional demo. Site text is English; social locale is `en_MY`.
+
+Root metadata is composed in `src/app/layout.tsx`; dental metadata is in `src/app/demo-dental/page.tsx`. Existing `src/app/opengraph-image.jpg` and `src/app/opengraph-image.alt.txt` are retained unchanged and used by both routes. `src/app/robots.ts` exports robots.txt with the public sitemap URL. `src/app/sitemap.ts` includes the two canonical routes with trailing slashes. Update each `pageSeo.*.lastModified` date when its page changes substantively; a build alone should not refresh these dates.
+
+`tests/seo.spec.mjs` verifies emitted production metadata, canonical URLs, inherited OG image and alt, robots.txt and sitemap. These are local checks; production deployment and search-engine recrawling are separate steps. Reference: https://developers.google.com/search/docs/fundamentals/get-started-developers and https://nextjs.org/docs/app/getting-started/metadata-and-og-images .

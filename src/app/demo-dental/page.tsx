@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { DentalHeader, DentalFooter } from "@/components/dental/DentalShell";
 import { Hero } from "@/components/dental/Hero";
@@ -6,15 +6,19 @@ import { ServicesGrid } from "@/components/dental/ServicesGrid";
 import { BookingExperience } from "@/components/dental/BookingExperience";
 import { FAQ } from "@/components/dental/FAQ";
 import "./dental.css";
+import { pageSeo, site } from "@/config/seo";
 
-export const metadata: Metadata = {
-  title: "Still Dental | A little more care. A lot more smile.",
-  description: "Explore Still Dental, a modern dental clinic template with transparent sample pricing and an appointment booking preview.",
-  alternates: { canonical: "/demo-dental/" },
-  keywords: ["dental clinic template", "dental appointment demo", "Still Dental"],
-  openGraph: { title: "Still Dental | Care that feels different", description: "A thoughtfully designed dental clinic demo. Explore care, sample pricing, and appointment booking.", url: "/demo-dental/", siteName: "Still Dental", type: "website" },
-  twitter: { card: "summary", title: "Still Dental", description: "A thoughtfully designed dental clinic demo." },
-};
+export async function generateMetadata(_props: unknown, parent: ResolvingMetadata): Promise<Metadata> {
+  const inherited = await parent;
+  return {
+  title: pageSeo.dental.title,
+  description: pageSeo.dental.description,
+  alternates: { canonical: pageSeo.dental.path },
+  keywords: [...pageSeo.dental.keywords],
+  openGraph: { title: pageSeo.dental.title, description: pageSeo.dental.description, url: pageSeo.dental.path, siteName: site.name, locale: site.locale, type: "website", images: inherited.openGraph?.images },
+  twitter: { card: "summary_large_image", title: pageSeo.dental.title, description: pageSeo.dental.description, images: inherited.twitter?.images ?? inherited.openGraph?.images },
+  };
+}
 
 export default function DentalDemoPage() {
   return (
