@@ -248,6 +248,15 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   margin-top: auto;
   padding-top: 0;
 }
+/* Keep moving headings readable over every video frame and the white fallback. */
+@media (min-width: 701px) {
+  .editorial-hero .hero-copy-block {
+    margin-inline: -64px;
+    padding: 18px 64px;
+    border-radius: 16px;
+    background: rgb(17 17 17 / .84);
+  }
+}
 .editorial-hero .intro-label { color: rgb(255 255 255 / .82); }
 .editorial-hero h1 { text-shadow: 0 2px 20px rgb(0 0 0 / .24); }
 .editorial-hero h1 span { color: rgb(255 255 255 / .78); }
