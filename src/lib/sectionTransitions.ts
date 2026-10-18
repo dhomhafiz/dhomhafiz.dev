@@ -11,6 +11,12 @@ export const sectionTransitionProfile: Readonly<SectionTransitionProfile> = {
   desktopScale: .96, mobileScale: .98, desktopRadius: 32, mobileRadius: 20,
 };
 
+export function sectionTransitionFrame(progress: number, mobile: boolean, profile = sectionTransitionProfile) {
+  const scale = 1 - (1 - (mobile ? profile.mobileScale : profile.desktopScale)) * progress;
+  const radius = (mobile ? profile.mobileRadius : profile.desktopRadius) * progress / scale;
+  return { scale, radius };
+}
+
 type Entry = {
   stage: HTMLElement;
   panel: HTMLElement;
@@ -75,8 +81,7 @@ export function createSectionTransitionController() {
       const progress = rawProgress < .001 ? 0 : rawProgress > .999 ? 1 : rawProgress;
       if (progress === entry.progress) continue;
       entry.progress = progress;
-      const scale = 1 - (1 - (mobile ? entry.profile.mobileScale : entry.profile.desktopScale)) * progress;
-      const radius = (mobile ? entry.profile.mobileRadius : entry.profile.desktopRadius) * progress / scale;
+      const { scale, radius } = sectionTransitionFrame(progress, mobile, entry.profile);
       const inset = Math.max(0, entry.height - viewport) + clearance * Math.min(1, progress / .3);
       entry.frame.style.transform = progress === 0 ? "none" : `scale(${scale})`;
       entry.frame.style.clipPath = progress === 0 ? "none" : `inset(${inset}px 0 0 round ${radius}px)`;

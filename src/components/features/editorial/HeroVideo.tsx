@@ -1,8 +1,10 @@
 ﻿"use client";
 import { useEffect, useRef, useState } from "react";
 import { heroVideo } from "@/config/editorial";
+import { useHeroVideoTransition } from "@/hooks/useHeroVideoTransition";
 
 export function HeroVideo() {
+  const frame = useHeroVideoTransition();
   const video = useRef<HTMLVideoElement>(null);
   const poster = useRef<HTMLImageElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -59,7 +61,7 @@ export function HeroVideo() {
   return <>
     <link rel="preload" as="image" href={heroVideo.mobilePoster} media="(max-width: 700px)" fetchPriority="high" />
     <link rel="preload" as="image" href={heroVideo.poster} media="(min-width: 701px)" fetchPriority="high" />
-    <div className="hero-video" data-playing={playing && !failed || undefined}>
+    <div ref={frame} className="hero-video" data-playing={playing && !failed || undefined}>
       <picture className={failed ? "hero-video-fallback" : "hero-video-poster"}>
         <source media="(max-width: 700px)" srcSet={heroVideo.mobilePoster} />
         <img ref={poster} src={heroVideo.poster} width={1120} height={630} fetchPriority="high" loading="eager" decoding="async" alt="" />
