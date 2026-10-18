@@ -47,12 +47,14 @@ body:has(.editorial-page){background:#fff}html:has(.editorial-page){scroll-paddi
 /* A small shared gutter keeps the composition away from the viewport edges. */
 .editorial-page { --page-gutter: clamp(16px, 1.7vw, 32px); padding-inline: var(--page-gutter); }
 .hero-video { width: calc(100% + 2 * var(--page-gutter)); margin-inline: calc(-1 * var(--page-gutter)); }
-.editorial-header nav { gap: 2px; padding: 5px; border-radius: 999px; background: #f5f5f5; }
-.editorial-header nav a, .editorial-header nav a:last-child { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 18px; border: 0; border-radius: 999px; color: #555; transition: background-color .2s, color .2s; }
+.editorial-header nav { gap: 10px; padding: 0; background: transparent; }
+.editorial-header nav a, .editorial-header nav a:last-child { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 18px; border: 0; border-radius: 999px; background: #f5f5f5; color: #555; transition: background-color .2s, color .2s; }
 .editorial-header nav a:hover { background: #e8e8e8; color: #171717; }
+.editorial-header nav a[href="#contact"] { background: #111; color: #fff; }
+.editorial-header nav a[href="#contact"]:hover { background: #333; color: #fff; }
 .editorial-brand img { object-position: center 16%; }
 @media (max-width: 600px) {
-  .editorial-header nav { gap: 0; padding: 4px; font-size: 11px; }
+  .editorial-header nav { gap: 8px; font-size: 11px; }
   .editorial-header nav a, .editorial-header nav a:last-child { padding: 8px 10px; }
   .editorial-brand { font-size: 13px; gap: 8px; }
   .editorial-brand img { width: 34px; height: 34px; }
@@ -76,16 +78,10 @@ body:has(.editorial-page){background:#fff}html:has(.editorial-page){scroll-paddi
 }
 
 /* Keep Selected Work below the initial viewport. The hero can grow at text zoom. */
-.editorial-page { --header-height: 126px; }
+.editorial-page { --header-height: 64px; }
 .editorial-hero { min-height: calc(100svh - var(--header-height)); }
 @media (max-width: 700px) {
-  .editorial-page { --header-height: 106px; }
-}
-@media (max-height: 700px) {
-  .editorial-page { --header-height: 86px; }
-}
-@media (max-width: 700px) and (max-height: 700px) {
-  .editorial-page { --header-height: 84px; }
+  .editorial-page { --header-height: 60px; }
 }
 
 .editorial-hero { display: flex; flex-direction: column; }
@@ -101,6 +97,7 @@ body:has(.editorial-page){background:#fff}html:has(.editorial-page){scroll-paddi
   width: calc(100% + 2 * var(--page-gutter));
   margin-inline: calc(-1 * var(--page-gutter));
   padding-inline: var(--page-gutter);
+  padding-block: 8px;
   background: #fff;
 }
 html:has(.editorial-page) { scroll-padding-top: 0; }
