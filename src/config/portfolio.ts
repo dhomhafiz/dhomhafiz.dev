@@ -18,6 +18,7 @@ const content: PortfolioContent = {
         { platform: "linkedin", href: "https://www.linkedin.com/in/mohd-hafiz-abd-rahim-b23a9667/?isSelfProfile=true" },
         { platform: "facebook", href: "https://www.facebook.com/profile.php?id=100064737337327" },
         { platform: "instagram", href: "https://www.instagram.com/dhomhafiz/" },
+        { platform: "threads", href: "https://www.threads.com/@dhomhafiz" },
       ],
       src: assetPath("/images/hafiz-cinematic-1122.webp"),
       webpSrcSet: assetSrcSet("/images/hafiz-cinematic-560.webp 560w, /images/hafiz-cinematic-840.webp 840w, /images/hafiz-cinematic-1122.webp 1122w"),

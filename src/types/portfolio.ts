@@ -7,7 +7,7 @@ export interface HeroCopy {
   description: string;
   portrait?: { src: string; alt: string; avifSrcSet?: string; webpSrcSet?: string; socials?: readonly SocialLink[] };
 }
-export interface SocialLink { platform: "github" | "linkedin" | "instagram" | "facebook"; href: string }
+export interface SocialLink { platform: "github" | "linkedin" | "instagram" | "facebook" | "threads"; href: string }
 export interface ToolkitTechnology { name: string; icon: IconType }
 export interface VideoSource {
   src: string;
