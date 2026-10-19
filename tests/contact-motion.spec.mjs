@@ -31,7 +31,7 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
       const mobile = innerWidth <= 700;
       const easedProgress = mobile ? progress ** 2 * (3 - 2 * progress) : progress ** 2;
       const stageRect = stage.getBoundingClientRect();
-      const titleTop = title.getBoundingClientRect().top - stageRect.top;
+      const titleTop = title.parentElement.getBoundingClientRect().bottom - title.offsetHeight - stageRect.top;
       const closeStart = mobile ? .3 : .97;
       const gapCloseProgress = Math.max(0, Math.min(1, (progress - closeStart) / (1 - closeStart)));
       const easedGapClose = gapCloseProgress ** 2 * (3 - 2 * gapCloseProgress);
@@ -50,6 +50,7 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
       };
       for (let frame = 0; frame < 6; frame++) await new Promise(requestAnimationFrame);
       sample.afterStop = new DOMMatrix(getComputedStyle(title).transform).d;
+      sample.afterStopPanelScale = new DOMMatrix(getComputedStyle(stage, '::before').transform).d;
       result.push(sample);
     }
     return result;
@@ -57,6 +58,7 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
   for (const sample of samples) {
     expect(sample.scale).toBeCloseTo(sample.expected, 3);
     expect(sample.afterStop).toBeCloseTo(sample.scale, 3);
+    expect(sample.afterStopPanelScale).toBeCloseTo(sample.backgroundScale, 3);
     expect(sample.textScale).toBeCloseTo(sample.scale, 3);
     expect(Math.abs(sample.panelTop - sample.expectedTop)).toBeLessThan(1);
     for (const ratio of sample.controls) expect(ratio).toBeCloseTo(1, 2);
@@ -78,6 +80,26 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
   await expect(contact.locator('.hire-button')).toBeInViewport();
   await expect.poll(() => contact.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  if (width <= 700) {
+    const stable = await page.evaluate(async () => {
+      const section = document.getElementById('contact');
+      const stage = section.querySelector('.contact-stage');
+      const title = section.querySelector('.contact-title');
+      const values = [];
+      for (let frame = 0; frame < 12; frame++) {
+        await new Promise(requestAnimationFrame);
+        values.push([
+          new DOMMatrix(getComputedStyle(title).transform).d,
+          new DOMMatrix(getComputedStyle(stage, '::before').transform).d,
+        ]);
+      }
+      return values;
+    });
+    for (let index = 1; index < stable.length; index++) {
+      expect(Math.abs(stable[index][0] - stable[index - 1][0])).toBeLessThan(.001);
+      expect(Math.abs(stable[index][1] - stable[index - 1][1])).toBeLessThan(.001);
+    }
+  }
   await page.screenshot({ path: `artifacts/contact-${width}.png` });
   await page.evaluate(() => {
     const section = document.getElementById('contact');
