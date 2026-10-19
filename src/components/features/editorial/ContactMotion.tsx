@@ -33,14 +33,16 @@ export function ContactMotion() {
       const top = section.getBoundingClientRect().top;
       // Render the current scroll position directly, with no easing or catch-up timer.
       const progress = Math.max(0, Math.min(1, (height - top) / (height - header)));
-      const easedProgress = progress ** 2;
+      const mobile = matchMedia("(max-width: 700px)").matches;
+      const easedProgress = mobile ? progress ** 2 * (3 - 2 * progress) : progress ** 2;
       // Keep a 24px reveal above the heading while compressing, then expand the
       // grey panel to the top edge as the contact section reaches its final state.
       section.style.setProperty("--contact-anchor-offset", `${Math.min(0, header - top)}px`);
       section.style.setProperty("--contact-title-rise", String(.01 + .99 * easedProgress));
       section.setAttribute("data-contact-motion", "ready");
       const titleTop = title.getBoundingClientRect().top - stage.getBoundingClientRect().top;
-      const gapCloseProgress = Math.max(0, Math.min(1, (progress - .97) / .03));
+      const closeStart = mobile ? .3 : .97;
+      const gapCloseProgress = Math.max(0, Math.min(1, (progress - closeStart) / (1 - closeStart)));
       const easedGapClose = gapCloseProgress ** 2 * (3 - 2 * gapCloseProgress);
       const riseForTitleGap = 1 - (titleTop - 24) / stage.clientHeight;
       const panelRise = riseForTitleGap + (1 - riseForTitleGap) * easedGapClose;
