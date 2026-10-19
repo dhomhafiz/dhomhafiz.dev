@@ -149,7 +149,7 @@ test('mobile contact panel tracks the changing viewport height', async ({ page }
   const stage = page.locator('#contact .contact-stage');
   const measureHeight = () => stage.evaluate(el => {
     const header = parseFloat(getComputedStyle(el.closest('#contact')).getPropertyValue('--header-height'));
-    return { height: el.getBoundingClientRect().height, expected: innerHeight - header };
+    return { height: el.getBoundingClientRect().height, expected: visualViewport.height - header };
   });
   expect(await measureHeight()).toMatchObject({ height: 784, expected: 784 });
 

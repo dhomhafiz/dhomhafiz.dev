@@ -30,12 +30,12 @@ export function ContactMotion() {
         section.style.removeProperty("--contact-anchor-offset");
         return;
       }
-      const height = window.innerHeight;
+      const mobile = matchMedia("(max-width: 700px)").matches;
+      const height = mobile ? window.visualViewport?.height ?? window.innerHeight : window.innerHeight;
       const header = parseFloat(getComputedStyle(section).getPropertyValue("--header-height")) || 0;
       const top = section.getBoundingClientRect().top;
       // Render the current scroll position directly, with no easing or catch-up timer.
       const progress = Math.max(0, Math.min(1, (height - top) / (height - header)));
-      const mobile = matchMedia("(max-width: 700px)").matches;
       const easedProgress = mobile ? progress ** 2 * (3 - 2 * progress) : progress ** 2;
       // Keep a 24px reveal above the heading while compressing, then expand the
       // grey panel to the top edge as the contact section reaches its final state.
@@ -64,6 +64,7 @@ export function ContactMotion() {
     void document.fonts.ready.then(() => { if (!disposed) resize(); });
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", resize);
+    window.visualViewport?.addEventListener("resize", schedule);
     motion.addEventListener("change", schedule);
     return () => {
       disposed = true;
@@ -71,6 +72,7 @@ export function ContactMotion() {
       cancelAnimationFrame(scheduledFrame);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", resize);
+      window.visualViewport?.removeEventListener("resize", schedule);
       motion.removeEventListener("change", schedule);
       section.removeAttribute("data-contact-motion");
       for (const property of ["--contact-font-size", "--contact-rise", "--contact-title-rise", "--contact-anchor-offset"]) section.style.removeProperty(property);
