@@ -314,6 +314,7 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   .editorial-hero h1 .hero-heading-line-first { color: #171717; }
   .editorial-hero h1 .hero-heading-line-second { color: #777; }
   .editorial-hero .hero-scroll-arrow {
+    display: none;
     margin-top: auto;
     color: #171717;
   }
@@ -352,7 +353,10 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
 }
 .contact-stage::before { content: ""; position: absolute; z-index: -1; inset: 0; background: #dededb; transform-origin: center bottom; }
 .contact-type-space { display: flex; justify-content: center; align-items: flex-end; width: 100%; pointer-events: none; }
+.contact-title-vector { display: none; }
+.hire-section h2 .contact-title-native { color: inherit; }
 .hire-section h2.contact-title {
+  position: relative;
   width: max-content;
   flex: 0 0 auto;
   margin: 0;
@@ -382,6 +386,11 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   .contact-stage { padding-bottom: calc(clamp(24px, 5svh, 64px) + clamp(56px, 12svh, 96px)); }
   .contact-stage, .contact-stage::before, .contact-title, .contact-type-space, .contact-actions { transform: none !important; will-change: auto !important; }
   .contact-actions .hire-button { font-size: 13px; padding: 16px 22px; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+  [data-contact-motion="ready"] .contact-title-native { visibility: hidden; }
+  [data-contact-motion="ready"] .contact-title-vector { display: block; position: absolute; inset-inline: 0; bottom: 0; width: 100%; height: var(--contact-vector-height, 100%); overflow: visible; fill: currentColor; }
+  .contact-title-vector text { font-family: inherit; font-weight: 400; font-size: 628px; letter-spacing: -.025em; }
 }
 @media (prefers-reduced-motion: reduce) {
   .contact-stage, .contact-title { transform: none; }

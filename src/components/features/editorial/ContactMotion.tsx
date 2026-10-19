@@ -9,6 +9,8 @@ export function ContactMotion() {
     const title = section.querySelector<HTMLElement>(".contact-title");
     const stage = section.querySelector<HTMLElement>(".contact-stage");
     const titleContainer = title?.parentElement;
+    const vector = title?.querySelector<SVGSVGElement>(".contact-title-vector");
+    const vectorText = vector?.querySelector("text");
     if (!title || !stage || !titleContainer) return;
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const mobile = matchMedia("(max-width: 700px)");
@@ -16,10 +18,14 @@ export function ContactMotion() {
     let disposed = false;
     let scheduledFrame = 0;
     let fittedWidth = 0;
+    let mobileInkHeight = 0;
+    let mobileViewportHeight = 0;
 
     const fitTitle = (force = false) => {
       if (!force && fittedWidth === stage.clientWidth) return;
       fittedWidth = stage.clientWidth;
+      mobileInkHeight = 0;
+      mobileViewportHeight = 0;
       // Fit native Anton glyphs at up to 628px; never stretch their proportions.
       section.style.setProperty("--contact-font-size", "628px");
       const width = title.offsetWidth;
@@ -27,11 +33,35 @@ export function ContactMotion() {
       section.style.setProperty("--contact-font-size", `${Math.min(628, 628 * available / width)}px`);
     };
     const update = () => {
-      if (motion.matches || mobile.matches) {
+      if (motion.matches) {
         section.removeAttribute("data-contact-motion");
         section.style.removeProperty("--contact-rise");
         section.style.removeProperty("--contact-title-rise");
         section.style.removeProperty("--contact-anchor-offset");
+        section.style.removeProperty("--contact-vector-height");
+        return;
+      }
+      if (mobile.matches && vector && vectorText) {
+        section.setAttribute("data-contact-motion", "ready");
+        const header = parseFloat(getComputedStyle(section).getPropertyValue("--header-height")) || 0;
+        if (!mobileInkHeight) {
+          const bounds = vectorText.getBBox();
+          if (bounds.width && bounds.height) {
+            vector.setAttribute("viewBox", `${bounds.x} ${bounds.y} ${bounds.width} ${bounds.height}`);
+            mobileInkHeight = bounds.height * parseFloat(getComputedStyle(title).fontSize) / 628;
+            mobileViewportHeight = stage.clientHeight + header;
+          }
+        }
+        const height = mobileViewportHeight || stage.clientHeight + header;
+        // Begin when the heading baseline enters the screen so the squash is
+        // visible, rather than finishing while the heading is still offscreen.
+        const progress = Math.max(0, Math.min(1, (height - title.getBoundingClientRect().bottom) / Math.max(1, mobileInkHeight * 2)));
+        const release = progress * progress * (3 - 2 * progress);
+        const pixels = window.devicePixelRatio || 1;
+        const inkHeight = Math.round(mobileInkHeight * (.025 + .975 * release) * pixels) / pixels;
+        // Resize the SVG viewport so the font is drawn as vectors at its displayed
+        // height, with no scaled text layer or changing heading layout.
+        section.style.setProperty("--contact-vector-height", `${Math.max(1 / pixels, inkHeight)}px`);
         return;
       }
       const height = window.innerHeight;
@@ -61,7 +91,7 @@ export function ContactMotion() {
       });
     };
     const resize = () => { fitTitle(); schedule(); };
-    const scroll = () => { if (!mobile.matches) schedule(); };
+    const scroll = () => schedule();
     const observer = new IntersectionObserver(([entry]) => { nearby = entry.isIntersecting; if (nearby) schedule(); }, { rootMargin: "200px 0px" });
     observer.observe(section);
     fitTitle();
@@ -79,7 +109,7 @@ export function ContactMotion() {
       mobile.removeEventListener("change", resize);
       motion.removeEventListener("change", schedule);
       section.removeAttribute("data-contact-motion");
-      for (const property of ["--contact-font-size", "--contact-rise", "--contact-title-rise", "--contact-anchor-offset"]) section.style.removeProperty(property);
+      for (const property of ["--contact-font-size", "--contact-rise", "--contact-title-rise", "--contact-anchor-offset", "--contact-vector-height"]) section.style.removeProperty(property);
     };
   }, []);
   return null;
