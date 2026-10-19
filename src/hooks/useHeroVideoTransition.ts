@@ -10,6 +10,12 @@ export function useHeroVideoTransition() {
     const surface = frame.current;
     if (!surface) return;
     const header = document.querySelector<HTMLElement>(".editorial-header");
+    const navigation = ["works", "contact"].map(id => ({
+      id,
+      section: document.getElementById(id),
+      link: header?.querySelector<HTMLAnchorElement>(`nav a[href="#${id}"]`),
+    }));
+    let activeSection = "";
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let request = 0;
     let origin = 0;
@@ -19,6 +25,19 @@ export function useHeroVideoTransition() {
     let headerScrolled = scrollY > 24;
     const render = () => {
       request = 0;
+      // Follow the section entering the upper part of the viewport in either direction.
+      const activationLine = headerHeight + Math.min(innerHeight * .25, 160);
+      let nextSection = "";
+      navigation.forEach(({ id, section }) => {
+        if (section && section.getBoundingClientRect().top <= activationLine) nextSection = id;
+      });
+      if (nextSection !== activeSection) {
+        activeSection = nextSection;
+        navigation.forEach(({ id, link }) => {
+          if (id === activeSection) link?.setAttribute("aria-current", "location");
+          else link?.removeAttribute("aria-current");
+        });
+      }
       // Share the existing frame with the header; hysteresis avoids flicker near the top.
       if (scrollY > 32) headerScrolled = true;
       else if (scrollY < 12) headerScrolled = false;
@@ -61,6 +80,7 @@ export function useHeroVideoTransition() {
       surface.style.removeProperty("clip-path");
       surface.style.removeProperty("will-change");
       header?.removeAttribute("data-surface");
+      navigation.forEach(({ link }) => link?.removeAttribute("aria-current"));
     };
   }, []);
 

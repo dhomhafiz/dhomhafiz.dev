@@ -109,8 +109,8 @@ body:has(.editorial-page){background:#fff}html:has(.editorial-page){scroll-paddi
 .editorial-header .editorial-brand, .editorial-header .editorial-brand small { color: #f7f8f9; }
 .editorial-header .editorial-brand small { opacity: .8; }
 .editorial-header nav a, .editorial-header nav a:last-child { color: #f7f8f9; background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .18); }
-.editorial-header nav a[href="#contact"] { color: #fff; background: rgb(255 255 255 / .16); }
 .editorial-header nav a:hover, .editorial-header nav a[href="#contact"]:hover { color: #fff; background: rgb(255 255 255 / .24); }
+.editorial-header nav a[aria-current="location"], .editorial-header nav a[aria-current="location"]:hover { color: #111; background: #f7f8f9; border-color: #f7f8f9; }
 .editorial-page .editorial-header :focus-visible { outline-color: #fff; }
 @supports not ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
   .editorial-header::before { background: rgb(14 17 20 / .96); }
@@ -363,7 +363,7 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   transform-origin: center bottom;
 }
 .contact-actions { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.contact-copyright { margin: 0; color: #000; font-size: 10px; font-weight: 700; line-height: 1.5; text-align: center; }
+.contact-copyright { margin: 16px 0 0; color: #000; font-size: 10px; font-weight: 700; line-height: 1.5; text-align: center; }
 .contact-copyright strong { font-weight: 700; }
 .contact-actions .hire-button { width: auto; min-height: 56px; font-size: 15px; padding: 18px 26px; border-radius: 999px; cursor: pointer; box-shadow: inset 0 0 0 1px #171717; transition: background-color .2s ease, color .2s ease; }
 .contact-actions a.hire-button:is(:hover, :focus-visible) { background: #fff; color: #000; }

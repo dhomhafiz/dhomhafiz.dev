@@ -9,7 +9,7 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
   const content = await provider.getPortfolio();
   return <div className="editorial-page" id="top">
     <header className="editorial-header">
-      <a className="editorial-brand" href="#top"><img src={assetPath("/images/hafiz-cinematic-avatar.webp")} width={48} height={48} alt="Dhom Hafiz" /><span>{content.brand}<small>©2026</small></span></a>
+      <a className="editorial-brand" href="#top"><img src={assetPath("/images/hafiz-cinematic-avatar.webp")} width={48} height={48} alt="Dhom Hafiz" /><span>{content.brand}</span></a>
       <nav aria-label="Main navigation"><a href="#works">Projects</a><a href="#contact">Contact</a></nav>
     </header>
     <main id="main">

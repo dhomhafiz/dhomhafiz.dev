@@ -50,7 +50,8 @@ for (const [width, height] of viewports) test(`cinematic composition at ${width}
     await expect(page).toHaveURL(new RegExp(`#${target}$`));
     await expect(header).toHaveAttribute('data-surface', 'scrolled');
     await expect.poll(() => header.evaluate(el => getComputedStyle(el, '::before').opacity)).toBe('1');
-    await expect(header.locator('nav a').first()).toHaveCSS('color', /rgb\((247, 248, 249|255, 255, 255)\)/);
+    await expect(header.locator(`nav a[href="#${target}"]`)).toHaveAttribute('aria-current', 'location');
+    await expect(header.locator(`nav a[href="#${target}"]`)).toHaveCSS('color', 'rgb(17, 17, 17)');
     const position = await page.locator(`#${target}`).boundingBox();
     expect(position.y).toBeGreaterThanOrEqual(geometry.header.height - 1);
     if (height >= 768) await page.screenshot({ path: `artifacts/cinematic-${target}-${width}x${height}.png` });
