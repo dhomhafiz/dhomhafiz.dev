@@ -9,15 +9,23 @@ export function useHeroVideoTransition() {
   useEffect(() => {
     const surface = frame.current;
     if (!surface) return;
+    const header = document.querySelector<HTMLElement>(".editorial-header");
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let request = 0;
     let origin = 0;
     let distance = 1;
     let height = 0;
     let headerHeight = 0;
+    let headerScrolled = scrollY > 24;
     const render = () => {
       request = 0;
-      const progress = motion.matches ? 0 : Math.max(0, Math.min(1, (scrollY - origin + headerHeight) / distance));
+      // Share the existing frame with the header; hysteresis avoids flicker near the top.
+      if (scrollY > 32) headerScrolled = true;
+      else if (scrollY < 12) headerScrolled = false;
+      const headerSurface = headerScrolled ? "scrolled" : "top";
+      if (header && header.dataset.surface !== headerSurface) header.dataset.surface = headerSurface;
+      // The fixed header now overlays the hero, so the film starts at the page origin.
+      const progress = motion.matches ? 0 : Math.max(0, Math.min(1, (scrollY - origin) / distance));
       const { scale, radius } = sectionTransitionFrame(progress, innerWidth < 768);
       // Keep the upper rounded edge below the sticky header as the film scrolls away.
       const top = origin - scrollY + height * (1 - scale) / 2;
@@ -33,7 +41,7 @@ export function useHeroVideoTransition() {
       const hero = surface.closest<HTMLElement>(".editorial-hero");
       origin = hero ? scrollY + hero.getBoundingClientRect().top : 0;
       height = surface.offsetHeight;
-      headerHeight = document.querySelector<HTMLElement>(".editorial-header")?.offsetHeight ?? 0;
+      headerHeight = header?.offsetHeight ?? 0;
       distance = Math.max(1, Math.min(height * .6, innerHeight * .5));
       schedule();
     };
@@ -52,6 +60,7 @@ export function useHeroVideoTransition() {
       surface.style.removeProperty("transform");
       surface.style.removeProperty("clip-path");
       surface.style.removeProperty("will-change");
+      header?.removeAttribute("data-surface");
     };
   }, []);
 
