@@ -110,6 +110,22 @@ test('header Contact link aligns the full section below the sticky header', asyn
   expect(background.scale).toBeCloseTo(1, 3);
   await expect(page.locator('#contact .hire-button')).toBeInViewport();
 });
+test('mobile contact panel tracks the changing viewport height', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const stage = page.locator('#contact .contact-stage');
+  const measureHeight = () => stage.evaluate(el => {
+    const header = parseFloat(getComputedStyle(el.closest('#contact')).getPropertyValue('--header-height'));
+    return { height: el.getBoundingClientRect().height, expected: innerHeight - header };
+  });
+  expect(await measureHeight()).toMatchObject({ height: 784, expected: 784 });
+
+  await page.setViewportSize({ width: 390, height: 740 });
+  await expect.poll(async () => {
+    const { height, expected } = await measureHeight();
+    return Math.abs(height - expected);
+  }).toBeLessThan(1);
+});
 test('WhatsApp button receives hover, click and keyboard focus after contact animation', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
