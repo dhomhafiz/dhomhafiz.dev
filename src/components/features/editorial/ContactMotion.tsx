@@ -68,7 +68,9 @@ export function ContactMotion() {
       const header = parseFloat(getComputedStyle(section).getPropertyValue("--header-height")) || 0;
       const top = section.getBoundingClientRect().top;
       // Render the current scroll position directly, with no easing or catch-up timer.
-      const progress = Math.max(0, Math.min(1, (height - top) / (height - header)));
+      // Native anchor scrolling rounds fractional section positions to pixels.
+      // Finish within that last pixel even when the reel above has a fluid height.
+      const progress = top - header <= 1 ? 1 : Math.max(0, Math.min(1, (height - top) / (height - header)));
       const easedProgress = progress ** 2;
       // Keep a 24px reveal above the heading while compressing, then expand the
       // grey panel to the top edge as the contact section reaches its final state.
