@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-for (const width of [390, 1440]) test(`contact text animates while controls retain their natural size at ${width}`, async ({ page }) => {
+for (const width of [1440]) test(`contact text animates while controls retain their natural size at ${width}`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await page.goto('/');
   const contact = page.locator('#contact');
@@ -143,7 +143,7 @@ test('header Contact link aligns the full section below the sticky header', asyn
   expect(background.scale).toBeCloseTo(1, 3);
   await expect(page.locator('#contact .hire-button')).toBeInViewport();
 });
-test('mobile contact panel tracks the changing viewport height', async ({ page }) => {
+test('mobile contact panel fits a resized screen', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const stage = page.locator('#contact .contact-stage');

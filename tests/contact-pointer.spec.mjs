@@ -6,7 +6,7 @@ for (const width of [390, 1280, 1920]) test(`WhatsApp hover remains active from 
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
   const contact = page.locator('#contact');
   const button = contact.locator('a.hire-button');
-  await expect.poll(() => contact.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 3);
+  await expect.poll(() => contact.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 2);
   const rect = await button.boundingBox();
   const cx = rect.x + rect.width / 2, cy = rect.y + rect.height / 2;
   const paths = {

@@ -378,8 +378,9 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
   [data-contact-motion="ready"] .contact-title { transform: scaleY(var(--contact-title-rise, 1)); }
 }
 @media (max-width: 700px) {
-  .hire-section.contact-scroll-track, .contact-stage { min-height: calc(100dvh - var(--header-height)); }
-  .contact-type-space, .contact-actions { transform: translateY(calc(-1 * clamp(56px, 12svh, 96px))); }
+  .hire-section.contact-scroll-track, .contact-stage { min-height: calc(100svh - var(--header-height)); }
+  .contact-stage { padding-bottom: calc(clamp(24px, 5svh, 64px) + clamp(56px, 12svh, 96px)); }
+  .contact-stage, .contact-stage::before, .contact-title, .contact-type-space, .contact-actions { transform: none !important; will-change: auto !important; }
   .contact-actions .hire-button { font-size: 13px; padding: 16px 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
