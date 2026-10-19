@@ -5,7 +5,7 @@ import { WorkCard } from "./WorkCard";
 export function SelectedWork({ projects }: { projects: readonly PersonalProject[] }) {
   const netflix = projects.find(project => project.id === "netflix-squid-game-2");
   return <section id="works" className="editorial-section" aria-labelledby="works-heading">
-    <div className="section-heading"><h2 id="works-heading">Personal Projects</h2><p>Considered design. Working experiences.</p></div>
+    <div className="section-heading"><h2 id="works-heading">Personal Projects</h2></div>
     <div className="selected-work-grid">
       <WorkCard className="dental-work" label="Still Dental concept project">
         <div className="work-image"><img src={assetPath("/images/dental/doctor-patient-15688027.webp")} width={640} height={720} loading="lazy" alt="A dentist performing a dental procedure on a patient in a clinic" /></div>

@@ -21,21 +21,29 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
     const stage = section.querySelector('.contact-stage');
     const title = section.querySelector('.contact-title');
     const result = [];
-    for (const fraction of [.9, .6, .3, 0, .4, .8, .2, 0]) {
-      window.scrollTo({ top: section.offsetTop - innerHeight * fraction, behavior: 'instant' });
+    for (const fraction of [.9, .6, .3, 0, .4, .8, .2, 1, 0]) {
+      window.scrollTo({ top: window.scrollY + section.getBoundingClientRect().top - innerHeight * fraction, behavior: 'instant' });
       for (let frame = 0; frame < 3; frame++) await new Promise(requestAnimationFrame);
       const header = parseFloat(getComputedStyle(section).getPropertyValue('--header-height'));
       const sectionTop = section.getBoundingClientRect().top;
       const progress = Math.max(0, Math.min(1, (innerHeight - sectionTop) / (innerHeight - header)));
       const scale = new DOMMatrix(getComputedStyle(title).transform).d;
-      const panelHeight = parseFloat(getComputedStyle(stage).height);
+      const easedProgress = progress ** 2;
+      const stageRect = stage.getBoundingClientRect();
+      const titleTop = title.getBoundingClientRect().top - stageRect.top;
+      const gapCloseProgress = Math.max(0, Math.min(1, (progress - .97) / .03));
+      const easedGapClose = gapCloseProgress ** 2 * (3 - 2 * gapCloseProgress);
+      const expectedGap = 24;
       const titleHeight = parseFloat(getComputedStyle(title).height);
       const sample = {
-        scale, expected: .035 + .965 * progress,
-        panelTop: stage.getBoundingClientRect().top,
+        progress, scale, expected: .01 + .99 * easedProgress, expectedGap,
+        panelTop: stageRect.top,
         expectedTop: Math.min(header, sectionTop),
         textScale: title.getBoundingClientRect().height / titleHeight,
         backgroundScale: new DOMMatrix(getComputedStyle(stage, '::before').transform).d,
+        gapAboveTitle: titleTop - stage.clientHeight * (1 - new DOMMatrix(getComputedStyle(stage, '::before').transform).d),
+        backgroundTopInset: stage.clientHeight * (1 - new DOMMatrix(getComputedStyle(stage, '::before').transform).d),
+        expectedBackgroundTopInset: (titleTop - expectedGap) * (1 - easedGapClose),
         controls: [...section.querySelectorAll('.hire-button, .contact-social-links a, .contact-copyright')].map(el => el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).height)),
       };
       for (let frame = 0; frame < 6; frame++) await new Promise(requestAnimationFrame);
@@ -49,9 +57,16 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
     expect(sample.afterStop).toBeCloseTo(sample.scale, 3);
     expect(sample.textScale).toBeCloseTo(sample.scale, 3);
     expect(Math.abs(sample.panelTop - sample.expectedTop)).toBeLessThan(1);
-    expect(sample.backgroundScale).toBeCloseTo(sample.scale, 3);
     for (const ratio of sample.controls) expect(ratio).toBeCloseTo(1, 2);
   }
+  const visibleGaps = samples.filter(sample => sample.progress > .1);
+  expect(visibleGaps.length).toBeGreaterThan(1);
+  for (const sample of visibleGaps.filter(sample => sample.progress <= .97)) expect(sample.gapAboveTitle).toBeCloseTo(sample.expectedGap, 0);
+  const fullPanel = samples.find(sample => sample.progress === 1);
+  expect(fullPanel).toBeDefined();
+  expect(fullPanel.backgroundScale).toBeCloseTo(1, 3);
+  expect(fullPanel.backgroundTopInset).toBeCloseTo(0, 0);
+  for (const sample of visibleGaps) expect(sample.backgroundTopInset).toBeCloseTo(sample.expectedBackgroundTopInset, 0);
   const works = await page.locator('#works').boundingBox();
   const panel = await contact.boundingBox();
   expect(panel.y - (works.y + works.height)).toBeCloseTo(12, 0);
@@ -61,7 +76,10 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
   await expect.poll(() => contact.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 3);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `artifacts/contact-${width}.png` });
-  await page.evaluate(() => window.scrollTo({ top: document.getElementById('contact').offsetTop - innerHeight * .5, behavior: 'instant' }));
+  await page.evaluate(() => {
+    const section = document.getElementById('contact');
+    window.scrollTo({ top: window.scrollY + section.getBoundingClientRect().top - innerHeight * .5, behavior: 'instant' });
+  });
   await page.screenshot({ path: `artifacts/contact-rising-${width}.png` });
 });
 
