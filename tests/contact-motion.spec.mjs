@@ -32,6 +32,8 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
       const easedProgress = mobile ? progress ** 2 * (3 - 2 * progress) : progress ** 2;
       const stageRect = stage.getBoundingClientRect();
       const titleTop = title.parentElement.getBoundingClientRect().bottom - title.offsetHeight - stageRect.top;
+      const titleContainerOffset = new DOMMatrix(getComputedStyle(title.parentElement).transform).f;
+      const actionsOffset = new DOMMatrix(getComputedStyle(section.querySelector('.contact-actions')).transform).f;
       const closeStart = mobile ? .3 : .97;
       const gapCloseProgress = Math.max(0, Math.min(1, (progress - closeStart) / (1 - closeStart)));
       const easedGapClose = gapCloseProgress ** 2 * (3 - 2 * gapCloseProgress);
@@ -39,6 +41,7 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
       const titleHeight = parseFloat(getComputedStyle(title).height);
       const sample = {
         progress, scale, expected: .01 + .99 * easedProgress, expectedGap,
+        titleContainerOffset, actionsOffset,
         panelTop: stageRect.top,
         expectedTop: Math.min(header, sectionTop),
         textScale: title.getBoundingClientRect().height / titleHeight,
@@ -71,6 +74,11 @@ for (const width of [390, 1440]) test(`contact text animates while controls reta
   expect(fullPanel).toBeDefined();
   expect(fullPanel.backgroundScale).toBeCloseTo(1, 3);
   expect(fullPanel.backgroundTopInset).toBeCloseTo(0, 0);
+  if (width <= 700) {
+    const shift = -Math.min(96, Math.max(56, 900 * .12));
+    expect(fullPanel.titleContainerOffset).toBeCloseTo(shift, 0);
+    expect(fullPanel.actionsOffset).toBeCloseTo(shift, 0);
+  }
   for (const sample of visibleGaps) expect(sample.backgroundTopInset).toBeCloseTo(sample.expectedBackgroundTopInset, 0);
   const works = await page.locator('#works').boundingBox();
   const panel = await contact.boundingBox();

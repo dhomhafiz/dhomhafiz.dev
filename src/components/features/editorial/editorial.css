@@ -379,6 +379,7 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
 }
 @media (max-width: 700px) {
   .hire-section.contact-scroll-track, .contact-stage { min-height: calc(100dvh - var(--header-height)); }
+  .contact-type-space, .contact-actions { transform: translateY(calc(-1 * clamp(56px, 12svh, 96px))); }
   .contact-actions .hire-button { font-size: 13px; padding: 16px 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
