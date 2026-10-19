@@ -123,9 +123,9 @@ test('reduced motion leaves the contact panel full size', async ({ page }) => {
   await expect(page.locator('.contact-stage')).toHaveCSS('transform', 'none');
   await expect(page.locator('.contact-title')).toHaveCSS('transform', 'none');
 });
-test('header Contact link aligns the full section below the sticky header', async ({ page }) => {
+test('hero Contact link aligns the full section at the viewport top', async ({ page }) => {
   await page.goto('/');
-  await page.locator('.editorial-header nav a[href="#contact"]').click();
+  await page.locator('.hero-bottom-bar nav a[href="#contact"]').click();
   await expect.poll(() => page.locator('#contact').evaluate(el => Math.round(el.getBoundingClientRect().top - parseFloat(getComputedStyle(el).getPropertyValue('--header-height'))))).toBeCloseTo(0, 0);
   await expect.poll(() => page.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 3);
   const background = await page.locator('#contact .contact-stage').evaluate(el => {
@@ -151,7 +151,7 @@ test('mobile contact panel fits a resized screen', async ({ page }) => {
     const header = parseFloat(getComputedStyle(el.closest('#contact')).getPropertyValue('--header-height'));
     return { height: el.getBoundingClientRect().height, expected: visualViewport.height - header };
   });
-  expect(await measureHeight()).toMatchObject({ height: 784, expected: 784 });
+  expect(await measureHeight()).toMatchObject({ height: 844, expected: 844 });
 
   await page.setViewportSize({ width: 390, height: 740 });
   await expect.poll(async () => {

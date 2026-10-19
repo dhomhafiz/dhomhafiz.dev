@@ -1,15 +1,13 @@
 import { FaWhatsapp } from "react-icons/fa6";
-import localFont from "next/font/local";
+import { displayFont } from "@/lib/displayFont";
 import { SocialLinks } from "@/components/common/SocialLinks";
 import type { SocialLink } from "@/types/portfolio";
 import { whatsappHref } from "@/config/editorial";
 import { ContactMotion } from "./ContactMotion";
 
-const contactFont = localFont({ src: "../../../app/fonts/anton-contact.ttf", weight: "400", display: "swap", variable: "--font-contact" });
-
 export function HireMe({ email, socials = [] }: { email: string; socials?: readonly SocialLink[] }) {
   const href = whatsappHref();
-  return <section id="contact" className={`hire-section contact-scroll-track ${contactFont.variable}`} aria-labelledby="hire-heading">
+  return <section id="contact" className={`hire-section contact-scroll-track ${displayFont.variable}`} aria-labelledby="hire-heading">
     <ContactMotion />
     <div className="contact-stage">
       <div className="contact-type-space"><h2 id="hire-heading" className="contact-title" aria-label="CONTACT"><span className="contact-title-native" aria-hidden="true">CONTACT</span><svg className="contact-title-vector" aria-hidden="true" focusable="false" preserveAspectRatio="none"><text x="0" y="0">CONTACT</text></svg></h2></div>
