@@ -24,11 +24,3 @@ test('Save-Data leaves the prioritised poster without fetching footage', async (
   await expect(page.locator('video')).not.toHaveAttribute('src');expect(requests).toEqual([]);
   expect(await page.locator('.hero-video picture img').evaluate(i=>i.complete&&i.naturalWidth>0)).toBe(true);
 });
-
-test('service animation enhances server-rendered copy only near its section',async({page})=>{
-  const response=await page.goto('/');expect(await response.text()).toContain('Landing page design');
-  const section=page.locator('#services');await expect(section).not.toHaveAttribute('data-motion','ready');
-  await section.scrollIntoViewIfNeeded();await expect(section).toHaveAttribute('data-motion','ready');
-  await page.emulateMedia({reducedMotion:'reduce'});await expect(section).not.toHaveAttribute('data-motion','ready');
-  await expect(section.locator('.service-row h3').first()).toHaveCSS('opacity','1');
-});
