@@ -33,7 +33,13 @@ test('robots and sitemap use public canonical URLs', async ({ request }) => {
   const text = await robots.text(); expect(text).toContain('User-Agent: *'); expect(text).toContain('Allow: /'); expect(text).toContain(`Sitemap: ${origin}/sitemap.xml`);
   const sitemap = await request.get('/sitemap.xml'); expect(sitemap.ok()).toBe(true);
   const xml = await sitemap.text();
-  expect([...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1])).toEqual([...pages.map(p => origin + p.path), `${origin}/work/still-dental/`, `${origin}/work/netflix-squid-game-2/`]);
+  const homepage = await request.get('/');
+  const projectSlugs = [...(await homepage.text()).matchAll(/data-project-slug="([^"]+)"/g)].map(match => match[1]);
+  expect(projectSlugs.length).toBeGreaterThan(0);
+  expect([...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1])).toEqual([
+    ...pages.map(p => origin + p.path),
+    ...projectSlugs.map(slug => `${origin}/work/${slug}/`),
+  ]);
   expect(xml).not.toContain('127.0.0.1');
   expect(xml).not.toContain('#');
 });

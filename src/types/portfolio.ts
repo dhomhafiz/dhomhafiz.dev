@@ -44,13 +44,41 @@ export interface FAQItem { question: string; answer: string }
 export type ProjectCategory = "enterprise" | "template";
 interface ProjectBase {
   id: string;
+  slug: string;
+  displayOrder: number;
   category: ProjectCategory;
+  displayTitle?: string;
+  displayCategory?: string;
+  caseStudyTitle?: string;
+  caseStudyCategory?: string;
   context: string;
   title: string;
   description: string;
+  introduction: string;
   location: string;
   technologies: readonly string[];
-  image: { src: string; srcSet?: string; alt: string; width: number; height: number; sourceUrl?: string; credit?: string };
+  image: { src: string; srcSet?: string; alt: string; width: number; height: number; objectPosition?: string; sourceUrl?: string; credit?: string };
+  sections?: readonly { title: string; text: string }[];
+  gallery?: readonly {
+    src: string;
+    alt: string;
+    caption?: string;
+    width: number;
+    height: number;
+    objectPosition?: string;
+    sourceUrl?: string;
+    credit?: string;
+  }[];
+  videos?: readonly {
+    src: string;
+    title: string;
+    type?: string;
+    poster?: string;
+    caption?: string;
+    sourceUrl?: string;
+    credit?: string;
+  }[];
+  externalLinks?: readonly { label: string; href: string }[];
 }
 export interface EnterpriseProject extends ProjectBase { category: "enterprise" }
 export interface TemplateProject extends ProjectBase {

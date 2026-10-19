@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type MouseEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent, type MouseEvent } from "react";
 import { workHref, type WorkProject } from "@/lib/workProjects";
-
-const positionKey = "dhomhafiz-film-frame";
+import { ProjectFrame } from "./ProjectFrame";
 
 export function FilmReel({ projects }: { projects: readonly WorkProject[] }) {
+  const instanceId = useId().replaceAll(":", "");
+  const positionKey = `dhomhafiz-film-frame:${instanceId}`;
+  const viewportId = `project-film-viewport-${instanceId}`;
   const root = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
@@ -137,7 +139,7 @@ export function FilmReel({ projects }: { projects: readonly WorkProject[] }) {
   };
 
   return <div ref={root} className="film-reel" role="region" aria-roledescription="carousel" aria-label="Selected works film reel" onKeyDown={keyboard}>
-    <div className="film-viewport" ref={viewport} id="project-film-viewport" tabIndex={0}
+    <div className="film-viewport" ref={viewport} id={viewportId} tabIndex={0}
       aria-label="Project frames. Swipe or use the left and right arrow keys."
       onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}
       onPointerLeave={() => { if (dragging.current && !dragging.current.moved) dragging.current = null; }}
@@ -147,42 +149,19 @@ export function FilmReel({ projects }: { projects: readonly WorkProject[] }) {
         {projects.map((item, index) => {
           const number = String(index + 1).padStart(2, "0");
           const expanded = revealed === index;
-          const image = item.project.image;
-          return <article key={item.slug} className="film-cell" role="group" aria-roledescription="slide"
-            aria-label={`${index + 1} of ${projects.length}: ${item.title}`} data-active={active === index}>
-            <div className="film-edge film-edge-top" aria-hidden="true"><span>DH / SELECTED WORK</span><span>35MM · {number}</span></div>
-            <div className={`film-window ${item.slug === "still-dental" ? "film-dental" : ""}`} data-revealed={expanded}
-              onPointerEnter={event => { if (event.pointerType === "mouse" && !dragging.current) setRevealed(index); }}
-              onPointerLeave={event => { if (event.pointerType === "mouse" && !event.currentTarget.contains(document.activeElement)) setRevealed(null); }}
-              onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setRevealed(null); }}>
-              <img className="film-image" src={image.src} srcSet={image.srcSet} sizes="(max-width: 700px) 84vw, (max-width: 1474px) 76vw, 1120px"
-                width={image.width} height={image.height} alt={image.alt} loading="lazy" decoding="async" draggable={false} />
-              <button type="button" className="film-reveal" data-reveal={index} aria-expanded={expanded} aria-controls={`film-details-${item.slug}`}
-                onClick={() => setRevealed(index)}>
-                <span className="film-caption"><span>{number} / {item.title}</span><span aria-hidden="true">+</span></span>
-                <span className="sr-only">Show project information</span>
-              </button>
-              <div id={`film-details-${item.slug}`} className="film-information" inert={!expanded} aria-hidden={!expanded}>
-                <button type="button" className="film-close" aria-label={`Close ${item.title} information`} onClick={() => dismiss(index)}>×</button>
-                <div className="film-information-copy">
-                  <p className="film-category">{item.category}</p><h3>{item.title}</h3>
-                  <p className="film-location">{item.project.location}</p>
-                  <p>{item.project.description}</p>
-                  <ul aria-label="Project technologies">{item.project.technologies.map(tag => <li key={tag}>{tag}</li>)}</ul>
-                  {image.credit && image.sourceUrl && <p className="film-credit">Image: <a href={image.sourceUrl} target="_blank" rel="noopener noreferrer">{image.credit}<span className="sr-only"> (opens in a new tab)</span></a></p>}
-                </div>
-                <a className="film-project-link" href={workHref(item.slug)} onClick={event => enterProject(event, item)}>View Project <span aria-hidden="true">↗</span><span className="sr-only">: {item.title}</span></a>
-              </div>
-            </div>
-            <div className="film-edge film-edge-bottom" aria-hidden="true"><span>{number} <span className="film-marker">▴</span></span><span>DHOMHAFIZ.DEV / {number}A</span></div>
-          </article>;
+          return <ProjectFrame key={item.slug} project={item} index={index} number={number} total={projects.length}
+            active={active === index} expanded={expanded} idPrefix={instanceId}
+            onHover={index => { if (!dragging.current) setRevealed(index); }}
+            onReveal={index => setRevealed(index)}
+            onDismiss={index => setRevealed(value => value === index ? null : value)}
+            onClose={dismiss} onProjectNavigate={enterProject} />;
         })}
       </div>
     </div>
     <div className="film-toolbar">
       <p className="film-hint"><span className="film-desktop-hint">Drag to explore</span><span className="film-mobile-hint">Swipe to explore</span> <span aria-hidden="true">↔</span><span className="film-touch-hint"> / Tap a frame for details</span></p>
       <p className="film-counter" aria-live="polite" aria-atomic="true"><span>{String(active + 1).padStart(2, "0")}</span> / {String(projects.length).padStart(2, "0")}<span className="sr-only"> — {projects[active]?.title}</span></p>
-      <div className="film-buttons"><button type="button" aria-label="Previous project" aria-controls="project-film-viewport" disabled={active === 0} onClick={() => goTo(active - 1)}>←</button><button type="button" aria-label="Next project" aria-controls="project-film-viewport" disabled={active === projects.length - 1} onClick={() => goTo(active + 1)}>→</button></div>
+      <div className="film-buttons"><button type="button" aria-label="Previous project" aria-controls={viewportId} disabled={active === 0} onClick={() => goTo(active - 1)}>←</button><button type="button" aria-label="Next project" aria-controls={viewportId} disabled={active === projects.length - 1} onClick={() => goTo(active + 1)}>→</button></div>
     </div>
     <noscript><div className="film-noscript">{projects.map(item => <a key={item.slug} href={workHref(item.slug)}>{item.title} ↗</a>)}</div></noscript>
   </div>;

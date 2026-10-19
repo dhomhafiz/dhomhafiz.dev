@@ -18,11 +18,11 @@ html:has(.case-study) { scroll-padding-top: 0; }
 .case-intro > p:last-child { align-self: end; justify-self: end; text-align: right; font-size: 12px; color: #65635c; }
 .case-hero { margin: 0; background: #101010; color: #d8cbb2; padding: 20px 0 0; }
 .case-hero > img { display: block; width: 100%; height: auto; max-height: 85svh; object-fit: cover; aspect-ratio: 16 / 9; }
-.case-dental > img { object-position: center 58%; }
 .case-hero figcaption { display: flex; justify-content: space-between; gap: 20px; padding: 18px var(--case-gutter); font: 10px/1.6 ui-monospace, monospace; }
 .case-hero a { text-decoration: underline; text-underline-offset: 3px; }
 .case-hero :focus-visible { outline-color: #fff; }
 .case-body { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(40px, 8vw, 160px); padding: clamp(60px, 8vw, 140px) var(--case-gutter); }
+.case-body-no-story { grid-template-columns: 1fr; }
 .case-facts { font-size: 12px; }
 .case-facts > p:nth-child(2) { margin-top: 24px; max-width: 260px; color: #65635c; }
 .case-facts ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin-top: 24px; }
@@ -39,6 +39,12 @@ html:has(.case-study) { scroll-padding-top: 0; }
 .case-gallery figure { margin: 0; min-width: 0; }
 .case-gallery img { display: block; width: 100%; height: auto; border: 1px solid #deded5; }
 .case-gallery figcaption { margin-top: 14px; color: #65635c; font-size: 11px; }
+.case-videos { padding: 0 var(--case-gutter) clamp(60px, 8vw, 140px); }
+.case-videos-heading .case-kicker { margin-bottom: 18px; }
+.case-video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 40px; align-items: start; }
+.case-video-grid figure { margin: 0; min-width: 0; }
+.case-video-grid video { display: block; width: 100%; height: auto; background: #101010; }
+.case-video-grid figcaption { margin-top: 14px; color: #65635c; font-size: 11px; }
 .case-pagination { border-top: 1px solid #d3d3cc; padding: 48px var(--case-gutter); }
 .case-pagination > div { margin-top: 28px; display: flex; justify-content: space-between; gap: 32px; }
 .case-pagination > div a { max-width: 850px; }
@@ -65,5 +71,6 @@ html:has(.case-study) { scroll-padding-top: 0; }
   .case-body { grid-template-columns: 1fr; gap: 48px; }
   .case-facts > p:nth-child(2) { max-width: none; margin-top: 16px; }
   .case-gallery-grid { grid-template-columns: 1fr; gap: 32px; }
+  .case-video-grid { grid-template-columns: 1fr; gap: 32px; }
   .case-pagination > div { flex-direction: column; }
 }

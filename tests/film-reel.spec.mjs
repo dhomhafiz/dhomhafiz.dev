@@ -6,6 +6,15 @@ async function openReel(page) {
   await page.evaluate(() => document.fonts.ready);
   await page.locator('#works').scrollIntoViewIfNeeded();
 }
+async function navigateToProject(page, slug) {
+  const target = page.locator(`.film-cell[data-project-slug="${slug}"]`);
+  const targetIndex = await target.evaluate(el => [...el.parentElement.children].indexOf(el));
+  await page.locator('.film-viewport').evaluate((reel, index) => {
+    const cell = reel.querySelector('.film-cell');
+    if (cell) reel.scrollTo({ left: index * cell.getBoundingClientRect().width, behavior: 'instant' });
+  }, targetIndex);
+  await expect(target).toHaveAttribute('data-active', 'true');
+}
 for (const [width, height] of sizes) test(`film composition and case studies at ${width}x${height}`, async ({ page }) => {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -13,8 +22,12 @@ for (const [width, height] of sizes) test(`film composition and case studies at 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openReel(page);
   const cells = page.locator('.film-cell');
-  await expect(cells).toHaveCount(2);
+  const projectCount = await cells.count();
+  expect(projectCount).toBeGreaterThan(0);
   await expect(cells.first()).toHaveAttribute('data-active', 'true');
+  const viewportIds = await page.locator('.film-viewport').evaluateAll(elements => elements.map(el => el.id));
+  expect(new Set(viewportIds).size).toBe(viewportIds.length);
+  await expect(page.locator('.film-reveal').first()).toHaveAttribute('aria-controls', await cells.first().locator('.film-information').getAttribute('id'));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(page.getByRole('button', { name: 'Previous project', exact: true })).toBeDisabled();
   const before = await cells.first().boundingBox();
@@ -30,13 +43,15 @@ for (const [width, height] of sizes) test(`film composition and case studies at 
   await expect(cells.first().getByRole('link', { name: /View Project/ })).toBeInViewport();
   await page.keyboard.press('Escape');
   await expect(cells.first().locator('.film-information')).not.toBeVisible();
-  await page.getByRole('button', { name: 'Next project', exact: true }).click();
+  for (let index = 1; index < projectCount; index++) await page.getByRole('button', { name: 'Next project', exact: true }).click();
   await expect(cells.last()).toHaveAttribute('data-active', 'true');
-  await cells.last().locator('.film-reveal').focus();
+  const netflix = page.locator('.film-cell[data-project-slug="netflix-squid-game-2"]');
+  await navigateToProject(page, 'netflix-squid-game-2');
+  await netflix.locator('.film-reveal').focus();
   await page.keyboard.press('Space');
-  await expect(cells.last().getByRole('link', { name: 'The Rakyat Post' })).toHaveAttribute('href', /therakyatpost\.com/);
+  await expect(netflix.getByRole('link', { name: 'The Rakyat Post' })).toHaveAttribute('href', /therakyatpost\.com/);
   await page.screenshot({ path: `artifacts/film-reveal-${width}x${height}.png` });
-  await cells.last().getByRole('link', { name: /View Project/ }).click();
+  await netflix.getByRole('link', { name: /View Project/ }).click();
   await expect(page).toHaveURL(/\/work\/netflix-squid-game-2\/$/);
   await expect(page.locator('h1')).toHaveText('Netflix Squid Game 2 Interactive Poll System');
   await expect(page.locator('.case-story')).toContainText('Blue for Continue, Red for Withdraw');
@@ -44,11 +59,12 @@ for (const [width, height] of sizes) test(`film composition and case studies at 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `artifacts/case-netflix-${width}x${height}.png`, fullPage: true });
   await page.goBack();
-  await expect(page.locator('.film-cell').last()).toHaveAttribute('data-active', 'true');
-  await page.getByRole('button', { name: 'Previous project', exact: true }).click();
-  await page.locator('.film-reveal').first().focus();
+  await expect(netflix).toHaveAttribute('data-active', 'true');
+  await navigateToProject(page, 'still-dental');
+  const dental = page.locator('.film-cell[data-project-slug="still-dental"]');
+  await dental.locator('.film-reveal').focus();
   await page.keyboard.press('Enter');
-  await page.locator('.film-cell').first().getByRole('link', { name: /View Project/ }).click();
+  await dental.getByRole('link', { name: /View Project/ }).click();
   await expect(page).toHaveURL(/\/work\/still-dental\/$/);
   await expect(page.getByRole('link', { name: 'Explore interactive demo' })).toHaveAttribute('href', '/demo-dental/');
   await expect(page.locator('.case-gallery img')).toHaveCount(2);
@@ -74,18 +90,19 @@ test('mouse drag, hover and keyboard navigation keep the reel stable', async ({ 
   await page.keyboard.press('Enter');
   await expect(frame.locator('.film-information')).toBeVisible();
   const y = rect.y + rect.height * .45;
+  const startingProject = await page.locator('.film-cell[data-active="true"]').getAttribute('data-project-slug');
   await page.mouse.move(rect.x + rect.width * .85, y);
   await page.mouse.down();
   await page.mouse.move(rect.x + rect.width * .1, y, { steps: 16 });
   await page.mouse.up();
-  await expect(page.locator('.film-cell').last()).toHaveAttribute('data-active', 'true');
+  await expect(page.locator('.film-cell[data-active="true"]')).not.toHaveAttribute('data-project-slug', startingProject);
   await expect(page).toHaveURL(/#works$/);
   const reel = page.locator('.film-viewport');
   await reel.focus();
   await page.keyboard.press('Home');
   await expect(page.locator('.film-cell').first()).toHaveAttribute('data-active', 'true');
   await page.keyboard.press('ArrowRight');
-  await expect(page.locator('.film-cell').last()).toHaveAttribute('data-active', 'true');
+  await expect(page.locator('.film-cell[data-active="true"]')).not.toHaveAttribute('data-project-slug', await page.locator('.film-cell').first().getAttribute('data-project-slug'));
   await page.keyboard.press('ArrowLeft');
   await expect(page.locator('.film-cell').first()).toHaveAttribute('data-active', 'true');
   await page.keyboard.press('End');
@@ -111,7 +128,7 @@ test('touch tap reveals, outside dismisses, swipe navigates without opening a pr
     await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 330, y }] });
     for (let x = 310; x >= 45; x -= 25) await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y }] });
     await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await expect(page.locator('.film-cell').last()).toHaveAttribute('data-active', 'true');
+      await expect(page.locator('.film-cell[data-active="true"]')).not.toHaveAttribute('data-project-slug', await frame.getAttribute('data-project-slug'));
     await expect(page.locator('.film-information[aria-hidden="false"]')).toHaveCount(0);
     await expect(page).toHaveURL(/#works$/);
     const before = await page.evaluate(() => scrollY);
@@ -132,8 +149,9 @@ test('normal-motion project navigation and Back, including rapid activation', as
     sessionStorage.setItem('film-test-native-transition', String(Boolean(event.viewTransition)));
   }));
   await openReel(page);
-  await page.locator('.film-window').first().hover();
-  const link = page.locator('.film-cell').first().getByRole('link', { name: /View Project/ });
+  await navigateToProject(page, 'still-dental');
+  await page.locator('.film-cell[data-project-slug="still-dental"] .film-window').hover();
+  const link = page.locator('.film-cell[data-project-slug="still-dental"]').getByRole('link', { name: /View Project/ });
   await link.dblclick({ noWaitAfter: true });
   await expect(page).toHaveURL(/\/work\/still-dental\/$/);
   await expect(page.locator('.case-hero img')).toBeVisible();
@@ -147,12 +165,25 @@ test('normal-motion project navigation and Back, including rapid activation', as
 });
 
 test('project routes have unique metadata, real media and sitemap entries', async ({ page, request }) => {
-  for (const slug of ['still-dental', 'netflix-squid-game-2']) {
+  await openReel(page);
+  const slugs = await page.locator('.film-cell').evaluateAll(cells => cells.map(cell => cell.getAttribute('data-project-slug')));
+  for (const [index, slug] of slugs.entries()) {
     expect((await page.goto(`/work/${slug}/`)).status()).toBe(200);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page).toHaveTitle(/\| Mohd Hafiz$/);
+    const title = (await page.locator('h1').textContent()).trim();
+    await expect(page).toHaveTitle(`${title} | Mohd Hafiz`);
+    const introduction = (await page.locator('.case-intro > p').first().textContent()).trim();
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', introduction);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://dhomhafiz.dev/work/${slug}/`);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://dhomhafiz.dev/work/${slug}/`);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', `${title} | Mohd Hafiz`);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', introduction);
+    const expectedPagination = [
+      ...(index > 0 ? [`/work/${slugs[index - 1]}/`] : []),
+      ...(index < slugs.length - 1 ? [`/work/${slugs[index + 1]}/`] : []),
+    ];
+    expect(await page.locator('.case-pagination > div a').evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual(expectedPagination);
     const images = await page.locator('meta[property="og:image"]').allTextContents();
     expect(images).toHaveLength(1);
     const src = await page.locator('meta[property="og:image"]').getAttribute('content');
@@ -161,8 +192,7 @@ test('project routes have unique metadata, real media and sitemap entries', asyn
     for (const href of await page.locator('.case-pagination a').evaluateAll(links => links.map(a => a.getAttribute('href')))) expect((await request.get(href.split('#')[0])).ok()).toBe(true);
   }
   const xml = await (await request.get('/sitemap.xml')).text();
-  expect(xml).toContain('https://dhomhafiz.dev/work/still-dental/');
-  expect(xml).toContain('https://dhomhafiz.dev/work/netflix-squid-game-2/');
+  for (const slug of slugs) expect(xml).toContain(`https://dhomhafiz.dev/work/${slug}/`);
 });
 
 test('real project anchors remain available without JavaScript', async ({ browser }) => {
@@ -170,7 +200,7 @@ test('real project anchors remain available without JavaScript', async ({ browse
   try {
     const page = await context.newPage();
     await page.goto('/#works');
-    await page.locator('.film-noscript a').first().click();
+    await page.locator('.film-noscript a[href="/work/still-dental/"]').click();
     await expect(page).toHaveURL(/\/work\/still-dental\/$/);
     await expect(page.locator('h1')).toHaveText('Still Dental');
     await page.getByRole('link', { name: 'Explore interactive demo' }).click();
