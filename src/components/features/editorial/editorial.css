@@ -101,7 +101,8 @@ body:has(.editorial-page){background:#fff}html:has(.editorial-page){scroll-paddi
   background: #fff;
 }
 html:has(.editorial-page) { scroll-padding-top: 0; }
-.editorial-page :is(#works, #contact) { scroll-margin-top: calc(var(--header-height) + 16px); }
+.editorial-page #works { scroll-margin-top: calc(var(--header-height) + 16px); }
+.editorial-page #contact { scroll-margin-top: var(--header-height); }
 
 /* Selected projects share rounded image surfaces and a responsive two-column grid. */
 .selected-work-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }

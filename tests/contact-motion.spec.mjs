@@ -90,6 +90,26 @@ test('reduced motion leaves the contact panel full size', async ({ page }) => {
   await expect(page.locator('.contact-stage')).toHaveCSS('transform', 'none');
   await expect(page.locator('.contact-title')).toHaveCSS('transform', 'none');
 });
+test('header Contact link aligns the full section below the sticky header', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.editorial-header nav a[href="#contact"]').click();
+  await expect.poll(() => page.locator('#contact').evaluate(el => Math.round(el.getBoundingClientRect().top - parseFloat(getComputedStyle(el).getPropertyValue('--header-height'))))).toBeCloseTo(0, 0);
+  await expect.poll(() => page.locator('.contact-title').evaluate(el => new DOMMatrix(getComputedStyle(el).transform).d)).toBeCloseTo(1, 3);
+  const background = await page.locator('#contact .contact-stage').evaluate(el => {
+    const section = el.closest('#contact');
+    const bounds = el.getBoundingClientRect();
+    return {
+      color: getComputedStyle(el, '::before').backgroundColor,
+      scale: new DOMMatrix(getComputedStyle(el, '::before').transform).d,
+      top: bounds.top,
+      sectionTop: section.getBoundingClientRect().top,
+    };
+  });
+  expect(background.color).toBe('rgb(222, 222, 219)');
+  expect(Math.abs(background.top - background.sectionTop)).toBeLessThan(1);
+  expect(background.scale).toBeCloseTo(1, 3);
+  await expect(page.locator('#contact .hire-button')).toBeInViewport();
+});
 test('WhatsApp button receives hover, click and keyboard focus after contact animation', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
