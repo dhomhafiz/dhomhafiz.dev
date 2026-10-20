@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { sectionTransitionFrame } from "@/lib/sectionTransitions";
 
-export function useHeroVideoTransition() {
+export function useHeroVideoTransition(spatial = false) {
   const frame = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export function useHeroVideoTransition() {
       request = 0;
       // Follow the section entering the upper part of the viewport in either direction.
       const activationLine = headerHeight + Math.min(innerHeight * .25, 160);
-      let nextSection = "";
+      let nextSection = surface.closest<HTMLElement>(".immersive-hero")?.dataset.gallery === "active" ? "works" : "";
       navigation.forEach(({ id, section }) => {
         if (section && section.getBoundingClientRect().top <= activationLine) nextSection = id;
       });
@@ -44,7 +44,7 @@ export function useHeroVideoTransition() {
       const headerSurface = headerScrolled ? "scrolled" : "top";
       if (header && header.dataset.surface !== headerSurface) header.dataset.surface = headerSurface;
       // The fixed header now overlays the hero, so the film starts at the page origin.
-      const progress = motion.matches ? 0 : Math.max(0, Math.min(1, (scrollY - origin) / distance));
+      const progress = spatial || motion.matches ? 0 : Math.max(0, Math.min(1, (scrollY - origin) / distance));
       const { scale, radius } = sectionTransitionFrame(progress, innerWidth < 768);
       // Keep the upper rounded edge below the sticky header as the film scrolls away.
       const top = origin - scrollY + height * (1 - scale) / 2;
@@ -82,7 +82,7 @@ export function useHeroVideoTransition() {
       header?.removeAttribute("data-surface");
       navigation.forEach(({ link }) => link?.removeAttribute("aria-current"));
     };
-  }, []);
+  }, [spatial]);
 
   return frame;
 }

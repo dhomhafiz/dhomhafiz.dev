@@ -19,3 +19,20 @@ export function getWorkProjects(projects: readonly PersonalProject[]): WorkProje
 }
 
 export function workHref(slug: string) { return assetPath(`/work/${slug}/`); }
+
+// A serializable view of the same portfolio record used by the film strip.
+export interface GalleryProject {
+  slug: string;
+  title: string;
+  category: string;
+  href: string;
+  preview: { src: string; width: number; height: number; alt: string };
+}
+
+export function getGalleryProject(projects: readonly PersonalProject[], slug?: string): GalleryProject | null {
+  const project = getWorkProjects(projects).find(item => slug ? item.slug === slug : item.category === "template" && item.presentation === "dental");
+  if (!project) return null;
+  return { slug: project.slug, title: project.displayTitle ?? project.title,
+    category: project.displayCategory ?? project.context, href: workHref(project.slug),
+    preview: project.gallery?.[0] ?? project.image };
+}

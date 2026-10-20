@@ -14,7 +14,8 @@ for (const width of [320, 390, 768, 1440, 1920]) test(`restored header, introduc
   await expect(page.locator('.hero-bottom-bar, .hero-display-name, .water-text')).toHaveCount(0);
   await expect(page.locator('.hero-scroll-arrow')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect.poll(() => page.locator('video').evaluate(el => el.currentTime)).toBeGreaterThan(0);
+  await expect(page.locator('.route-surface')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Explore Selected Works' })).toBeVisible();
   await page.screenshot({ path: `artifacts/restored-header-${width}.png` });
   await page.locator('.editorial-header nav a[href="#works"]').click();
   await expect(page).toHaveURL(/#works$/);
@@ -24,11 +25,4 @@ for (const width of [320, 390, 768, 1440, 1920]) test(`restored header, introduc
   await expect(page.locator('#contact .hire-button')).toHaveAttribute('href', /^https:\/\/wa.me\/60197860823\?text=/);
   expect(errors).toEqual([]);
 });
-test('reduced motion keeps a poster and failed media has a fallback',async({page})=>{
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/');expect(await page.locator('video').getAttribute('src')).toBeNull();
- await page.emulateMedia({reducedMotion:'no-preference'});await page.route('**/*.mp4',r=>r.abort());await page.reload();await expect(page.locator('.hero-video-fallback')).toBeVisible();
-});
-test('blocked autoplay keeps the poster without controls',async({page})=>{
- await page.addInitScript(()=>{HTMLMediaElement.prototype.play=function(){return Promise.reject(new DOMException('Blocked','NotAllowedError'))}});
- await page.goto('/');await expect(page.getByRole('status')).toContainText('Autoplay unavailable');await expect(page.locator('.hero-video button')).toHaveCount(0);expect(await page.locator('video').evaluate(v=>v.controls)).toBe(false);
-});
+// Reduced motion and renderer failures are covered by immersive-hero.spec.mjs.

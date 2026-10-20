@@ -17,13 +17,13 @@ for (const [width, height] of viewports) test(`cinematic composition at ${width}
     const copy = document.querySelector('.hero-copy-block');
     const heading = document.querySelector('h1');
     const arrow = document.querySelector('.hero-scroll-arrow');
-    const video = document.querySelector('.hero-video');
+    const video = document.querySelector('.route-surface');
     const rect = el => el.getBoundingClientRect().toJSON();
     return {
       header: rect(header), hero: rect(hero), copy: rect(copy), heading: rect(heading), video: rect(video),
       arrow: getComputedStyle(arrow).display === 'none' ? null : rect(arrow),
       copyBackground: getComputedStyle(copy).backgroundColor, copyRadius: getComputedStyle(copy).borderRadius,
-      gradient: getComputedStyle(video, '::after').backgroundImage,
+      gradient: getComputedStyle(document.querySelector('.route-scrim')).backgroundImage,
       headerOpacity: getComputedStyle(header, '::before').opacity,
       overflow: document.documentElement.scrollWidth > innerWidth,
       links: [...header.querySelectorAll('nav a')].map(rect),
@@ -64,9 +64,9 @@ test('header shares the hero scroll lifecycle with stable state changes and reta
   const header = page.locator('.editorial-header');
   await expect(header).toHaveAttribute('data-surface', 'top');
   const initial = await header.boundingBox();
-  await expect(page.locator('.hero-video')).toHaveCSS('transform', 'none');
+  await expect(page.locator('.route-surface')).toHaveCSS('transform', 'none');
   const heading = page.locator('.hero-heading-line-first');
-  await expect(heading).toHaveCSS('animation-name', 'hero-heading-drift');
+  await expect(heading).toHaveCSS('animation-name', 'none');
   for (const amount of [50, 24, 16, 30]) {
     await page.evaluate(top => window.scrollTo({ top, behavior: 'instant' }), amount);
     await expect(header).toHaveAttribute('data-surface', 'scrolled');
@@ -75,13 +75,9 @@ test('header shares the hero scroll lifecycle with stable state changes and reta
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect(header).toHaveAttribute('data-surface', 'top');
   await page.evaluate(() => window.scrollTo({ top: 200, behavior: 'instant' }));
-  await expect(page.locator('.hero-video')).not.toHaveCSS('transform', 'none');
-  // Exercise each heading at the furthest drift while preserving its original animation.
-  const bounds = await page.locator('.hero-heading-line').evaluateAll(lines => lines.map(line => {
-    const animation = line.getAnimations()[0];
-    animation.pause(); animation.currentTime = 18000;
-    return line.getBoundingClientRect().toJSON();
-  }));
+  await expect(page.locator('.route-surface')).not.toHaveCSS('transform', 'none');
+  // HTML headings stay still while the 3D camera moves.
+  const bounds = await page.locator('.hero-heading-line').evaluateAll(lines => lines.map(line => line.getBoundingClientRect().toJSON()));
   for (const bound of bounds) { expect(bound.left).toBeGreaterThanOrEqual(0); expect(bound.right).toBeLessThanOrEqual(1440); }
   await page.locator('.editorial-header nav a[href="#works"]').click();
   const appearance = await header.evaluate(el => ({ surface: getComputedStyle(el, '::before').backgroundColor, blur: getComputedStyle(el, '::before').backdropFilter, transition: getComputedStyle(el, '::before').transitionProperty }));
