@@ -308,7 +308,6 @@ html:has(.editorial-page) { scroll-padding-top: 0; }
     padding-top: calc(var(--header-height) + clamp(20px, 4svh, 40px));
   }
   .editorial-hero .intro-label { font-size: 10px; gap: 16px; }
-  .editorial-hero .hero-scroll-arrow { display: none; }
   .editorial-hero h1 .hero-heading-line-first { --hero-heading-drift: -18px; }
   .editorial-hero h1 .hero-heading-line-second { --hero-heading-drift: 18px; }
 }

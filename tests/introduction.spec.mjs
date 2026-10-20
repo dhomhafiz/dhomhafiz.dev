@@ -12,8 +12,7 @@ for (const width of [320, 390, 768, 1440, 1920]) test(`restored header, introduc
   await expect(page.locator('.intro-label')).toContainText('Independent webdesigner');
   await expect(page.locator('.intro-label')).toContainText('Kuala Lumpur, MY');
   await expect(page.locator('.hero-bottom-bar, .hero-display-name, .water-text')).toHaveCount(0);
-  if (width <= 700) await expect(page.locator('.hero-scroll-arrow')).not.toBeVisible();
-  else await expect(page.locator('.hero-scroll-arrow')).toBeVisible();
+  await expect(page.locator('.hero-scroll-arrow')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect.poll(() => page.locator('video').evaluate(el => el.currentTime)).toBeGreaterThan(0);
   await page.screenshot({ path: `artifacts/restored-header-${width}.png` });
