@@ -40,6 +40,9 @@
 .route-journey[data-journey="active"] .immersive-hero {
   position: sticky; top: 0; height: var(--route-hero-height, 100svh);
 }
+.route-journey[data-journey="active"] > .route-gallery-presentation:not([data-presentation="active"]) {
+  display: block; position: absolute; inset: 0; overflow: hidden; visibility: hidden; pointer-events: none;
+}
 .route-journey[data-journey="active"] + #works {
   background: #fff;
 }
@@ -77,4 +80,36 @@
 .route-gallery-actions button.route-gallery-all-projects { pointer-events: auto; min-height: 44px; padding: 10px 16px; background: #080e17ed; border: 1px solid #788796; border-radius: 24px; color: #fff; font-size: 12px; cursor: pointer; }
 @media (max-width: 700px) {
   [data-presentation="active"] .route-gallery-back { margin-right: 16px; font-size: 12px; }
+}
+/* Before Sunrise: a single semantic Contact section, in flow for every fallback. */
+.contact-destination { position: relative; width: calc(100% + 2 * var(--page-gutter)); margin: 0 calc(-1 * var(--page-gutter)); padding: clamp(64px, 8vw, 120px) var(--page-gutter); min-height: calc(100svh - var(--header-height)); background: #101c2b; color: #f7eee0; }
+.contact-destination-copy { max-width: 760px; margin-inline: auto; }
+.contact-destination-eyebrow { color: #e5bc87; font-size: 10px; letter-spacing: .22em; margin-bottom: 22px; }
+.editorial-page .contact-destination h2 { font-family: var(--font-contact), var(--font-body), sans-serif; font-weight: 800; font-size: clamp(58px, 8vw, 116px) !important; letter-spacing: -.025em; line-height: .98; margin: 0 0 24px; text-wrap: balance; }
+.contact-destination-description { max-width: 480px; font-size: clamp(14px, 1.2vw, 17px); line-height: 1.8; color: #e4e8e8; margin-bottom: 28px; }
+.contact-destination .hire-button { display: inline-flex; width: auto; min-height: 56px; padding: 16px 24px; border-radius: 28px; background: #edc595; color: #101923; font-size: 13px; letter-spacing: .025em; }
+.contact-destination .hire-button:hover { background: #fff1dc; }
+.contact-destination .contact-social-links { margin-top: 26px; }
+.contact-destination .contact-social-links a { background: #0c1824b3; border-color: #9ba8b8; color: #f7eee0; }
+.contact-destination .contact-social-links a:hover { background: #f7eee0; color: #101923; }
+.contact-destination .contact-copyright { text-align: left; color: #aeb9c4; font-size: 9px; margin-top: 24px; }
+.editorial-page .contact-destination :focus-visible { outline-color: #edc595; }
+.contact-destination[data-route-contact="waiting"] { position: absolute; visibility: hidden; height: 0; min-height: 0; padding: 0; overflow: hidden; }
+.contact-destination[data-route-contact="active"] { position: fixed; inset: 0; z-index: 3; width: 100%; margin: 0; background: transparent; padding: calc(var(--header-height) + 40px) var(--hero-gutter, clamp(24px, 6vw, 100px)) 60px; display: flex; align-items: flex-end; pointer-events: none; }
+[data-route-contact="active"] .contact-destination-copy { width: 100%; max-width: 760px; margin-inline: auto; opacity: var(--route-contact-reveal, 0); transform: translateY(calc((1 - var(--route-contact-reveal, 0)) * 32px)); text-shadow: 0 2px 20px #030a14cc; }
+[data-route-contact="active"] a { pointer-events: auto; text-shadow: none; }
+[data-contact="active"] .route-scrim { opacity: .35; }
+@media (max-width: 700px) {
+  .editorial-page .contact-destination h2 { font-size: clamp(50px, 12vw, 76px) !important; }
+  .contact-destination[data-route-contact="active"] { padding: calc(var(--header-height) + 24px) 24px 60px; overflow-y: auto; }
+  .contact-destination .hire-button { font-size: 11px; padding-inline: 18px; }
+}
+@media (max-height: 720px) and (min-width: 701px) {
+  .editorial-page [data-route-contact="active"] h2 { font-size: 64px !important; margin-bottom: 16px; }
+  [data-route-contact="active"] .contact-destination-eyebrow { margin-bottom: 12px; }
+  [data-route-contact="active"] .contact-destination-description { margin-bottom: 18px; }
+  [data-route-contact="active"] .contact-social-links { margin-top: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-destination-copy { transform: none !important; }
 }

@@ -8,7 +8,7 @@ import { RouteEnvironment } from "./RouteEnvironment";
 import { SceneReadiness } from "./SceneReadiness";
 import { updateMouseInfluence } from "./routeCameraInteraction";
 import { sampleCameraPath } from "./routeCameraPath";
-import { routeJourneySettings, type JourneyProgress } from "./routeJourneySettings";
+import { contactReveal, routeJourneySettings, type JourneyProgress } from "./routeJourneySettings";
 import { RouteGallery } from "./RouteGallery";
 import type { GalleryProject } from "@/lib/workProjects";
 
@@ -25,6 +25,7 @@ interface SceneProps {
 function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">) {
   const { suspended } = useGalleryPresentation();
   const { camera, size } = useThree();
+  const contact = useRef<HTMLElement | null>(null);
   const input = useRef({ x: 0, y: 0, scroll: 0 });
   const opening = useRef(0);
   const path = useRef({ y: camera.position.y, pitch: camera.rotation.x, z: camera.position.z, progress: 0, started: false,
@@ -33,6 +34,7 @@ function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">
   const horizontalHalfFov = Math.atan(Math.tan(MathUtils.degToRad((camera as PerspectiveCamera).fov / 2)) * size.width / Math.max(1, size.height));
 
   useEffect(() => {
+    contact.current = document.getElementById("contact");
     const hero = surface.current?.closest<HTMLElement>(".immersive-hero");
     if (!hero) return;
     const reset = () => { if (!suspended.current) input.current.x = input.current.y = 0; };
@@ -87,19 +89,27 @@ function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">
     path.current.progress = MathUtils.damp(path.current.progress, progress, routeJourneySettings.response, Math.min(delta, 0.1));
     sampleCameraPath(path.current.progress, path.current.position, path.current.direction, path.current.rotation, horizontalHalfFov);
     journey.current.cameraProgress = path.current.progress;
+    if (journey.current.enabled && contact.current) {
+      const reveal = contactReveal(path.current.progress);
+      contact.current.style.setProperty("--route-contact-reveal", String(reveal));
+      const interactive = contact.current.dataset.routeContact === "active" && reveal > 0.7;
+      contact.current.inert = !interactive;
+      contact.current.setAttribute("aria-hidden", String(!interactive));
+    }
     // Preserve the opening's timing and damping; travel is additive to that reveal.
     path.current.y = MathUtils.damp(path.current.y, 2.25 + (1 - reveal) * 5, 4, dt);
     path.current.pitch = MathUtils.damp(path.current.pitch, -0.025 - (1 - reveal) * 0.17, 3, dt);
     path.current.z = MathUtils.damp(path.current.z, 6 + (1 - reveal) * 9, 4, dt);
     // Retain a small exploration layer at the screen without retuning hero sensitivity.
-    input.current.scroll = MathUtils.lerp(path.current.progress, 0.78, MathUtils.smoothstep(path.current.progress, 0.7, 1));
+    const exploration = Math.min(1, path.current.progress / routeJourneySettings.contactDeparture);
+    input.current.scroll = MathUtils.lerp(exploration, 0.78, MathUtils.smoothstep(exploration, 0.7, 1));
     updateMouseInfluence(mouse.current, input.current, delta, opening.current, horizontalHalfFov);
     camera.position.x = path.current.position.x + mouse.current.x;
     camera.position.y = path.current.position.y + path.current.y - 2.25 + mouse.current.y;
     camera.position.z = path.current.position.z + path.current.z - 6;
     camera.rotation.set(path.current.rotation.pitch + path.current.pitch + 0.025 + mouse.current.pitch,
       path.current.rotation.yaw + mouse.current.yaw, 0, "YXZ");
-  });
+  }, -1);
   return null;
 }
 
@@ -140,7 +150,7 @@ export default function RouteScene({ active, surface, journey, projects, onHover
       }}
       fallback={null}>
       <Suspense fallback={null}>
-      <RouteEnvironment /><RouteGallery projects={projects} journey={journey} onHover={onHover} /><CameraRig surface={surface} journey={journey} />
+      <RouteEnvironment journey={journey} /><RouteGallery projects={projects} journey={journey} onHover={onHover} /><CameraRig surface={surface} journey={journey} />
       <SceneReadiness onFailure={fail} onReady={() => {
         if (!failed.current) { setInitialized(true); callbacks.current.onReady(); }
       }} />

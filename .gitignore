@@ -10,3 +10,6 @@ out/
 artifacts/
 playwright-report/
 test-results/
+
+# Graphify generated analysis
+graphify-out/

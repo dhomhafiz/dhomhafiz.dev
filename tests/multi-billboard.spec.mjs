@@ -111,7 +111,7 @@ test('both physical screens hover and open their own existing case study, restor
   }
 });
 
-test('keyboard, next/previous, history, film-strip and Contact retain native destinations', async ({ page }) => {
+test('keyboard, next/previous, history, film-strip and cinematic Contact navigation remain coordinated', async ({ page }) => {
   test.setTimeout(100_000);
   await openScene(page);
   await nav(page).focus(); await page.keyboard.press('Enter');
@@ -138,11 +138,11 @@ test('keyboard, next/previous, history, film-strip and Contact retain native des
   await expect(hero(page)).toHaveAttribute('data-billboard', 'still-dental');
   await page.getByRole('navigation').getByRole('link', { name: 'Contact', exact: true }).click();
   await expect(page.locator('#contact')).toBeInViewport();
-  await expect(page.locator('#works')).toHaveJSProperty('inert', false);
+  await expect(page.locator('#works')).toHaveJSProperty('inert', true);
   await nav(page).click();
   await page.getByRole('button', { name: 'View All Projects' }).click();
   await expect(page.locator('#works-heading')).toBeInViewport();
-  await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
+  await expect(page.locator('.immersive-hero')).toHaveJSProperty('inert', true);
 });
 
 test('second focus and highway reload restore; a fresh Works deep link starts at Dental', async ({ page }) => {

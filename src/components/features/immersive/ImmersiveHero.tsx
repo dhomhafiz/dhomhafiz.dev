@@ -36,7 +36,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
   const [posterFailed, setPosterFailed] = useState(false);
   const revealed = eligible && ready && posterReady && !failed;
   const frame = useHeroVideoTransition(revealed);
-  const journey = useImmersiveJourney(frame, revealed && projects.length === billboardDestinations.length, setActiveBillboard);
+  const journey = useImmersiveJourney(frame, revealed && projects.length === billboardDestinations.length, setActiveBillboard, paused);
   const decodePoster = useCallback(() => {
     const image = poster.current;
     if (!image) return;

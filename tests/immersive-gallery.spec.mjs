@@ -115,7 +115,7 @@ test('keyboard link and film switch keep one active presentation without losing 
   await page.getByRole('button', { name: 'View All Projects' }).click();
   await expect(page).toHaveURL(/\?gallery=projects#works$/);
   await expect(page.locator('#works')).toHaveJSProperty('inert', false);
-  await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
+  await expect(page.locator('.immersive-hero')).toHaveJSProperty('inert', true);
   await expect(page.locator('#works-heading')).toBeInViewport();
   const first = page.locator('.film-cell').first();
   await first.locator('.film-reveal').focus();
@@ -124,7 +124,7 @@ test('keyboard link and film switch keep one active presentation without losing 
   await expect(page).toHaveURL(/\/work\/still-dental\/$/);
 });
 
-test('gallery deep links and mid-journey refresh restore while Contact stays native', async ({ page }) => {
+test('gallery deep links and mid-journey refresh restore while cinematic Contact keeps the archive inert', async ({ page }) => {
   test.setTimeout(90_000);
   await openScene(page);
   await seek(page, (await galleryEnd(page)) * firstTravel(.6), -94);
@@ -138,11 +138,16 @@ test('gallery deep links and mid-journey refresh restore while Contact stays nat
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-gallery', 'active');
   await page.getByRole('navigation').getByRole('link', { name: 'Contact', exact: true }).click();
   await expect(page.locator('#contact')).toBeInViewport();
-  await expect(page.locator('#works')).toHaveJSProperty('inert', false);
+  await expect(page.locator('#works')).toHaveJSProperty('inert', true);
   await page.goto('/#works-film');
   await expect(page.locator('.route-journey')).toHaveAttribute('data-journey', 'active');
+  await expect(page.locator('.route-gallery-presentation')).toHaveAttribute('data-presentation', 'active');
+  await expect(page.locator('.route-gallery-presentation')).toHaveAttribute('role', 'dialog');
   await expect(page.locator('#works-heading')).toBeInViewport();
   await expect(page.locator('.route-gallery-ui')).toHaveJSProperty('inert', true);
+  await page.keyboard.press('Escape');
+  await expect(page).toHaveURL(/#works$/);
+  await expect(page.locator('.route-gallery-presentation')).not.toHaveAttribute('data-presentation', 'active');
 });
 
 test('pending preview stays behind readiness; a failed preview falls back to the HTML gallery', async ({ page }) => {

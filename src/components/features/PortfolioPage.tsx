@@ -26,8 +26,8 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
           <div className="route-actions"><a href="#works">Explore Selected Works <span aria-hidden="true">↗</span></a><a href="#contact">Let’s talk <span aria-hidden="true">↗</span></a></div>
         </div>
         <a className="hero-scroll-arrow" href="#works" aria-label="Scroll to Selected Work"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 5v22M7 18l9 9 9-9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></a>
-      </section></div>
-      <GalleryPresentation><SelectedWork projects={content.projects} /></GalleryPresentation>
+      </section>
+      <GalleryPresentation><SelectedWork projects={content.projects} /></GalleryPresentation></div>
       <HireMe email={content.contactEmail} socials={content.hero.portrait?.socials} />
     </main>
   </div></GalleryPresentationProvider>;

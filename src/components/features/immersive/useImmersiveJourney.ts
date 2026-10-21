@@ -4,13 +4,15 @@ import { useLayoutEffect, useRef, type RefObject } from "react";
 import { useGalleryPresentation } from "./GalleryPresentation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { routeJourneySettings, type JourneyProgress } from "./routeJourneySettings";
+import { billboardProgress, contactReveal, routeJourneySettings, type JourneyProgress } from "./routeJourneySettings";
 import { billboardDestinations, billboardEntry, viewingBillboard } from "./routeBillboardSettings";
 
 // Actual document scroll is the single input for both manual and link navigation.
 // React never renders per scroll frame; the scene reads this persistent ref.
-export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, enabled: boolean, onBillboardChange: (index: number) => void) {
-  const { suspended, bridge } = useGalleryPresentation();
+export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, enabled: boolean, onBillboardChange: (index: number) => void, paused = false) {
+  const pause = useRef(paused);
+  pause.current = paused;
+  const { host, suspended, bridge } = useGalleryPresentation();
   const journey = useRef<JourneyProgress>({ enabled: false, progress: 0, galleryActive: false, activeBillboard: -1, cameraProgress: 0 });
 
   useLayoutEffect(() => {
@@ -24,10 +26,14 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     const arrow = hero.querySelector<HTMLElement>(".hero-scroll-arrow");
     const gallery = hero.querySelector<HTMLElement>(".route-gallery-ui");
     const heading = document.getElementById("gallery-heading");
+    const contact = document.getElementById("contact");
+    const contactHeading = document.getElementById("hire-heading");
     const originalTabIndex = heading?.getAttribute("tabindex");
     heading?.setAttribute("tabindex", "-1");
     const previousWorksTop = works.getBoundingClientRect().top;
     const layout = track.parentElement!;
+    const archive = host.current;
+    const previousArchiveInert = archive?.inert ?? false;
     const measure = () => {
       delete track.dataset.journey;
       layout.style.setProperty("--route-hero-height", `${hero.offsetHeight}px`);
@@ -35,6 +41,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       track.dataset.journey = "active";
     };
     measure();
+    if (archive && !suspended.current) archive.inert = true;
     journey.current.enabled = true;
     let navigation: gsap.core.Tween | undefined;
     let restoreFrame = 0;
@@ -53,7 +60,9 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
     const journeyEnd = () => scrollY + track.getBoundingClientRect().top + hero.offsetHeight * routeJourneySettings.scrollScreens;
     const galleryDestination = (index = 0) => scrollY + track.getBoundingClientRect().top +
-      hero.offsetHeight * routeJourneySettings.scrollScreens * billboardEntry(index);
+      hero.offsetHeight * routeJourneySettings.billboardScreens * billboardEntry(index);
+    const contactDestination = () => scrollY + track.getBoundingClientRect().top +
+      hero.offsetHeight * routeJourneySettings.scrollScreens * routeJourneySettings.contactEntry;
     const save = () => {
       history.replaceState({ ...history.state, routeJourneyScroll: scrollY }, "", location.href);
       try { sessionStorage.setItem(`route-journey:${location.pathname}${location.search}${location.hash}`, String(scrollY)); }
@@ -64,11 +73,11 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       if (suspended.current) return;
       journey.current.progress = progress;
       // Release the introduction, while keyboard focus can always restore it.
-      const fade = 1 - gsap.utils.clamp(0, 1, progress / (billboardDestinations[0].viewStart * 0.32));
+      const fade = progress > routeJourneySettings.contactDeparture ? 0 : 1 - gsap.utils.clamp(0, 1, billboardProgress(progress) / (billboardDestinations[0].viewStart * 0.32));
       if (copy) { copy.style.opacity = String(fade); copy.inert = fade === 0; }
       if (caption) caption.style.opacity = String(fade);
       if (arrow) { arrow.style.opacity = String(fade); arrow.inert = fade === 0; }
-      const index = scrollY <= journeyEnd() + hero.offsetHeight * 0.15 ? viewingBillboard(progress) : -1;
+      const index = scrollY <= journeyEnd() + hero.offsetHeight * 0.15 ? viewingBillboard(billboardProgress(progress)) : -1;
       const changed = index !== journey.current.activeBillboard;
       const active = index >= 0;
       journey.current.activeBillboard = index;
@@ -78,7 +87,22 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       if (active) hero.dataset.billboard = billboardDestinations[index].projectSlug;
       else delete hero.dataset.billboard;
       if (gallery) { gallery.inert = !active; gallery.setAttribute("aria-hidden", String(!active)); }
-      works.inert = active;
+      const atContact = progress > 0.84 && scrollY <= journeyEnd() + hero.offsetHeight * 0.15;
+      hero.dataset.contact = atContact ? "active" : "inactive";
+      if (contact) {
+        contact.dataset.routeContact = atContact ? "active" : "waiting";
+        if (!atContact) { contact.inert = true; contact.setAttribute("aria-hidden", "true"); }
+        else if (pause.current) {
+          // Pausing the optional scene must never pause HTML navigation/Contact.
+          const reveal = contactReveal(progress);
+          contact.style.setProperty("--route-contact-reveal", String(reveal));
+          contact.inert = reveal <= 0.7; contact.setAttribute("aria-hidden", String(contact.inert));
+        }
+      }
+      works.inert = active || atContact;
+      if (!atContact && contact?.contains(document.activeElement)) {
+        (active ? heading : document.querySelector<HTMLElement>('.editorial-header a[href="#contact"]'))?.focus({ preventScroll: true });
+      }
       // Returning to the highway or switching presentations never leaves focus inert.
       if (active && (works.contains(document.activeElement) || (changed && gallery?.contains(document.activeElement)))) heading?.focus({ preventScroll: true });
       else if (!active && gallery?.contains(document.activeElement)) {
@@ -111,22 +135,23 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       if (!link) return;
       stop();
       if (suspended.current) return;
-      if (link.getAttribute("href") !== "#works" || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+      const hash = link.getAttribute("href");
+      if ((hash !== "#works" && hash !== "#contact") || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
       event.preventDefault();
       const requested = billboardDestinations.findIndex(item => item.projectSlug === link.dataset.billboard);
       const index = Math.max(0, requested);
       const proxy = { y: scrollY };
       const from = scrollY;
       navigation = gsap.to(proxy, {
-        y: galleryDestination(index), duration: routeJourneySettings.navigationSeconds, ease: "power2.inOut",
+        y: hash === "#contact" ? contactDestination() : galleryDestination(index), duration: routeJourneySettings.navigationSeconds, ease: "power2.inOut",
         onUpdate: () => { scrollTo({ top: proxy.y, behavior: "instant" }); ScrollTrigger.update(); },
         onComplete: () => {
           navigation = undefined;
-          if (location.hash !== "#works" || Math.abs(from - scrollY) > 1) {
+          if (location.hash !== hash || Math.abs(from - scrollY) > 1) {
             history.replaceState({ ...history.state, routeJourneyScroll: from }, "", location.href);
-            history.pushState({ routeJourneyScroll: scrollY }, "", "#works");
+            history.pushState({ ...history.state, routeJourneyScroll: scrollY }, "", hash);
           }
-          heading?.focus({ preventScroll: true });
+          (hash === "#contact" ? contactHeading : heading)?.focus({ preventScroll: true });
         },
       });
     };
@@ -138,8 +163,8 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
         if (suspended.current || new URL(location.href).searchParams.get("gallery") === "projects") return;
         let target: HTMLElement | null = null;
         try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { /* Invalid hash keeps native behavior. */ }
-        if (target) scrollTo({ top: location.hash === "#works" ?
-          (history.state?.routeJourneyScroll ?? reloadScroll ?? galleryDestination()) : destination(target), behavior: "instant" });
+        if (target) scrollTo({ top: location.hash === "#works" || location.hash === "#contact" ?
+          (history.state?.routeJourneyScroll ?? reloadScroll ?? (location.hash === "#contact" ? contactDestination() : galleryDestination())) : destination(target), behavior: "instant" });
         else if (!location.hash) scrollTo({ top: history.state?.routeJourneyScroll ?? reloadScroll ?? 0, behavior: "instant" });
         reloadScroll = undefined;
         ScrollTrigger.refresh();
@@ -158,7 +183,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       restore: saved => {
         stop(); measure(); ScrollTrigger.refresh();
         const top = saved.progress === undefined ? (location.hash === "#works" ? galleryDestination() :
-          location.hash === "#works-film" ? destination(works) : saved.scroll) :
+          location.hash === "#contact" ? contactDestination() : location.hash === "#works-film" ? destination(works) : saved.scroll) :
           saved.progress === 1 && saved.billboard === -1 ? saved.scroll : scrollY + track.getBoundingClientRect().top +
           hero.offsetHeight * routeJourneySettings.scrollScreens * saved.progress;
         scrollTo({ top, behavior: "instant" }); ScrollTrigger.update(); update(trigger.progress);
@@ -166,7 +191,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     };
     const resize = () => { if (suspended.current) return; stop(); measure(); ScrollTrigger.refresh(); };
     const persist = () => { if (suspended.current) return; update(trigger.progress); clearTimeout(saveTimer); saveTimer = window.setTimeout(save, 120); };
-    const hashChanged = () => { stop(); if (location.hash === "#works") restore(); };
+    const hashChanged = () => { stop(); if (location.hash === "#works" || location.hash === "#contact") restore(); };
     const show = () => { if (location.hash || history.state?.routeJourneyScroll !== undefined) restore(); else ScrollTrigger.refresh(); };
     document.addEventListener("click", navigate);
     window.addEventListener("wheel", stop, { passive: true });
@@ -199,6 +224,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       const oldWorksTop = works.getBoundingClientRect().top;
       const beyondHero = scrollY > hero.offsetHeight;
       const wasGallery = journey.current.galleryActive;
+      const wasContact = hero.dataset.contact === "active";
       journey.current.enabled = false;
       journey.current.progress = 0;
       journey.current.galleryActive = false;
@@ -206,6 +232,13 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       journey.current.cameraProgress = 0;
       onBillboardChange(-1);
       works.inert = false;
+      if (archive) archive.inert = previousArchiveInert;
+      delete hero.dataset.contact;
+      if (contact) {
+        delete contact.dataset.routeContact;
+        contact.inert = false; contact.removeAttribute("aria-hidden");
+        contact.style.removeProperty("--route-contact-reveal");
+      }
       delete hero.dataset.gallery;
       delete hero.dataset.billboard;
       if (gallery) { gallery.inert = true; gallery.setAttribute("aria-hidden", "true"); }
@@ -218,7 +251,10 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       if (arrow) arrow.inert = false;
       if (originalTabIndex === null) heading?.removeAttribute("tabindex");
       else if (originalTabIndex !== undefined) heading?.setAttribute("tabindex", originalTabIndex);
-      if (!suspended.current && wasGallery) {
+      if (!suspended.current && wasContact && contact) {
+        scrollTo({ top: destination(contact), behavior: "instant" });
+        contactHeading?.focus({ preventScroll: true });
+      } else if (!suspended.current && wasGallery) {
         scrollTo({ top: destination(works), behavior: "instant" });
         document.getElementById("works-heading")?.focus({ preventScroll: true });
       } else if (!suspended.current && beyondHero) scrollTo({ top: scrollY + works.getBoundingClientRect().top - oldWorksTop, behavior: "instant" });
@@ -234,6 +270,6 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       window.removeEventListener("pagehide", save);
       window.removeEventListener("scroll", persist);
     };
-  }, [enabled, surface, onBillboardChange, suspended, bridge]);
+  }, [enabled, surface, onBillboardChange, host, suspended, bridge]);
   return journey;
 }

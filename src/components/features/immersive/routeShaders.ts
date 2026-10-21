@@ -70,11 +70,24 @@ export const skyBakeFragment = /* glsl */`
 
 const skySampling = /* glsl */`
   uniform samplerCube uSky;
-  uniform float uTime;
+  uniform float uTime, uDawn;
+  uniform vec3 uDawnZenith, uDawnHorizon;
   vec3 skyDirection(vec3 direction) {
     float angle = uTime;
     direction.xz = mat2(cos(angle), -sin(angle), sin(angle), cos(angle)) * direction.xz;
     return direction;
+  }
+  // The existing cloud cubemap stays cached. Sky and wet road share this exact
+  // directional dawn response, so reflections change with the same atmosphere.
+  vec3 routeSky(vec3 ray, float lod) {
+    vec3 night = textureCube(uSky, skyDirection(ray), lod).rgb;
+    float horizon = exp(-max(ray.y, 0.0) * 6.0);
+    float forward = pow(max(dot(ray, normalize(vec3(0.0, 0.025, -1.0))), 0.0), 6.0);
+    float cloudLight = clamp(dot(night, vec3(0.2126, 0.7152, 0.0722)) * 18.0, 0.0, 1.0);
+    vec3 dawn = mix(uDawnZenith, uDawnHorizon, horizon * (0.3 + 0.7 * forward));
+    dawn *= 0.58 + cloudLight * 0.42;
+    dawn += night * 0.42;
+    return mix(night, dawn, uDawn);
   }
 `;
 
@@ -82,7 +95,7 @@ export const skyFragment = /* glsl */`
   varying vec3 vWorld;
   ${skySampling}
   void main() {
-    gl_FragColor = vec4(textureCube(uSky, skyDirection(normalize(vWorld - cameraPosition))).rgb, 1.0);
+    gl_FragColor = vec4(routeSky(normalize(vWorld - cameraPosition), 0.0), 1.0);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }
@@ -115,9 +128,9 @@ export const roadFragment = /* glsl */`
       1.0, (noise(p * 27.0 + 43.0) - 0.5) * 0.025 * detail));
     float facing = max(dot(normal, view), 0.0);
     float fresnel = mix(0.025, 0.07, puddle) + 0.93 * pow(1.0 - facing, 5.0);
-    vec3 reflection = textureCube(uSky, skyDirection(reflect(-view, normal)), roughness * 5.0).rgb;
+    vec3 reflection = routeSky(reflect(-view, normal), roughness * 5.0);
     // Broken puddles reveal the cloud deck; rougher asphalt returns a softer sky.
-    vec3 color = asphalt * (0.7 - puddle * 0.3) + reflection * fresnel * mix(0.3, 0.95, puddle);
+    vec3 color = asphalt * (0.7 - puddle * 0.3 + uDawn * 1.1) + reflection * fresnel * mix(0.3, 0.95, puddle);
     float aa = max(0.008, fwidth(p.x));
     float edge = line(abs(p.x), 5.62, 0.055, aa);
     float median = line(abs(p.x), 0.14, 0.037, aa);

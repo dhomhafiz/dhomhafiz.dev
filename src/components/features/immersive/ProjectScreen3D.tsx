@@ -4,6 +4,7 @@ import { useLayoutEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame, useLoader, type ThreeEvent } from "@react-three/fiber";
 import { BoxGeometry, MathUtils, MeshBasicMaterial, MeshStandardMaterial, SRGBColorSpace, TextureLoader } from "three";
 import type { GalleryProject } from "@/lib/workProjects";
+import { billboardProgress } from "./routeJourneySettings";
 import type { JourneyProgress } from "./routeJourneySettings";
 import { viewingBillboard } from "./routeBillboardSettings";
 
@@ -30,7 +31,7 @@ export function ProjectScreen3D({ project, index, journey, onHover, width, heigh
     onHover(value);
   };
   const active = () => journey.current.galleryActive && journey.current.activeBillboard === index &&
-    viewingBillboard(journey.current.cameraProgress) === index;
+    viewingBillboard(billboardProgress(journey.current.cameraProgress)) === index;
   const allowed = (event: ThreeEvent<PointerEvent | MouseEvent>) => active() &&
     !(event.nativeEvent.target as Element)?.closest("a, button");
   useFrame((_, delta) => {

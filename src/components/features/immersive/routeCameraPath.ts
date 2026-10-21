@@ -1,4 +1,5 @@
 ﻿import { CatmullRomCurve3, MathUtils, Vector3 } from "three";
+import { routeJourneySettings, billboardProgress } from "./routeJourneySettings";
 import { billboardDestinations as destinations } from "./routeBillboardSettings";
 
 const paths = destinations.map(item => new CatmullRomCurve3(item.approach.map(point => new Vector3(...point)), false, "centripetal"));
@@ -37,7 +38,20 @@ function sampleDestination(index: number, progress: number, position: Vector3, d
 // no timed stops or additional animation/scroll controllers.
 export function sampleCameraPath(progress: number, position: Vector3, direction: Vector3,
   rotation: { yaw: number; pitch: number }, horizontalHalfFov?: number) {
-  const t = MathUtils.clamp(progress, 0, 1);
+  const t = MathUtils.clamp(billboardProgress(progress), 0, 1);
+  if (progress > routeJourneySettings.contactDeparture) {
+    // Depart the existing Squid Game pose, including narrow-aspect retreat.
+    sampleDestination(destinations.length - 1, 1, previousPosition, previousDirection, previousRotation, horizontalHalfFov);
+    const travel = MathUtils.smoothstep(progress, routeJourneySettings.contactDeparture, routeJourneySettings.contactArrival);
+    const center = MathUtils.smoothstep(travel, 0, 0.6);
+    position.set(MathUtils.lerp(previousPosition.x, 0, center), MathUtils.lerp(previousPosition.y, 2.8, center),
+      MathUtils.lerp(previousPosition.z, -278, travel));
+    direction.set(0, 0, -1);
+    const turn = MathUtils.smoothstep(travel, 0, 0.42);
+    rotation.yaw = MathUtils.lerp(previousRotation.yaw, 0, turn);
+    rotation.pitch = MathUtils.lerp(previousRotation.pitch, -0.012, turn);
+    return;
+  }
   let index = destinations.length - 1;
   while (index > 0 && t <= destinations[index].travelStart) index--;
   const item = destinations[index];

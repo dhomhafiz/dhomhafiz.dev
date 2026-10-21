@@ -1,12 +1,13 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import {
   BackSide, BufferGeometry, Color, CubeCamera, DoubleSide, Float32BufferAttribute,
-  InstancedMesh, LinearMipmapLinearFilter, LinearSRGBColorSpace, Mesh, Object3D,
+  FogExp2, HemisphereLight, DirectionalLight, InstancedMesh, LinearMipmapLinearFilter, LinearSRGBColorSpace, Mesh, Object3D,
   Scene, ShaderMaterial, Shape, SphereGeometry, Vector3, WebGLCubeRenderTarget,
 } from "three";
+import { dawnProgress, type JourneyProgress } from "./routeJourneySettings";
 import { routeEnvironment as settings } from "./routeEnvironmentSettings";
 import { roadFragment, skyBakeFragment, skyFragment, worldVertex } from "./routeShaders";
 
@@ -41,7 +42,7 @@ function terrainGeometry(side: number) {
     height * Math.exp(-(((x - cx) / width) ** 2 + ((z - cz) / depth) ** 2));
   for (let row = 0; row <= rows; row++) for (let column = 0; column <= columns; column++) {
     const x = 7.9 + (column / columns) ** 1.65 * 180;
-    const z = 32 - row / rows * 350;
+    const z = 32 - row / rows * 460;
     const mass = side < 0
       ? peak(x, z, 34, -51, 22, 43, 11) + peak(x, z, 76, -151, 50, 68, 32) + peak(x, z, 135, -245, 65, 85, 47)
       : peak(x, z, 39, -84, 25, 48, 12) + peak(x, z, 95, -199, 62, 82, 39);
@@ -203,8 +204,16 @@ function Roadside() {
   </>;
 }
 
-export function RouteEnvironment() {
-  const { gl } = useThree();
+export function RouteEnvironment({ journey }: { journey: RefObject<JourneyProgress> }) {
+  const { gl, camera } = useThree();
+  const dome = useRef<Mesh>(null), fog = useRef<FogExp2>(null);
+  const ambient = useRef<HemisphereLight>(null), key = useRef<DirectionalLight>(null), fill = useRef<DirectionalLight>(null);
+  const colors = useMemo(() => ({
+    fogNight: new Color(settings.atmosphere.color), fogDawn: new Color(settings.dawn.fog),
+    skyNight: new Color("#8298ab"), skyDawn: new Color(settings.dawn.skyLight),
+    groundNight: new Color("#151c22"), groundDawn: new Color(settings.dawn.groundLight),
+    keyNight: new Color(settings.sky.moonColor), keyDawn: new Color(settings.dawn.keyLight),
+  }), []);
   const sky = useRef<ShaderMaterial>(null), road = useRef<ShaderMaterial>(null);
   const elapsed = useRef(0);
   const cube = useMemo(() => new WebGLCubeRenderTarget(settings.sky.resolution, {
@@ -212,8 +221,9 @@ export function RouteEnvironment() {
   }), []);
   const moon = useMemo(() => new Vector3(...settings.sky.moonDirection).normalize(), []);
   const uniforms = useMemo(() => ({
-    uSky: { value: cube.texture }, uTime: { value: 0 },
-    uFogColor: { value: new Color(settings.atmosphere.color) }, uFogDensity: { value: settings.atmosphere.density },
+    uSky: { value: cube.texture }, uTime: { value: 0 }, uDawn: { value: 0 },
+    uDawnZenith: { value: new Color(settings.dawn.zenith) }, uDawnHorizon: { value: new Color(settings.dawn.horizon) },
+    uFogColor: { value: new Color(settings.atmosphere.color) }, uFogDensity: { value: settings.atmosphere.density as number },
     uMoonDirection: { value: moon }, uWetness: { value: settings.road.wetness },
     uSignFirstZ: { value: settings.signs.firstZ }, uSignSpacing: { value: settings.signs.spacing },
     uSignOffset: { value: settings.signs.offset }, uSignHeight: { value: settings.signs.height },
@@ -237,22 +247,43 @@ export function RouteEnvironment() {
   }, [cube, gl, moon]);
   useFrame((_, delta) => {
     elapsed.current += Math.min(delta, 0.05) * settings.sky.drift;
+    const dawn = dawnProgress(journey.current.cameraProgress);
+    uniforms.uDawn.value = dawn;
+    uniforms.uFogColor.value.copy(colors.fogNight).lerp(colors.fogDawn, dawn);
+    uniforms.uFogDensity.value = settings.atmosphere.density + (settings.dawn.density - settings.atmosphere.density) * dawn;
+    if (fog.current) { fog.current.color.copy(uniforms.uFogColor.value); fog.current.density = uniforms.uFogDensity.value; }
+    if (ambient.current) {
+      ambient.current.color.copy(colors.skyNight).lerp(colors.skyDawn, dawn);
+      ambient.current.groundColor.copy(colors.groundNight).lerp(colors.groundDawn, dawn);
+      ambient.current.intensity = 0.7 + dawn * 0.65;
+    }
+    if (key.current) { key.current.color.copy(colors.keyNight).lerp(colors.keyDawn, dawn); key.current.intensity = settings.sky.moonIntensity + dawn * 0.15; }
+    if (fill.current) fill.current.intensity = 0.35 + dawn * 0.25;
+    dome.current?.position.copy(camera.position);
     // Both materials sample the same cached cloud lighting at the same rotation.
-    if (sky.current) sky.current.uniforms.uTime.value = elapsed.current;
-    if (road.current) road.current.uniforms.uTime.value = elapsed.current;
+    if (sky.current) {
+      sky.current.uniforms.uTime.value = elapsed.current;
+      sky.current.uniforms.uDawn.value = dawn;
+    }
+    if (road.current) {
+      road.current.uniforms.uTime.value = elapsed.current;
+      road.current.uniforms.uDawn.value = dawn;
+      road.current.uniforms.uFogColor.value.copy(uniforms.uFogColor.value);
+      road.current.uniforms.uFogDensity.value = uniforms.uFogDensity.value;
+    }
   });
   return <>
     <color attach="background" args={[settings.atmosphere.color]} />
-    <fogExp2 attach="fog" args={[settings.atmosphere.color, settings.atmosphere.density]} />
-    <hemisphereLight args={["#8298ab", "#151c22", 0.7]} />
-    <directionalLight position={settings.sky.moonDirection.map(value => value * 100) as [number, number, number]} intensity={settings.sky.moonIntensity} color={settings.sky.moonColor} />
-    <directionalLight position={[15, 12, 40]} intensity={0.35} color="#8c9ba8" />
+    <fogExp2 ref={fog} attach="fog" args={[settings.atmosphere.color, settings.atmosphere.density]} />
+    <hemisphereLight ref={ambient} args={["#8298ab", "#151c22", 0.7]} />
+    <directionalLight ref={key} position={settings.sky.moonDirection.map(value => value * 100) as [number, number, number]} intensity={settings.sky.moonIntensity} color={settings.sky.moonColor} />
+    <directionalLight ref={fill} position={[15, 12, 40]} intensity={0.35} color="#8c9ba8" />
     <pointLight position={[settings.signs.offset, settings.signs.height + 0.55, settings.signs.firstZ + 0.15]} color="#dfb675" intensity={7} distance={22} decay={2} />
-    <mesh renderOrder={-10}>
+    <mesh ref={dome} renderOrder={-10}>
       <sphereGeometry args={[260, 24, 16]} /><shaderMaterial ref={sky} side={BackSide} vertexShader={worldVertex} fragmentShader={skyFragment} uniforms={uniforms} depthWrite={false} />
     </mesh>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, -110]}>
-      <planeGeometry args={[500, 500]} /><meshStandardMaterial color="#182028" roughness={0.95} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, -175]}>
+      <planeGeometry args={[650, 650]} /><meshStandardMaterial color="#182028" roughness={0.95} />
     </mesh>
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, settings.road.centerZ]}>
       <planeGeometry args={[settings.road.width, settings.road.length]} /><shaderMaterial ref={road} vertexShader={worldVertex} fragmentShader={roadFragment} uniforms={uniforms} />

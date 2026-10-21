@@ -23,7 +23,7 @@ for (const [progress, slug] of [[.45, 'still-dental'], [.96, 'netflix-squid-game
     await expect(archive(page)).toBeVisible();
     await expect(page.locator('.film-reel')).toHaveCount(1);
     await expect(page.locator('canvas')).toHaveCount(1);
-    await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
+    await expect(page.locator('.immersive-hero')).toHaveJSProperty('inert', true);
     await expect(page.locator('.skip-link')).toHaveJSProperty('inert', true);
     await page.mouse.move(-10, -10);
     await page.mouse.move(600, 500);
@@ -59,7 +59,7 @@ test('Back, Forward, refresh, rapid dismissal, carousel and case-study Back pres
   await page.goBack();
   await page.goForward();
   await expect(back(page)).toBeFocused();
-  await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
+  await expect(page.locator('.immersive-hero')).toHaveJSProperty('inert', true);
   await page.reload();
   await expect(back(page)).toBeFocused();
   await expect(page.locator('.route-surface')).toHaveAttribute('data-scene', 'ready');

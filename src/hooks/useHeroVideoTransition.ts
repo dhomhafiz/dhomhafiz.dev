@@ -10,6 +10,9 @@ export function useHeroVideoTransition(spatial = false) {
     const surface = frame.current;
     if (!surface) return;
     const header = document.querySelector<HTMLElement>(".editorial-header");
+    const hero = surface.closest<HTMLElement>(".immersive-hero");
+    const track = hero?.closest<HTMLElement>(".route-journey");
+    const gallery = document.querySelector<HTMLElement>(".route-gallery-presentation");
     const navigation = ["works", "contact"].map(id => ({
       id,
       section: document.getElementById(id),
@@ -25,12 +28,21 @@ export function useHeroVideoTransition(spatial = false) {
     let headerScrolled = scrollY > 24;
     const render = () => {
       request = 0;
-      // Follow the section entering the upper part of the viewport in either direction.
+      // The hidden archive shares the track's origin, so its bounds cannot identify
+      // a journey destination. Follow the existing journey/presentation state instead.
       const activationLine = headerHeight + Math.min(innerHeight * .25, 160);
-      let nextSection = surface.closest<HTMLElement>(".immersive-hero")?.dataset.gallery === "active" ? "works" : "";
-      navigation.forEach(({ id, section }) => {
-        if (section && section.getBoundingClientRect().top <= activationLine) nextSection = id;
-      });
+      let nextSection = "";
+      if (gallery?.dataset.presentation === "active") nextSection = "works";
+      else if (track?.dataset.journey === "active") {
+        if (hero?.dataset.contact === "active") nextSection = "contact";
+        else if (hero?.dataset.gallery === "active") nextSection = "works";
+      } else {
+        // Fallback mode retains ordinary section navigation in either direction.
+        navigation.forEach(({ id, section }) => {
+          if (section?.dataset.routeContact === "waiting") return;
+          if (section && section.getBoundingClientRect().top <= activationLine) nextSection = id;
+        });
+      }
       if (nextSection !== activeSection) {
         activeSection = nextSection;
         navigation.forEach(({ id, link }) => {
@@ -66,6 +78,11 @@ export function useHeroVideoTransition(spatial = false) {
     };
     const observer = new ResizeObserver(measure);
     observer.observe(surface);
+    // Gallery open/close and enhancement changes can happen without a scroll.
+    const stateObserver = new MutationObserver(schedule);
+    if (hero) stateObserver.observe(hero, { attributes: true, attributeFilter: ["data-gallery", "data-contact"] });
+    if (track) stateObserver.observe(track, { attributes: true, attributeFilter: ["data-journey"] });
+    if (gallery) stateObserver.observe(gallery, { attributes: true, attributeFilter: ["data-presentation"] });
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", measure);
     motion.addEventListener("change", schedule);
@@ -73,6 +90,7 @@ export function useHeroVideoTransition(spatial = false) {
     return () => {
       cancelAnimationFrame(request);
       observer.disconnect();
+      stateObserver.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", measure);
       motion.removeEventListener("change", schedule);

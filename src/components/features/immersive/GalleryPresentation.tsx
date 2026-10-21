@@ -31,6 +31,7 @@ export function GalleryPresentationProvider({ children }: { children: ReactNode 
   const release = useRef<(() => void) | null>(null);
   const exiting = useRef(false);
   const finishFrame = useRef(0);
+  const directArchive = useRef(false);
 
   const present = useCallback(() => {
     const element = host.current;
@@ -58,6 +59,8 @@ export function GalleryPresentationProvider({ children }: { children: ReactNode 
       }
       const works = element.querySelector<HTMLElement>("#works");
       const worksInert = works?.inert ?? false;
+      const hostInert = element.inert;
+      element.inert = false;
       if (works) works.inert = false;
       const overflow = document.documentElement.style.overflow;
       const gutter = document.documentElement.style.scrollbarGutter;
@@ -67,6 +70,7 @@ export function GalleryPresentationProvider({ children }: { children: ReactNode 
       document.documentElement.style.overflow = "hidden";
       release.current = () => {
         siblings.forEach(([sibling, inert]) => { sibling.inert = inert; });
+        element.inert = bridge.current ? hostInert : false;
         if (works) works.inert = bridge.current ? worksInert : false;
         document.documentElement.style.overflow = overflow;
         document.documentElement.style.scrollbarGutter = gutter;
@@ -137,14 +141,21 @@ export function GalleryPresentationProvider({ children }: { children: ReactNode 
     exiting.current = true;
     if (history.state?.routeGalleryEntry && isGalleryURL()) history.back();
     else {
-      const url = new URL(location.href); url.searchParams.delete("gallery");
+      const url = new URL(location.href);
+      url.searchParams.delete("gallery");
+      if (url.hash === "#works-film" && directArchive.current) url.hash = "#works";
+      directArchive.current = false;
       history.replaceState({ ...history.state, routeGalleryEntry: false }, "", url);
       dismiss();
     }
   }, [dismiss]);
 
   useEffect(() => {
-    const sync = () => { if (isGalleryURL()) present(); else dismiss(); };
+    const sync = () => {
+      directArchive.current = !isGalleryURL() && location.hash === "#works-film";
+      if (isGalleryURL() || directArchive.current) present();
+      else dismiss();
+    };
     const key = (event: KeyboardEvent) => {
       if (!suspended.current) return;
       if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); close(); }
