@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { localPortfolioProvider } from "@/config/portfolio";
@@ -59,7 +58,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
       </div>
       <figure className="case-hero">
         <img src={image.src} srcSet={image.srcSet} sizes="100vw" alt={image.alt} width={image.width} height={image.height}
-          fetchPriority="high" style={{ viewTransitionName: `project-${slug}`, ...(image.objectPosition ? { objectPosition: image.objectPosition } : {}) } as CSSProperties} />
+          fetchPriority="high" style={image.objectPosition ? { objectPosition: image.objectPosition } : undefined} />
         <figcaption><span>{String(index + 1).padStart(2, "0")}A / {project.context}</span>{image.sourceUrl && image.credit && <span>Image: <a href={image.sourceUrl} target="_blank" rel="noopener noreferrer">{image.credit}<span className="sr-only"> (opens in a new tab)</span></a></span>}</figcaption>
       </figure>
       <div className={`case-body${sections.length ? "" : " case-body-no-story"}`}>

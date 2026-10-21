@@ -60,3 +60,21 @@
 [data-gallery="active"]:has(.route-gallery-ui[data-hovered="true"]) { cursor: pointer; }
 .route-scrim { transition: opacity .4s ease; }
 [data-gallery="active"] .route-scrim { opacity: .45; }
+/* One existing HTML reel becomes the full-viewport archive. */
+.route-gallery-presentation { display: contents; }
+.route-gallery-back { display: none; }
+.route-gallery-presentation[data-presentation="active"] {
+  display: block; position: fixed; inset: 0; z-index: 1000; overflow-y: auto;
+  overscroll-behavior: contain; background: #f3f2ec; color: #171717;
+  padding-top: max(16px, env(safe-area-inset-top)); opacity: 0;
+}
+[data-presentation="active"] .route-gallery-back {
+  display: block; position: sticky; top: 12px; z-index: 5; margin: 0 24px 12px auto;
+  min-height: 48px; padding: 12px 20px; border: 1px solid #8b806d; border-radius: 28px;
+  background: #080e17; color: #f6c47a; cursor: pointer; font-size: 13px;
+}
+[data-presentation="active"] #works { min-height: calc(100svh - 90px); padding-top: clamp(20px, 4vh, 48px); }
+.route-gallery-actions button.route-gallery-all-projects { pointer-events: auto; min-height: 44px; padding: 10px 16px; background: #080e17ed; border: 1px solid #788796; border-radius: 24px; color: #fff; font-size: 12px; cursor: pointer; }
+@media (max-width: 700px) {
+  [data-presentation="active"] .route-gallery-back { margin-right: 16px; font-size: 12px; }
+}

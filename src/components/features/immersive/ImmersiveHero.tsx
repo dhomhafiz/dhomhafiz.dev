@@ -1,5 +1,6 @@
 "use client";
 
+import { useGalleryPresentation } from "./GalleryPresentation";
 import dynamic from "next/dynamic";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useHeroVideoTransition } from "@/hooks/useHeroVideoTransition";
@@ -20,6 +21,7 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
 }
 
 export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
+  const gallery = useGalleryPresentation();
   const [activeBillboard, setActiveBillboard] = useState(-1);
   const project = projects.find(item => item.slug === billboardDestinations[Math.max(0, activeBillboard)]?.projectSlug);
   const [eligible, setEligible] = useState(false);
@@ -90,7 +92,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
             onError={() => { setPosterFailed(true); setPosterReady(true); }} />
         </picture>
       </div>
-      {eligible && project && !failed && <SceneBoundary onFailure={() => setFailed(true)}><RouteScene active={visible && !paused && posterReady} surface={frame} journey={journey} projects={projects} onHover={onHover}
+      {eligible && project && !failed && <SceneBoundary onFailure={() => setFailed(true)}><RouteScene active={visible && !paused && !gallery.active && posterReady} surface={frame} journey={journey} projects={projects} onHover={onHover}
         onReady={() => setReady(true)} onFailure={() => { setFailed(true); setReady(false); }} /></SceneBoundary>}
       <div className="route-scrim" />
     </div>

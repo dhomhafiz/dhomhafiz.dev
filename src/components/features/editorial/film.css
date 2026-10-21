@@ -55,15 +55,6 @@
 .film-buttons button:hover:enabled { color: #fff; background: #171717; }
 .film-buttons button:disabled { opacity: .3; }
 .film-noscript { display: flex; flex-wrap: wrap; gap: 24px; padding: 24px; text-decoration: underline; }
-.film-image[style*="view-transition-name"] { filter: none !important; transform: none !important; opacity: 1; }
-
-/* Cross-document enhancement keeps ordinary anchors and static export intact. */
-@view-transition { navigation: auto; }
-::view-transition-group(*) { animation-duration: .42s; animation-timing-function: cubic-bezier(.22,.68,.25,1); }
-::view-transition-old(root) { animation: film-page-out .2s both; }
-::view-transition-new(root) { animation: film-page-in .3s both; }
-@keyframes film-page-out { to { opacity: 0; } }
-@keyframes film-page-in { from { opacity: 0; } }
 @media (max-width: 700px) {
   .film-section-heading { align-items: flex-start; }
   #works .film-section-note { display: none; }
@@ -89,7 +80,5 @@
   .film-desktop-hint { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
   .film-reel *, .case-study * { animation: none !important; transition: none !important; }
 }

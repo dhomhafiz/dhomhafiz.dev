@@ -63,19 +63,18 @@ export function FilmReel({ projects }: { projects: readonly WorkProject[] }) {
       const expanded = root.current?.querySelector('.film-window[data-revealed="true"]');
       if (expanded && !expanded.contains(event.target as Node)) setRevealed(null);
     };
-    const resetTransition = () => {
-      reel.querySelectorAll<HTMLElement>(".film-image").forEach(image => image.style.removeProperty("view-transition-name"));
+    const resetDetails = () => {
       setRevealed(null);
     };
     reel.addEventListener("scroll", scroll, { passive: true });
     document.addEventListener("pointerdown", outside);
-    window.addEventListener("pageshow", resetTransition);
+    window.addEventListener("pageshow", resetDetails);
     return () => {
       cancelAnimationFrame(request);
       resize.disconnect();
       reel.removeEventListener("scroll", scroll);
       document.removeEventListener("pointerdown", outside);
-      window.removeEventListener("pageshow", resetTransition);
+      window.removeEventListener("pageshow", resetDetails);
       if (suppressTimer.current) clearTimeout(suppressTimer.current);
     };
   }, [projects]);
@@ -131,11 +130,9 @@ export function FilmReel({ projects }: { projects: readonly WorkProject[] }) {
   };
   const enterProject = (event: MouseEvent<HTMLAnchorElement>, item: WorkProject) => {
     if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const image = event.currentTarget.closest(".film-cell")?.querySelector<HTMLElement>(".film-image");
-    if (image && !matchMedia("(prefers-reduced-motion: reduce)").matches) image.style.viewTransitionName = `project-${item.slug}`;
     try { sessionStorage.setItem(positionKey, item.slug); } catch { /* Navigation works without storage. */ }
-    // Keep the real anchor: native shared-element enhancement, reliable Back,
-    // and ordinary navigation when animation APIs or JavaScript are unavailable.
+    // Keep ordinary document navigation and native Back restoration.
+    // The immersive archive transition is owned by GSAP, not View Transitions.
   };
 
   return <div ref={root} className="film-reel" role="region" aria-roledescription="carousel" aria-label="Selected works film reel" onKeyDown={keyboard}>

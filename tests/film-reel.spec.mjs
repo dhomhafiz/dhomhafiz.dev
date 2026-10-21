@@ -145,9 +145,14 @@ test('normal-motion project navigation and Back, including rapid activation', as
   page.on('console', message => { if (['warning', 'error'].includes(message.type())) errors.push(message.text()); });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.addInitScript(() => window.addEventListener('pageswap', event => {
-    sessionStorage.setItem('film-test-native-transition', String(Boolean(event.viewTransition)));
-  }));
+  await page.addInitScript(() => {
+    // This test isolates HTML document navigation; the immersive console path
+    // is covered with a live canvas in navigation-console.spec.mjs.
+    Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 4 });
+    window.addEventListener('pageswap', event => {
+      sessionStorage.setItem('film-test-native-transition', String(Boolean(event.viewTransition)));
+    });
+  });
   await openReel(page);
   await navigateToProject(page, 'still-dental');
   await page.locator('.film-cell[data-project-slug="still-dental"] .film-window').hover();
@@ -156,7 +161,7 @@ test('normal-motion project navigation and Back, including rapid activation', as
   await expect(page).toHaveURL(/\/work\/still-dental\/$/);
   await expect(page.locator('.case-hero img')).toBeVisible();
   if (await page.evaluate(() => 'onpageswap' in window)) {
-    expect(await page.evaluate(() => sessionStorage.getItem('film-test-native-transition'))).toBe('true');
+    expect(await page.evaluate(() => sessionStorage.getItem('film-test-native-transition'))).toBe('false');
   }
   await page.goBack();
   await expect(page.locator('.film-cell').first()).toHaveAttribute('data-active', 'true');

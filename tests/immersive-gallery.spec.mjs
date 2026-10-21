@@ -112,10 +112,10 @@ test('keyboard link and film switch keep one active presentation without losing 
   await expect(page).toHaveURL(/\/work\/still-dental\/$/);
   await page.goBack();
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-gallery', 'active');
-  await page.getByRole('link', { name: 'View All Projects', exact: true }).click();
-  await expect(page).toHaveURL(/#works-film$/);
+  await page.getByRole('button', { name: 'View All Projects' }).click();
+  await expect(page).toHaveURL(/\?gallery=projects#works$/);
   await expect(page.locator('#works')).toHaveJSProperty('inert', false);
-  await expect(page.locator('.route-gallery-ui')).toHaveJSProperty('inert', true);
+  await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
   await expect(page.locator('#works-heading')).toBeInViewport();
   const first = page.locator('.film-cell').first();
   await first.locator('.film-reveal').focus();

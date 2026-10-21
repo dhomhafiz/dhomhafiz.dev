@@ -37,7 +37,7 @@ test('one continuous road visits both roadside screens and reverses through stab
   await expect(hero(page)).toHaveAttribute('data-billboard', 'still-dental');
   await expect(title(page)).toHaveText('Still Dental');
   await expect(ui(page).getByText('Concept Project · Healthcare')).toBeVisible();
-  await expect(ui(page).getByRole('link', { name: 'View All Projects', exact: true })).toHaveAttribute('href', '#works-film');
+  await expect(ui(page).getByRole('button', { name: 'View All Projects' })).toHaveAttribute('aria-haspopup', 'dialog');
   const dental = await cameraPose(page);
   expect(dental.x).toBeGreaterThan(0); expect(dental.yaw).toBeLessThan(0);
   await page.screenshot({ path: 'artifacts/milestone-3b/dental.png' });
@@ -60,7 +60,7 @@ test('one continuous road visits both roadside screens and reverses through stab
   await expect(hero(page)).toHaveAttribute('data-billboard', 'netflix-squid-game-2');
   await expect(title(page)).toHaveText('Netflix Squid Game 2 Interactive Poll System');
   await expect(ui(page).getByText('Interactive Installation · Python')).toBeVisible();
-  await expect(ui(page).getByRole('link', { name: 'View All Projects', exact: true })).toHaveAttribute('href', '#works-film');
+  await expect(ui(page).getByRole('button', { name: 'View All Projects' })).toHaveAttribute('aria-haspopup', 'dialog');
   await expect(page.locator('canvas')).toHaveCount(1);
   await expect(ui(page).getByRole('link', { name: /case study/ })).toHaveCount(1);
   await expect(page.locator('#works')).toHaveJSProperty('inert', true);
@@ -140,9 +140,9 @@ test('keyboard, next/previous, history, film-strip and Contact retain native des
   await expect(page.locator('#contact')).toBeInViewport();
   await expect(page.locator('#works')).toHaveJSProperty('inert', false);
   await nav(page).click();
-  await page.getByRole('link', { name: 'View All Projects', exact: true }).click();
+  await page.getByRole('button', { name: 'View All Projects' }).click();
   await expect(page.locator('#works-heading')).toBeInViewport();
-  await expect(ui(page)).toHaveJSProperty('inert', true);
+  await expect(page.locator('.route-journey')).toHaveJSProperty('inert', true);
 });
 
 test('second focus and highway reload restore; a fresh Works deep link starts at Dental', async ({ page }) => {

@@ -122,7 +122,7 @@ test('refresh restores mid-journey scroll; Works deep links and film links remai
   await page.reload();
   await expect(page.locator('.route-journey')).toHaveAttribute('data-journey', 'active');
   await expect(page.locator('#gallery-heading')).toBeInViewport();
-  await page.getByRole('link', { name: 'View All Projects', exact: true }).click();
+  await page.getByRole('button', { name: 'View All Projects' }).click();
   const cell = page.locator('.film-cell').first();
   await cell.locator('.film-reveal').focus();
   await page.keyboard.press('Enter');

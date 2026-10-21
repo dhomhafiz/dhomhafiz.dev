@@ -1,5 +1,6 @@
 "use client";
 
+import { useGalleryPresentation } from "./GalleryPresentation";
 import { Suspense, useEffect, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MathUtils, Vector3, type PerspectiveCamera, type WebGLRenderer } from "three";
@@ -22,6 +23,7 @@ interface SceneProps {
 }
 
 function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">) {
+  const { suspended } = useGalleryPresentation();
   const { camera, size } = useThree();
   const input = useRef({ x: 0, y: 0, scroll: 0 });
   const opening = useRef(0);
@@ -33,9 +35,9 @@ function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">
   useEffect(() => {
     const hero = surface.current?.closest<HTMLElement>(".immersive-hero");
     if (!hero) return;
-    const reset = () => { input.current.x = input.current.y = 0; };
+    const reset = () => { if (!suspended.current) input.current.x = input.current.y = 0; };
     const pointer = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
+      if (suspended.current || event.pointerType !== "mouse") return;
       const rect = hero.getBoundingClientRect();
       if (event.clientX < 0 || event.clientY < 0 || event.clientX > innerWidth || event.clientY > innerHeight ||
         event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
@@ -63,9 +65,10 @@ function CameraRig({ surface, journey }: Pick<SceneProps, "surface" | "journey">
       window.removeEventListener("blur", reset);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [surface]);
+  }, [surface, suspended]);
 
   useFrame((_, delta) => {
+    if (suspended.current) return;
     const dt = Math.min(delta, 0.05);
     const progress = journey.current.enabled ? journey.current.progress : 0;
     // Deep links/restored scroll start at their path pose, without replaying the opening.

@@ -1,3 +1,4 @@
+import { GalleryPresentationProvider, GalleryPresentation } from "./immersive/GalleryPresentation";
 import type { PortfolioProvider } from "@/types/portfolio";
 import { ImmersiveHero } from "./immersive/ImmersiveHero";
 import { SelectedWork } from "./editorial/SelectedWork";
@@ -10,7 +11,7 @@ import "./immersive/immersive.css";
 
 export async function PortfolioPage({ provider }: { provider: PortfolioProvider }) {
   const content = await provider.getPortfolio();
-  return <div className="editorial-page" id="top">
+  return <GalleryPresentationProvider><div className="editorial-page" id="top">
     <header className="editorial-header">
       <a className="editorial-brand" href="#top"><img src={assetPath("/images/hafiz-cinematic-avatar.webp")} width={48} height={48} alt="Dhom Hafiz" /><span>{content.brand}</span></a>
       <nav aria-label="Main navigation"><a href="#works">Projects</a><a href="#contact">Contact</a></nav>
@@ -26,8 +27,8 @@ export async function PortfolioPage({ provider }: { provider: PortfolioProvider 
         </div>
         <a className="hero-scroll-arrow" href="#works" aria-label="Scroll to Selected Work"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 5v22M7 18l9 9 9-9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></a>
       </section></div>
-      <SelectedWork projects={content.projects} />
+      <GalleryPresentation><SelectedWork projects={content.projects} /></GalleryPresentation>
       <HireMe email={content.contactEmail} socials={content.hero.portrait?.socials} />
     </main>
-  </div>;
+  </div></GalleryPresentationProvider>;
 }
