@@ -193,7 +193,20 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
         scrollTo({ top, behavior: "instant" }); ScrollTrigger.update(); update(trigger.progress);
       },
     };
-    const resize = () => { if (suspended.current) return; stop(); measure(); ScrollTrigger.refresh(); };
+    const resize = () => {
+      if (suspended.current) return;
+      const preserveProgress = scrollY >= trigger.start && scrollY <= trigger.end;
+      const progress = trigger.progress;
+      stop();
+      measure();
+      ScrollTrigger.refresh();
+      if (preserveProgress) {
+        const top = scrollY + track.getBoundingClientRect().top +
+          hero.offsetHeight * routeJourneySettings.scrollScreens * progress;
+        scrollTo({ top, behavior: "instant" });
+        ScrollTrigger.update();
+      }
+    };
     const persist = () => { if (suspended.current) return; update(trigger.progress); clearTimeout(saveTimer); saveTimer = window.setTimeout(save, 120); };
     const hashChanged = () => { stop(); if (location.hash === "#works" || location.hash === "#contact") restore(); };
     const show = () => { if (location.hash || history.state?.routeJourneyScroll !== undefined) restore(); else ScrollTrigger.refresh(); };

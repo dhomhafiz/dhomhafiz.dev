@@ -25,6 +25,9 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
   const [activeBillboard, setActiveBillboard] = useState(-1);
   const project = projects.find(item => item.slug === billboardDestinations[Math.max(0, activeBillboard)]?.projectSlug);
   const [eligible, setEligible] = useState(false);
+  const [mobileProfile, setMobileProfile] = useState(false);
+  const [deferredDownload, setDeferredDownload] = useState(false);
+  const [loadRequested, setLoadRequested] = useState(false);
   const [visible, setVisible] = useState(true);
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
@@ -34,7 +37,8 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
   const poster = useRef<HTMLImageElement>(null);
   const [posterReady, setPosterReady] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
-  const revealed = eligible && ready && posterReady && !failed;
+  const loadScene = eligible && (!deferredDownload || loadRequested);
+  const revealed = loadScene && ready && posterReady && !failed;
   const frame = useHeroVideoTransition(revealed);
   const journey = useImmersiveJourney(frame, revealed && projects.length === billboardDestinations.length, setActiveBillboard, paused);
   const decodePoster = useCallback(() => {
@@ -47,18 +51,23 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
 
   useEffect(() => {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
-    const smallTouch = matchMedia("(max-width: 900px) and (pointer: coarse)");
+    // Primary touch input selects initial quality, never GPU eligibility.
+    // Fine-pointer desktops retain their existing DPR even in narrow windows.
+    const mobile = matchMedia("(pointer: coarse)");
     const device = navigator as Navigator & {
       deviceMemory?: number;
       connection?: EventTarget & { saveData?: boolean; effectiveType?: string };
     };
     const update = () => {
-      const constrained = smallTouch.matches || (device.deviceMemory ?? 8) <= 4 ||
-        (device.hardwareConcurrency > 0 && device.hardwareConcurrency <= 4) ||
-        device.connection?.saveData || /(^|-)2g$/.test(device.connection?.effectiveType ?? "");
+      const constrained = (device.deviceMemory ?? 8) <= 4 ||
+        (device.hardwareConcurrency > 0 && device.hardwareConcurrency <= 4);
       const allowed = !motion.matches && !constrained;
+      setMobileProfile(mobile.matches);
+      // Network hints defer an optional download; they do not measure GPU power.
+      const deferred = !!device.connection?.saveData || /(^|-)2g$/.test(device.connection?.effectiveType ?? "");
+      setDeferredDownload(deferred);
       setEligible(allowed);
-      if (!allowed) setReady(false);
+      if (!allowed || (deferred && !loadRequested)) setReady(false);
     };
     const visibility = () => setVisible(!document.hidden && inView);
     let inView = true;
@@ -68,7 +77,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
     });
     if (frame.current) observer.observe(frame.current);
     motion.addEventListener("change", update);
-    smallTouch.addEventListener("change", update);
+    mobile.addEventListener("change", update);
     device.connection?.addEventListener("change", update);
     document.addEventListener("visibilitychange", visibility);
     update();
@@ -76,11 +85,11 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
     return () => {
       observer.disconnect();
       motion.removeEventListener("change", update);
-      smallTouch.removeEventListener("change", update);
+      mobile.removeEventListener("change", update);
       device.connection?.removeEventListener("change", update);
       document.removeEventListener("visibilitychange", visibility);
     };
-  }, [frame]);
+  }, [frame, loadRequested]);
 
   return <>
     <div ref={frame} className="route-surface" aria-hidden="true" data-scene={revealed ? "ready" : "fallback"}>
@@ -92,7 +101,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
             onError={() => { setPosterFailed(true); setPosterReady(true); }} />
         </picture>
       </div>
-      {eligible && project && !failed && <SceneBoundary onFailure={() => setFailed(true)}><RouteScene active={visible && !paused && !gallery.active && posterReady} surface={frame} journey={journey} projects={projects} onHover={onHover}
+      {loadScene && project && !failed && <SceneBoundary onFailure={() => setFailed(true)}><RouteScene active={visible && !paused && !gallery.active && posterReady} mobileProfile={mobileProfile} surface={frame} journey={journey} projects={projects} onHover={onHover}
         onReady={() => setReady(true)} onFailure={() => { setFailed(true); setReady(false); }} /></SceneBoundary>}
       <div className="route-scrim" />
     </div>
@@ -104,7 +113,11 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
         {activeBillboard >= 0 && activeBillboard < billboardDestinations.length - 1 && <a href="#works" data-billboard={billboardDestinations[activeBillboard + 1].projectSlug}>Next project</a>}
         <span>Scroll to continue along the highway</span></div>
     </div>}
-    {eligible && project && !revealed && !failed && <span className="route-loading-label" role="status">Preparing scene&#8230;</span>}
+    {eligible && deferredDownload && !loadRequested && !failed && <div className="route-scene-consent">
+      <p>3D is optional. Load it only if you want the extra download.</p>
+      <button type="button" onClick={() => setLoadRequested(true)}>Load 3D scene</button>
+    </div>}
+    {loadScene && project && !revealed && !failed && <span className="route-loading-label" role="status">Preparing scene&#8230;</span>}
     {revealed && <button className="route-pause" type="button" aria-pressed={paused}
       onClick={() => setPaused(value => !value)}>{paused ? "Resume scene" : "Pause scene"}</button>}
   </>;

@@ -8,7 +8,8 @@ const previousRotation = { yaw: 0, pitch: 0 };
 
 // Sample into reusable outputs. Travel and framing reference the destination,
 // never project-specific coordinates or identity.
-function sampleDestination(index: number, progress: number, position: Vector3, direction: Vector3, rotation: { yaw: number; pitch: number }, horizontalHalfFov?: number) {
+function sampleDestination(index: number, progress: number, position: Vector3, direction: Vector3, rotation: { yaw: number; pitch: number },
+  horizontalHalfFov?: number, verticalHalfFov?: number, framingScale = 0.58) {
   const destination = destinations[index];
   const end = destination.approach[destination.approach.length - 1];
   const [targetX, targetY, targetZ] = destination.position.map((value, axis) => value + destination.focusOffset[axis]);
@@ -16,8 +17,13 @@ function sampleDestination(index: number, progress: number, position: Vector3, d
   paths[index].getPoint(t, position);
   paths[index].getTangent(t, direction);
   if (horizontalHalfFov !== undefined) {
-    const distance = destination.screen.width * 0.58 / Math.tan(horizontalHalfFov);
-    const desiredZ = targetZ + Math.sqrt(Math.max(0, distance ** 2 - (targetX - end[0]) ** 2));
+    const horizontalDistance = destination.screen.width * framingScale / Math.tan(horizontalHalfFov);
+    const verticalDistance = verticalHalfFov === undefined ? 0 :
+      destination.screen.height * framingScale / Math.tan(verticalHalfFov);
+    const distance = Math.max(horizontalDistance, verticalDistance);
+    const dx = targetX - end[0], dy = targetY - end[1];
+    const verticalOffset = verticalHalfFov === undefined ? 0 : dy ** 2;
+    const desiredZ = targetZ + Math.sqrt(Math.max(0, distance ** 2 - dx ** 2 - verticalOffset));
     const retreat = MathUtils.clamp(desiredZ - end[2], 0, destination.maxRetreat);
     const travel = destination.approach[0][2] - end[2];
     // Distribute retreat across travel to preserve monotonic forward motion even
@@ -37,11 +43,12 @@ function sampleDestination(index: number, progress: number, position: Vector3, d
 // One reversible sampler. Travel eases to zero velocity at scroll viewing intervals;
 // no timed stops or additional animation/scroll controllers.
 export function sampleCameraPath(progress: number, position: Vector3, direction: Vector3,
-  rotation: { yaw: number; pitch: number }, horizontalHalfFov?: number) {
+  rotation: { yaw: number; pitch: number }, horizontalHalfFov?: number, verticalHalfFov?: number, framingScale = 0.58) {
   const t = MathUtils.clamp(billboardProgress(progress), 0, 1);
   if (progress > routeJourneySettings.contactDeparture) {
     // Depart the existing Squid Game pose, including narrow-aspect retreat.
-    sampleDestination(destinations.length - 1, 1, previousPosition, previousDirection, previousRotation, horizontalHalfFov);
+    sampleDestination(destinations.length - 1, 1, previousPosition, previousDirection, previousRotation,
+      horizontalHalfFov, verticalHalfFov, framingScale);
     const travel = MathUtils.smoothstep(progress, routeJourneySettings.contactDeparture, routeJourneySettings.contactArrival);
     const center = MathUtils.smoothstep(travel, 0, 0.6);
     position.set(MathUtils.lerp(previousPosition.x, 0, center), MathUtils.lerp(previousPosition.y, 2.8, center),
@@ -56,9 +63,10 @@ export function sampleCameraPath(progress: number, position: Vector3, direction:
   while (index > 0 && t <= destinations[index].travelStart) index--;
   const item = destinations[index];
   const travel = MathUtils.smoothstep(t, item.travelStart, item.viewStart);
-  sampleDestination(index, travel, position, direction, rotation, horizontalHalfFov);
+  sampleDestination(index, travel, position, direction, rotation, horizontalHalfFov, verticalHalfFov, framingScale);
   if (index > 0) {
-    sampleDestination(index - 1, 1, previousPosition, previousDirection, previousRotation, horizontalHalfFov);
+    sampleDestination(index - 1, 1, previousPosition, previousDirection, previousRotation,
+      horizontalHalfFov, verticalHalfFov, framingScale);
     const departure = MathUtils.smoothstep(travel, 0, 0.3);
     rotation.yaw = MathUtils.lerp(previousRotation.yaw, rotation.yaw, departure);
     rotation.pitch = MathUtils.lerp(previousRotation.pitch, rotation.pitch, departure);

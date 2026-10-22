@@ -54,7 +54,7 @@ test('a delayed GPU frame keeps the complete poster visible and HTML navigation 
   await page.evaluate(() => document.fonts.ready);
   const heading = await page.locator('h1').boundingBox();
   await page.screenshot({ path: 'artifacts/initialization-fix/after-loading.png' });
-  await page.getByRole('link', { name: 'Explore Selected Works' }).focus();
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Projects', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/#works$/);
   await expect(page.locator('#works')).toBeInViewport();

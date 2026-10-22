@@ -10,11 +10,11 @@ const compiled = ts.transpileModule(fs.readFileSync('src/components/features/imm
 }).outputText;
 const context = { exports: {}, require: name => { assert.equal(name, 'three'); return THREE; } };
 vm.runInNewContext(compiled, context);
-const { updateMouseInfluence: step } = context.exports;
+const { updateMouseInfluence: step, cameraTouchSettings } = context.exports;
 const empty = () => ({ yaw: 0, pitch: 0, x: 0, y: 0 });
 const input = { x: 1, y: 1, scroll: 0 };
-const advance = (state, target, frames, rate, opening = 1, halfFov = MathUtils.degToRad(40)) => {
-  for (let frame = 0; frame < frames; frame++) step(state, target, 1 / rate, opening, halfFov);
+const advance = (state, target, frames, rate, opening = 1, halfFov = MathUtils.degToRad(40), config) => {
+  for (let frame = 0; frame < frames; frame++) step(state, target, 1 / rate, opening, halfFov, config);
   return state;
 };
 
@@ -69,4 +69,22 @@ test('narrow viewports retain a vanishing-point margin and stalls cannot snap to
   const resumed = empty();
   step(resumed, input, 20, 1, MathUtils.degToRad(40));
   assert.ok(Math.abs(resumed.yaw) < MathUtils.degToRad(4));
+});
+
+test('touch look reaches its capped range and returns smoothly to the scripted pose', () => {
+  const state = empty();
+  const halfFov = MathUtils.degToRad(40);
+  advance(state, input, 120, 60, 1, halfFov, cameraTouchSettings);
+  assert.ok(Math.abs(state.yaw) <= MathUtils.degToRad(10));
+  assert.ok(Math.abs(state.yaw) > MathUtils.degToRad(9.8));
+  assert.ok(Math.abs(state.pitch) <= MathUtils.degToRad(5));
+  assert.ok(Math.abs(state.pitch) > MathUtils.degToRad(4.9));
+  for (let frame = 0; frame < 180; frame++) {
+    const previousYaw = Math.abs(state.yaw), previousPitch = Math.abs(state.pitch);
+    step(state, { x: 0, y: 0, scroll: 0 }, 1 / 60, 1, halfFov, cameraTouchSettings);
+    assert.ok(Math.abs(state.yaw) <= previousYaw);
+    assert.ok(Math.abs(state.pitch) <= previousPitch);
+  }
+  assert.ok(Math.abs(state.yaw) < 1e-8);
+  assert.ok(Math.abs(state.pitch) < 1e-8);
 });

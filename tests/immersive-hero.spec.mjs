@@ -37,12 +37,14 @@ test('real WebGL scene, pointer response, pause, scroll, and context-loss fallba
   expect(paused.equals(await canvas.screenshot())).toBe(true);
   await page.getByRole('button', { name: 'Resume scene', exact: true }).click();
   await page.evaluate(() => scrollTo({ top: 300, behavior: 'instant' }));
-  await expect(page.locator('.editorial-header')).toHaveAttribute('data-surface', 'scrolled');
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(300);
+  await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Home', exact: true }))
+    .toHaveAttribute('aria-current', 'location');
   await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
   await canvas.evaluate(el => el.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
   await expect(surface).toHaveAttribute('data-scene', 'fallback');
   await expect(canvas).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('I am Mohd Hafiz');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('I AM HAFIZ.');
   expect(errors).toEqual([]);
 });
 
@@ -59,7 +61,7 @@ for (const scenario of ['reduced motion', 'low power', 'no WebGL']) {
     await page.goto('/');
     await expect(page.locator('.route-surface')).toHaveAttribute('data-scene', 'fallback');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await page.getByRole('link', { name: 'Explore Selected Works' }).click();
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Projects', exact: true }).click();
     await expect(page).toHaveURL(/#works$/);
     await expect(page.locator('#works')).toBeInViewport();
     await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Contact' }).click();
@@ -71,12 +73,17 @@ for (const scenario of ['reduced motion', 'low power', 'no WebGL']) {
 
 test('mobile and no-JavaScript paths retain a readable hero without horizontal overflow', async ({ browser }) => {
   for (const javaScriptEnabled of [true, false]) {
-    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, javaScriptEnabled });
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, javaScriptEnabled, baseURL: test.info().project.use.baseURL });
+    await context.addInitScript(() => {
+      Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+    });
     const page = await context.newPage();
     await page.goto('/');
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Explore Selected Works' })).toBeVisible();
-    await expect(page.locator('canvas')).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Projects', exact: true })).toBeVisible();
+    if (javaScriptEnabled) await expect(page.locator('.route-surface')).toHaveAttribute('data-scene', 'ready');
+    await expect(page.locator('canvas')).toHaveCount(javaScriptEnabled ? 1 : 0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await context.close();
   }
@@ -88,7 +95,7 @@ test('live motion preference removes the enhancement and retains keyboard links'
   await expect(page.locator('.route-surface')).toHaveAttribute('data-scene', 'ready');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('canvas')).toHaveCount(0);
-  const works = page.getByRole('link', { name: 'Explore Selected Works' });
+  const works = page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Projects', exact: true });
   await works.focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/#works$/);

@@ -96,9 +96,13 @@ for (const width of [390, 1440]) {
 test.describe('mobile gestures', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   test('swiping over the cue scrolls naturally and returning restores it', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+      Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+    });
     await page.goto('/');
     await expect(cue(page).locator('.hero-scroll-swipe')).toBeVisible();
-    await expect(page.locator('.route-journey')).not.toHaveAttribute('data-journey');
+    await expect(page.locator('.route-journey')).toHaveAttribute('data-journey', 'active');
     const bounds = await cue(page).boundingBox();
     const client = await page.context().newCDPSession(page);
     const x = bounds.x + bounds.width / 2, y = bounds.y + bounds.height / 2;
@@ -110,8 +114,8 @@ test.describe('mobile gestures', () => {
     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
     // A touch stops native inertia before returning to the opening viewport.
     await page.touchscreen.tap(200, 300);
-    await page.evaluate(() => scrollTo({ top: innerHeight, behavior: 'instant' }));
-    await expect(cue(page)).not.toBeInViewport();
+    await page.evaluate(() => scrollTo({ top: innerHeight * 2, behavior: 'instant' }));
+    await expect(cue(page)).toHaveCSS('opacity', '0');
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     await expect(cue(page)).toBeInViewport();
     await expect(cue(page)).toHaveCSS('opacity', '1');

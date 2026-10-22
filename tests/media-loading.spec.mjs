@@ -14,7 +14,11 @@ for (const width of [390, 1440]) test('procedural hero avoids legacy media and r
   expect((await request.get(script)).headers()['cache-control']).toBe('public, max-age=31536000, immutable');
 });
 
-test('Save-Data shows the CSS fallback without fetching footage or mounting WebGL', async ({ page }) => {
+test('Save-Data defers optional 3D without fetching footage or mounting WebGL', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+    Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+  });
   await page.addInitScript(() => Object.defineProperty(navigator, 'connection', {
     value: Object.assign(new EventTarget(), { saveData: true, effectiveType: '4g' }), configurable: true,
   }));
@@ -25,5 +29,6 @@ test('Save-Data shows the CSS fallback without fetching footage or mounting WebG
   await expect(page.locator('.route-surface')).toHaveAttribute('data-scene', 'fallback');
   await expect(page.locator('.route-fallback')).toBeVisible();
   await expect(page.locator('.immersive-hero canvas')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Load 3D scene' })).toBeVisible();
   expect(requests).toEqual([]);
 });

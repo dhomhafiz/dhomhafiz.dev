@@ -17,14 +17,36 @@ export const cameraMouseSettings = {
   scrollFadeEnd: 1,
 } as const;
 
+export const cameraTouchSettings = {
+  ...cameraMouseSettings,
+  yawDegrees: 10,
+  pitchDegrees: 5,
+  scrollFadeStart: 0,
+  scrollFadeEnd: 1,
+} as const;
+
+interface CameraInteractionSettings {
+  sensitivity: number;
+  yawDegrees: number;
+  pitchDegrees: number;
+  response: number;
+  parallaxX: number;
+  parallaxY: number;
+  maxDelta: number;
+  horizontalFovFraction: number;
+  openingBlendStart: number;
+  scrollFadeStart: number;
+  scrollFadeEnd: number;
+}
+
 export interface MouseInfluence { yaw: number; pitch: number; x: number; y: number }
 interface MouseInput { x: number; y: number; scroll: number }
 
 // Mutate a persistent offset without allocating objects in the animation loop.
 export function updateMouseInfluence(
   state: MouseInfluence, input: MouseInput, delta: number, opening: number, horizontalHalfFov: number,
+  config: CameraInteractionSettings = cameraMouseSettings,
 ) {
-  const config = cameraMouseSettings;
   const dt = MathUtils.clamp(delta, 0, config.maxDelta);
   const blend = MathUtils.smoothstep(opening, config.openingBlendStart, 1) *
     (1 - MathUtils.smoothstep(input.scroll, config.scrollFadeStart, config.scrollFadeEnd));

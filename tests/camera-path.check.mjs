@@ -76,6 +76,31 @@ test('narrow framing stays forward and inside the rails while aiming at the conf
   }
 });
 
+test('portrait mobile framing keeps both billboard screen corners in the viewport', () => {
+  const camera = new THREE.PerspectiveCamera(58, 390 / 844, 0.1, 420);
+  const aspect = camera.aspect;
+  const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov / 2);
+  const horizontalHalfFov = Math.atan(Math.tan(verticalHalfFov) * aspect);
+  const corner = new THREE.Vector3();
+  for (let index = 0; index < billboardDestinations.length; index++) {
+    const destination = billboardDestinations[index];
+    const progress = index === 0 ? 0.45 : 0.96;
+    sample(progress * contactDeparture, position, tangent, rotation, horizontalHalfFov, verticalHalfFov, 0.72);
+    camera.position.copy(position);
+    camera.rotation.set(rotation.pitch, rotation.yaw, 0, 'YXZ');
+    camera.updateMatrixWorld();
+    const center = new THREE.Vector3(...destination.position);
+    const billboardRotation = new THREE.Euler(0, destination.rotationY, 0);
+    for (const x of [-destination.screen.width / 2, destination.screen.width / 2]) {
+      for (const y of [-destination.screen.height / 2, destination.screen.height / 2]) {
+        corner.set(x, y, 0.06).applyEuler(billboardRotation).add(center).project(camera);
+        assert.ok(Math.abs(corner.x) <= 0.95, `${destination.projectSlug} horizontal corner outside safe frame: ${corner.x}`);
+        assert.ok(Math.abs(corner.y) <= 0.95, `${destination.projectSlug} vertical corner outside safe frame: ${corner.y}`);
+      }
+    }
+  }
+});
+
 test('billboard structure is beyond the right rail and the road extends past it', () => {
   for (const destination of billboardDestinations) {
     const [x, , z] = destination.position;

@@ -39,11 +39,15 @@ test('captures Hero, Dental, Squid Game, Contact and mobile compositions', async
   fs.writeFileSync(`${directory}/${label}-poses.json`, JSON.stringify(poses, null, 2));
 
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await context.addInitScript(() => {
+    Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 8 });
+    Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+  });
   const mobile = await context.newPage();
   await mobile.goto(new URL('/', page.url()).href);
   await mobile.evaluate(() => document.fonts.ready);
   await expect(mobile.locator('.editorial-brand')).toHaveText('dhomhafiz.dev');
-  await expect(mobile.locator('.route-surface')).toHaveAttribute('data-scene', 'fallback');
+  await expect(mobile.locator('.route-surface')).toHaveAttribute('data-scene', 'ready');
   await mobile.screenshot({ path: `${directory}/${label}-mobile.png` });
   await context.close();
 });
