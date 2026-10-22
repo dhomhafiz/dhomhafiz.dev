@@ -188,17 +188,20 @@
 .editorial-page .editorial-header nav a[aria-current="location"]::before {
   height: 30px;
 }
+.editorial-page .editorial-header nav a:last-child {
+  margin-top: 12px;
+}
 .editorial-page .editorial-header nav a:hover {
   color: #fff;
   background: transparent;
 }
 .editorial-nav-label {
   display: block;
-  transform: rotate(-90deg);
+  transform: rotate(90deg);
   white-space: nowrap;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: .2em;
+  letter-spacing: .32em;
   text-transform: uppercase;
 }
 @media (min-width: 701px) and (max-height: 560px) {
@@ -340,6 +343,7 @@
     width: auto;
     min-width: 44px;
     min-height: 48px;
+    margin-top: 0;
     padding: 0 6px;
   }
   .editorial-page .editorial-header nav a::before {
@@ -416,6 +420,7 @@
     width: auto;
     min-width: 60px;
     min-height: 44px;
+    margin-top: 0;
     padding: 0 6px;
   }
   .editorial-page .editorial-header nav a::before {
