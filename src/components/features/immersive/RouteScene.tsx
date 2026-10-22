@@ -6,6 +6,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MathUtils, Vector3, type PerspectiveCamera, type WebGLRenderer } from "three";
 import { RouteEnvironment } from "./RouteEnvironment";
 import { SceneReadiness } from "./SceneReadiness";
+import { routePerformanceDiagnostics } from "./routePerformanceDiagnostics";
 import { cameraTouchSettings, updateMouseInfluence } from "./routeCameraInteraction";
 import { sampleCameraPath } from "./routeCameraPath";
 import { contactReveal, routeJourneySettings, type JourneyProgress } from "./routeJourneySettings";
@@ -20,12 +21,13 @@ interface SceneProps {
   projects: GalleryProject[];
   onHover: (slug: string, hovered: boolean) => void;
   onReady: () => void;
-  onFailure: () => void;
+  onFailure: (reason: string) => void;
 }
 
 function CameraRig({ surface, journey, mobileProfile }: Pick<SceneProps, "surface" | "journey" | "mobileProfile">) {
   const { suspended } = useGalleryPresentation();
-  const { camera, size } = useThree();
+  const { camera, size, gl } = useThree();
+  const diagnostics = routePerformanceDiagnostics();
   const contact = useRef<HTMLElement | null>(null);
   const input = useRef({ x: 0, y: 0, scroll: 0 });
   const touch = useRef({
@@ -158,6 +160,7 @@ function CameraRig({ surface, journey, mobileProfile }: Pick<SceneProps, "surfac
   }, [mobileProfile, surface, suspended]);
 
   useFrame((_, delta) => {
+    diagnostics?.recordFrame(delta, gl);
     if (suspended.current) {
       input.current.x = input.current.y = 0;
       touch.current.pointerId = -1;
@@ -217,13 +220,59 @@ function CameraRig({ surface, journey, mobileProfile }: Pick<SceneProps, "surfac
 
 export default function RouteScene({ active, mobileProfile = false, surface, journey, projects, onHover, onReady, onFailure }: SceneProps) {
   const [initialized, setInitialized] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
   const lifecycle = useRef<{ gl: WebGLRenderer; lost: (event: Event) => void; fail: () => void } | null>(null);
   const failed = useRef(false);
   const callbacks = useRef({ onReady, onFailure });
   callbacks.current = { onReady, onFailure };
-  const fail = () => {
-    if (!failed.current) { failed.current = true; callbacks.current.onFailure(); }
+  const fail = (reason = "Route scene initialization failed.") => {
+    if (!failed.current) {
+      failed.current = true;
+      const diagnostics = routePerformanceDiagnostics();
+      diagnostics?.recordError("route-scene", reason);
+      if (diagnostics) {
+        const runtime = diagnostics.report().runtime;
+        if (runtime.canvas.rendererState === "pending" || runtime.canvas.rendererState === "not-mounted") {
+          diagnostics.setRendererState("failed");
+        }
+        if (["compiling", "uploading", "waiting-gpu"].includes(runtime.readiness.state)) {
+          diagnostics.setReadiness("failed", reason);
+        }
+      }
+      callbacks.current.onFailure(reason);
+    }
   };
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+    const diagnostics = routePerformanceDiagnostics();
+    if (!diagnostics) return;
+    let attachedCanvas: HTMLCanvasElement | null = null;
+    const onContextCreationError = (event: Event) => {
+      const message = (event as WebGLContextEvent).statusMessage || "The browser could not create a WebGL context for the scene Canvas.";
+      diagnostics.setRendererState("failed");
+      diagnostics.recordError("webgl-context-creation", message);
+      fail(message);
+    };
+    const attachCanvasListener = () => {
+      const canvas = container.current?.querySelector("canvas") ?? null;
+      if (canvas === attachedCanvas) {
+        diagnostics.markCanvasMounted(!!canvas);
+        return;
+      }
+      attachedCanvas?.removeEventListener("webglcontextcreationerror", onContextCreationError);
+      attachedCanvas = canvas;
+      attachedCanvas?.addEventListener("webglcontextcreationerror", onContextCreationError);
+      diagnostics.markCanvasMounted(!!canvas);
+    };
+    const observer = new MutationObserver(attachCanvasListener);
+    if (container.current) observer.observe(container.current, { childList: true, subtree: true });
+    attachCanvasListener();
+    return () => {
+      observer.disconnect();
+      attachedCanvas?.removeEventListener("webglcontextcreationerror", onContextCreationError);
+      diagnostics.markCanvasMounted(false);
+    };
+  }, []);
   useEffect(() => {
     const current = lifecycle.current;
     if (current) {
@@ -238,23 +287,53 @@ export default function RouteScene({ active, mobileProfile = false, surface, jou
       }
     };
   }, []);
-  return <div className="route-canvas" data-initialized={initialized || undefined}>
+  return <div ref={container} className="route-canvas" data-initialized={initialized || undefined}>
     <Canvas dpr={mobileProfile ? 1 : [1, 1.5]} frameloop={initialized && active ? "always" : "never"}
       eventSource={surface.current?.parentElement ?? undefined} eventPrefix="client"
       camera={{ position: [0, 7.25, 15], rotation: [-0.195, 0, 0], fov: 58, near: 0.1, far: 420 }}
       gl={{ antialias: false, alpha: true, powerPreference: "low-power", failIfMajorPerformanceCaveat: true }}
       onCreated={({ gl }) => {
-        const lost = (event: Event) => { event.preventDefault(); fail(); };
+        const diagnostics = routePerformanceDiagnostics();
+        diagnostics?.markCanvasCreated(gl);
+        if (diagnostics) gl.info.autoReset = false;
+        const lost = (event: Event) => {
+          event.preventDefault();
+          if (process.env.NODE_ENV === "development") {
+            const diagnostics = routePerformanceDiagnostics();
+            diagnostics?.markContextLost();
+            diagnostics?.recordError("webgl-context-loss", "The WebGL context was lost while the scene was active.");
+            fail("The WebGL context was lost while the scene was active.");
+          } else {
+            fail();
+          }
+        };
         lifecycle.current = { gl, lost, fail };
         // Install before environment layout effects, including the sky bake.
         gl.domElement.addEventListener("webglcontextlost", lost);
-        gl.debug.onShaderError = fail;
+        if (process.env.NODE_ENV === "development") {
+          gl.debug.onShaderError = (context, program, vertexShader, fragmentShader) => {
+            const details = [
+              context.getProgramInfoLog(program),
+              context.getShaderInfoLog(vertexShader),
+              context.getShaderInfoLog(fragmentShader),
+            ].filter(Boolean).join("\n");
+            const message = details || "WebGL reported a shader compilation or linking error without an info log.";
+            routePerformanceDiagnostics()?.recordError("shader-compilation", message);
+            fail("WebGL reported a shader compilation or linking failure.");
+          };
+        } else {
+          gl.debug.onShaderError = () => fail();
+        }
       }}
       fallback={null}>
       <Suspense fallback={null}>
       <RouteEnvironment journey={journey} /><RouteGallery projects={projects} journey={journey} onHover={onHover} /><CameraRig surface={surface} journey={journey} mobileProfile={mobileProfile} />
       <SceneReadiness onFailure={fail} onReady={() => {
-        if (!failed.current) { setInitialized(true); callbacks.current.onReady(); }
+        if (!failed.current) {
+          routePerformanceDiagnostics()?.markSceneReady();
+          setInitialized(true);
+          callbacks.current.onReady();
+        }
       }} />
       </Suspense>
     </Canvas>

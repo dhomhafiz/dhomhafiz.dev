@@ -9,9 +9,9 @@ The existing Graphify graph/report were inspected without regeneration. Their us
 ## Eligibility and loading policy
 
 - Removed the width-and-coarse-pointer exclusion. Mobile and desktop mount the same dynamically imported RouteScene.
-- Retained reduced-motion, reported memory <= 4 GB, and reported nonzero core count <= 4 safeguards. Missing memory information retains the existing default. These are conservative eligibility heuristics, not GPU measurements.
+- Reduced motion remains an eligibility safeguard. Reported device memory and logical processor count are diagnostic hints only; missing or low reported values do not prevent an attempt to initialize the protected WebGL scene. They do not measure actual GPU capability.
 - Retained WebGL creation/major-performance-caveat protection, React scene boundary, shader/initialization failure, GPU completion fence, poster decode and context-loss handling.
-- Save-Data and slow-2g/2g now defer the optional scene download behind **Load 3D scene** rather than classifying the GPU as unsupported. HTML portfolio media and the loading poster still load normally. Consent is per page visit; there is no new persistence. Reduced-motion and resource/failure safeguards still apply after consent.
+- Save-Data and slow-2g/2G defer the optional scene download behind **Load 3D scene** rather than classifying the GPU as unsupported. HTML portfolio media and the loading poster still load normally. Consent is per page visit; there is no new persistence. Reduced-motion preference, WebGL initialization failure, context loss, and scene-readiness protections remain in effect.
 - If a live network-policy change unloads the scene, readiness is reset. An explicit subsequent load must complete the existing GPU readiness check again.
 
 ## Initial rendering profile

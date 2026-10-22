@@ -123,7 +123,7 @@ test('mobile uses both billboards, gallery and Contact, reverses, then releases 
   await fallbackLinks(page);
 });
 
-for (const scenario of ['reduced motion', 'low memory', 'low cores', 'no WebGL', 'failed initialization']) {
+for (const scenario of ['reduced motion', 'no WebGL', 'failed initialization']) {
   test(`mobile ${scenario} retains accessible fallback destinations`, async ({ page }) => {
     await instrument(page, { memory: scenario === 'low memory' ? 2 : 8, cores: scenario === 'low cores' ? 2 : 8,
       noGL: scenario === 'no WebGL', failGPU: scenario === 'failed initialization' });
@@ -132,6 +132,16 @@ for (const scenario of ['reduced motion', 'low memory', 'low cores', 'no WebGL',
     if (scenario === 'failed initialization') await expect.poll(() => page.evaluate(() => window.fenceChecks)).toBeGreaterThan(0);
     await fallbackLinks(page);
     await expect(page.getByRole('status')).toHaveCount(0);
+  });
+}
+
+for (const device of [{ name: 'low memory', memory: 2, cores: 8 }, { name: 'low core count', memory: undefined, cores: 2 }]) {
+  test(`mobile ${device.name} hint does not prevent WebGL attempt`, async ({ page }) => {
+    await instrument(page, { memory: device.memory, cores: device.cores });
+    await page.goto('/');
+    await expect(page.locator('canvas')).toHaveCount(1);
+    await ready(page);
+    await oneJourney(page);
   });
 }
 

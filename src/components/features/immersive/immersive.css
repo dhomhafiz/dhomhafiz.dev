@@ -24,6 +24,31 @@
 .route-actions a:hover { border-color: #fff; }
 .editorial-page .immersive-hero :focus-visible { outline-color: #f6c47a; }
 .route-pause { position: absolute; right: var(--hero-gutter); bottom: 24px; z-index: 2; padding: 10px 14px; min-height: 44px; border: 1px solid #788796; border-radius: 24px; background: #080e17cc; color: #dbe4ed; cursor: pointer; font-size: 11px !important; }
+.route-performance-panel { position: fixed; top: max(76px, calc(env(safe-area-inset-top) + 64px)); left: max(12px, env(safe-area-inset-left)); z-index: 20; color: #edf2f6; font: 12px/1.4 var(--font-body), sans-serif; pointer-events: none; }
+.route-performance-panel button, .route-performance-panel select { min-height: 44px; border: 1px solid #657381; border-radius: 3px; background: #101923f2; color: #f5f7f9; font: inherit; }
+.route-performance-panel button { padding: 9px 12px; cursor: pointer; pointer-events: auto; }
+.route-performance-panel button:focus-visible, .route-performance-panel select:focus-visible { outline: 2px solid #f6c47a; outline-offset: 2px; }
+.route-performance-toggle { min-width: 56px; }
+.route-performance-card { width: min(320px, calc(100vw - 24px)); max-height: min(72svh, 540px); overflow-y: auto; margin-top: 6px; padding: 14px; border: 1px solid #53616f; background: #080e17f5; box-shadow: 0 8px 28px #0008; pointer-events: auto; }
+.route-performance-card h2 { margin: 0 0 12px; font-size: 14px; }
+.route-performance-card label { display: grid; gap: 5px; }
+.route-performance-card select { width: 100%; padding: 8px; }
+.route-performance-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.route-performance-controls button { flex: 1; }
+.route-performance-status { min-height: 34px; margin: 10px 0; color: #d4dce3; font-size: 11px; }
+.route-performance-card dl { display: grid; gap: 6px; margin: 0; font-size: 11px; }
+.route-performance-card dl > div { display: flex; justify-content: space-between; gap: 10px; }
+.route-performance-card dt { color: #aebbc7; }
+.route-performance-card dd { max-width: 58%; margin: 0; text-align: right; overflow-wrap: anywhere; }
+.route-performance-renderer { display: grid; gap: 2px; }
+.route-performance-renderer dd { max-width: none; text-align: left; }
+.route-diagnostic-section { margin: 12px 0; padding: 10px 0; border-block: 1px solid #35424f; }
+.route-diagnostic-section h3 { margin: 12px 0 6px; color: #f6c47a; font-size: 11px; }
+.route-diagnostic-section h3:first-child { margin-top: 0; }
+.route-diagnostic-section ul { margin: 4px 0 8px; padding-left: 18px; overflow-wrap: anywhere; }
+.route-diagnostic-section li { margin: 4px 0; }
+.route-diagnostic-section > p { margin: 4px 0 8px; color: #d4dce3; overflow-wrap: anywhere; }
+.route-performance-controls button:disabled { opacity: .55; cursor: not-allowed; }
 @media (max-width: 700px) {
   .immersive-hero { grid-template-rows: minmax(100px, 1fr) auto minmax(64px, .3fr); }
   .route-caption { font-size: 9px; }
@@ -38,7 +63,15 @@
 }
 
 /* Optional desktop journey: native document scroll, one existing sticky scene. */
-.route-journey[data-journey="active"] { height: calc(var(--route-hero-height, 100svh) * var(--route-track-screens, 4)); position: relative; }
+/* The active journey owns the document's under-page paint as well as its track.
+   Safari can expose this surface at the native scroll boundary; the legacy white
+   editorial background belongs only to the ordinary HTML/fallback presentation. */
+html:has(.route-journey[data-journey="active"]),
+body:has(.route-journey[data-journey="active"]),
+.editorial-page:has(.route-journey[data-journey="active"]) {
+  background-color: #080e17;
+}
+.route-journey[data-journey="active"] { height: calc(var(--route-hero-height, 100svh) * var(--route-track-screens, 4)); position: relative; background: #080e17; }
 .route-journey[data-journey="active"] .immersive-hero {
   position: sticky; top: 0; height: var(--route-hero-height, 100svh);
 }
@@ -81,6 +114,7 @@
 [data-presentation="active"] #works { min-height: calc(100svh - 90px); padding-top: clamp(20px, 4vh, 48px); }
 .route-gallery-actions button.route-gallery-all-projects { pointer-events: auto; min-height: 44px; padding: 10px 16px; background: #080e17ed; border: 1px solid #788796; border-radius: 24px; color: #fff; font-size: 12px; cursor: pointer; }
 @media (max-width: 700px) {
+  .editorial-page .immersive-hero { min-height: 100vh; min-height: 100dvh; }
   [data-presentation="active"] .route-gallery-back { margin-right: 16px; font-size: 12px; }
 }
 /* Before Sunrise: a single semantic Contact section, in flow for every fallback. */

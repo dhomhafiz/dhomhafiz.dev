@@ -9,14 +9,16 @@ import { useImmersiveJourney } from "./useImmersiveJourney";
 import type { GalleryProject } from "@/lib/workProjects";
 import { billboardDestinations } from "./routeBillboardSettings";
 import { ViewAllProjectsButton } from "./ViewAllProjectsButton";
+import { RoutePerformancePanel } from "./RoutePerformancePanel";
+import { routeDiagnosticDeviceInfo, routePerformanceDiagnostics, routeWebGLApiAvailability } from "./routePerformanceDiagnostics";
 
 // This boundary owns the optional enhancement; portfolio HTML never depends on it.
 const RouteScene = dynamic(() => import("./RouteScene"), { ssr: false });
 
-class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
+class SceneBoundary extends Component<{ children: ReactNode; onFailure: (reason: string) => void }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch() { this.props.onFailure(); }
+  componentDidCatch(error: Error) { this.props.onFailure(error.message); }
   render() { return this.state.failed ? null : this.props.children; }
 }
 
@@ -32,6 +34,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [showPerformancePanel, setShowPerformancePanel] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const onHover = useCallback((slug: string, value: boolean) => setHovered(current => value ? slug : current === slug ? null : current), []);
   const poster = useRef<HTMLImageElement>(null);
@@ -50,6 +53,11 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
   useEffect(() => { if (poster.current?.complete) decodePoster(); }, [decodePoster]);
 
   useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+    setShowPerformancePanel(new URLSearchParams(window.location.search).get("perf") === "1");
+  }, []);
+
+  useEffect(() => {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     // Primary touch input selects initial quality, never GPU eligibility.
     // Fine-pointer desktops retain their existing DPR even in narrow windows.
@@ -59,9 +67,7 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
       connection?: EventTarget & { saveData?: boolean; effectiveType?: string };
     };
     const update = () => {
-      const constrained = (device.deviceMemory ?? 8) <= 4 ||
-        (device.hardwareConcurrency > 0 && device.hardwareConcurrency <= 4);
-      const allowed = !motion.matches && !constrained;
+      const allowed = !motion.matches;
       setMobileProfile(mobile.matches);
       // Network hints defer an optional download; they do not measure GPU power.
       const deferred = !!device.connection?.saveData || /(^|-)2g$/.test(device.connection?.effectiveType ?? "");
@@ -91,6 +97,54 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
     };
   }, [frame, loadRequested]);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development" || !showPerformancePanel) return;
+    const diagnostics = routePerformanceDiagnostics();
+    if (!diagnostics) return;
+    const device = navigator as Navigator & {
+      deviceMemory?: number;
+      connection?: { saveData?: boolean; effectiveType?: string };
+    };
+    const blockers: string[] = [];
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) blockers.push("Reduced-motion preference prevents 3D activation.");
+    const deferReasons: string[] = [];
+    if (device.connection?.saveData) deferReasons.push("Save-Data preference defers the optional 3D download.");
+    if (/(^|-)2g$/.test(device.connection?.effectiveType ?? "")) deferReasons.push("A 2G network hint defers the optional 3D download.");
+    diagnostics.updateRuntime({
+      eligibility: {
+        checked: true,
+        eligible,
+        blockers,
+        deferred: deferredDownload,
+        deferReasons,
+        loadRequested,
+        sceneRequested: loadScene && !!project && !failed,
+      },
+      capability: routeWebGLApiAvailability(),
+      poster: { loaded: posterReady, failed: posterFailed },
+      display: revealed ? "3d" : "poster-fallback",
+      device: routeDiagnosticDeviceInfo(),
+    });
+  }, [deferredDownload, eligible, failed, loadRequested, loadScene, posterFailed, posterReady, project, revealed, showPerformancePanel]);
+
+  const onSceneFailure = (reason: string) => {
+    if (process.env.NODE_ENV === "development") {
+      const diagnostics = routePerformanceDiagnostics();
+      diagnostics?.recordError("scene-initialization", reason);
+      if (diagnostics) {
+        const runtime = diagnostics.report().runtime;
+        if (runtime.canvas.rendererState === "pending" || runtime.canvas.rendererState === "not-mounted") {
+          diagnostics.setRendererState("failed");
+        }
+        if (["compiling", "uploading", "waiting-gpu"].includes(runtime.readiness.state)) {
+          diagnostics.setReadiness("failed", reason);
+        }
+      }
+    }
+    setFailed(true);
+    setReady(false);
+  };
+
   return <>
     <div ref={frame} className="route-surface" aria-hidden="true" data-scene={revealed ? "ready" : "fallback"}>
       <div className="route-fallback" data-poster-failed={posterFailed || undefined}>
@@ -101,8 +155,8 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
             onError={() => { setPosterFailed(true); setPosterReady(true); }} />
         </picture>
       </div>
-      {loadScene && project && !failed && <SceneBoundary onFailure={() => setFailed(true)}><RouteScene active={visible && !paused && !gallery.active && posterReady} mobileProfile={mobileProfile} surface={frame} journey={journey} projects={projects} onHover={onHover}
-        onReady={() => setReady(true)} onFailure={() => { setFailed(true); setReady(false); }} /></SceneBoundary>}
+      {loadScene && project && !failed && <SceneBoundary onFailure={onSceneFailure}><RouteScene active={visible && !paused && !gallery.active && posterReady} mobileProfile={mobileProfile} surface={frame} journey={journey} projects={projects} onHover={onHover}
+        onReady={() => setReady(true)} onFailure={onSceneFailure} /></SceneBoundary>}
       <div className="route-scrim" />
     </div>
     {project && <div className="route-gallery-ui" inert aria-hidden="true" data-hovered={hovered === project.slug || undefined}>
@@ -120,5 +174,6 @@ export function ImmersiveHero({ projects }: { projects: GalleryProject[] }) {
     {loadScene && project && !revealed && !failed && <span className="route-loading-label" role="status">Preparing scene&#8230;</span>}
     {revealed && <button className="route-pause" type="button" aria-pressed={paused}
       onClick={() => setPaused(value => !value)}>{paused ? "Resume scene" : "Pause scene"}</button>}
+    {process.env.NODE_ENV === "development" && showPerformancePanel && <RoutePerformancePanel />}
   </>;
 }

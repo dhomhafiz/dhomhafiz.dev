@@ -45,6 +45,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     journey.current.enabled = true;
     let navigation: gsap.core.Tween | undefined;
     let restoreFrame = 0;
+    let resizeFrame = 0;
     let saveTimer = 0;
     let reloadScroll: number | undefined;
     const storageKey = `route-journey:${location.pathname}${location.search}${location.hash}`;
@@ -195,17 +196,24 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     };
     const resize = () => {
       if (suspended.current) return;
-      const preserveProgress = scrollY >= trigger.start && scrollY <= trigger.end;
+      // Capture before ScrollTrigger's refresh sees the new responsive hero height.
+      // Safari can also report elastic overscroll beyond the final Contact endpoint.
+      // Remeasuring temporarily collapses the track, so completed progress must
+      // be restored rather than leaving the browser's clamped Home position.
+      const preserveProgress = scrollY >= trigger.start && (scrollY <= trigger.end || trigger.progress === 1);
       const progress = trigger.progress;
-      stop();
-      measure();
-      ScrollTrigger.refresh();
-      if (preserveProgress) {
-        const top = scrollY + track.getBoundingClientRect().top +
-          hero.offsetHeight * routeJourneySettings.scrollScreens * progress;
-        scrollTo({ top, behavior: "instant" });
-        ScrollTrigger.update();
-      }
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        stop();
+        measure();
+        ScrollTrigger.refresh();
+        if (preserveProgress) {
+          const top = scrollY + track.getBoundingClientRect().top +
+            hero.offsetHeight * routeJourneySettings.scrollScreens * progress;
+          scrollTo({ top, behavior: "instant" });
+          ScrollTrigger.update();
+        }
+      });
     };
     const persist = () => { if (suspended.current) return; update(trigger.progress); clearTimeout(saveTimer); saveTimer = window.setTimeout(save, 120); };
     const hashChanged = () => { stop(); if (location.hash === "#works" || location.hash === "#contact") restore(); };
@@ -218,6 +226,8 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     window.addEventListener("popstate", restore);
     window.addEventListener("hashchange", hashChanged);
     window.addEventListener("resize", resize);
+    const visualViewport = window.visualViewport;
+    if (matchMedia("(pointer: coarse)").matches) visualViewport?.addEventListener("resize", resize);
     window.addEventListener("pageshow", show);
     window.addEventListener("pagehide", save);
     window.addEventListener("scroll", persist, { passive: true });
@@ -236,6 +246,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       bridge.current = null;
       stop();
       cancelAnimationFrame(restoreFrame);
+      cancelAnimationFrame(resizeFrame);
       clearTimeout(saveTimer);
       trigger.kill();
       const oldWorksTop = works.getBoundingClientRect().top;
@@ -283,6 +294,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       window.removeEventListener("popstate", restore);
       window.removeEventListener("hashchange", hashChanged);
       window.removeEventListener("resize", resize);
+      if (matchMedia("(pointer: coarse)").matches) visualViewport?.removeEventListener("resize", resize);
       window.removeEventListener("pageshow", show);
       window.removeEventListener("pagehide", save);
       window.removeEventListener("scroll", persist);
