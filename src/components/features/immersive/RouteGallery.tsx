@@ -36,13 +36,16 @@ function RoadsideBillboard({ destination, project, index, journey, onHover, reso
   journey: RefObject<JourneyProgress>; onHover: (hovered: boolean) => void; resources: ReturnType<typeof useBillboardResources>;
 }) {
   const { box, steel, concrete, trim, lamp, edge, cylinder } = resources;
+  // Only Dental receives the modest night-time display/fixture lift.
+  const dental = project.slug === "still-dental";
   const [width, height] = [destination.screen.width, destination.screen.height];
   const elevation = destination.position[1];
   const deckY = -height / 2 - 0.55;
   const deckWidth = width + 0.85;
   const span = deckWidth / 6;
   return <group position={destination.position} rotation={[0, destination.rotationY, 0]} name={`roadside-billboard-${project.slug}`}>
-    <ProjectScreen3D project={project} index={index} journey={journey} onHover={onHover} width={width} height={height} />
+    <ProjectScreen3D project={project} index={index} journey={journey} onHover={onHover} width={width} height={height}
+      displayBrightness={dental ? 1.06 : 1} />
     {/* Round steel columns, mounting collars and bolted foundation plates. */}
     {[-width * 0.25, width * 0.25].map(x => <group key={x}>
       <mesh geometry={cylinder} material={steel} position={[x, -elevation / 2, -0.75]} scale={[0.32, elevation, 0.32]} />
@@ -85,7 +88,7 @@ function RoadsideBillboard({ destination, project, index, journey, onHover, reso
       <mesh geometry={box} material={lamp} position={[0, 0.41, 0.73]} rotation={[-0.55, 0, 0]} scale={[0.49, 0.025, 0.25]} />
     </group>)}
     <mesh geometry={box} material={trim} position={[0, height / 2 + 0.4, -0.1]} scale={[width + 0.7, 0.12, 0.3]} />
-    <pointLight position={[0, height / 2 + 0.75, 1.6]} color="#ffe0af" intensity={180} distance={20} decay={2} />
-    <pointLight position={[0, deckY + 0.1, 1.8]} color="#ffd5a0" intensity={65} distance={13} decay={2} />
+    <pointLight position={[0, height / 2 + 0.75, 1.6]} color="#ffe0af" intensity={dental ? 230 : 180} distance={20} decay={2} />
+    <pointLight position={[0, deckY + 0.1, 1.8]} color="#ffd5a0" intensity={dental ? 80 : 65} distance={13} decay={2} />
   </group>;
 }

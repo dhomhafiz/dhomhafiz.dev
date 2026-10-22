@@ -5,6 +5,7 @@ export const routeJourneySettings = {
   response: 8,
   navigationSeconds: 2.4,
   contactDeparture: 8 / 12,
+  contactStart: 0.84,
   contactArrival: 0.96,
   contactEntry: 0.975,
 } as const;
@@ -18,7 +19,7 @@ export function dawnProgress(progress: number) {
   return t * t * (3 - 2 * t);
 }
 export function contactReveal(progress: number) {
-  const t = Math.max(0, Math.min(1, (progress - 0.84) / 0.11));
+  const t = Math.max(0, Math.min(1, (progress - routeJourneySettings.contactStart) / 0.11));
   return t * t * (3 - 2 * t);
 }
 export interface JourneyProgress { enabled: boolean; progress: number; galleryActive: boolean; activeBillboard: number; cameraProgress: number }

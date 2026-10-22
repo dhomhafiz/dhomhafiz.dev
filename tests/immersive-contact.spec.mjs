@@ -42,18 +42,18 @@ test('one reversible highway travels from midnight through dawn and back to both
   const errors = await observe(page);
   await openScene(page); await page.mouse.move(-10, -10);
   await page.screenshot({ path: 'artifacts/milestone-4/midnight.png' });
-  await seek(page, .64, -194);
+  await seek(page, .64, -158);
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', 'netflix-squid-game-2');
   expect(await page.evaluate(() => window.routeDawn)).toBe(0);
   const squid = await cameraPose(page);
-  await seek(page, 2 / 3 + .0001, -194);
+  await seek(page, 2 / 3 + .0001, -158);
   expect(Math.abs((await cameraPose(page)).yaw - squid.yaw)).toBeLessThan(.1);
   let previous = 0;
   for (const progress of [.74, .81, .9, .975]) {
     await seek(page, progress);
     await expect.poll(() => page.evaluate(() => window.routeDawn)).toBeGreaterThan(previous + .01);
     if (progress === .81) {
-      await expect.poll(async () => Math.abs((await cameraPose(page)).z + 234)).toBeLessThan(3);
+      await expect.poll(async () => Math.abs((await cameraPose(page)).z + 216)).toBeLessThan(3);
       await page.screenshot({ path: 'artifacts/milestone-4/transition.png' });
     }
     if (progress === .975) await expect.poll(() => page.evaluate(() => window.routeDawn)).toBe(1);
@@ -74,9 +74,9 @@ test('one reversible highway travels from midnight through dawn and back to both
   const dawn = await page.evaluate(() => window.routeDawn);
   await page.waitForTimeout(200); // A stationary journey must not become brighter with time.
   expect(Math.abs(await page.evaluate(() => window.routeDawn) - dawn)).toBeLessThan(.03);
-  await seek(page, .64, -194);
+  await seek(page, .64, -158);
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', 'netflix-squid-game-2');
-  await seek(page, .3, -115);
+  await seek(page, .3, -93);
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', 'still-dental');
   await seek(page, 0, 6);
   expect(await page.evaluate(() => window.routeDawn)).toBe(0);

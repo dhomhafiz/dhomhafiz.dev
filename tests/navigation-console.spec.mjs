@@ -30,7 +30,7 @@ test('normal-motion load, gallery history and case-study document navigation hav
   test.setTimeout(90_000);
   const log = await observe(page);
   await openScene(page);
-  for (const [progress, slug, z] of [[.45, 'still-dental', -115], [.96, 'netflix-squid-game-2', -194]]) {
+  for (const [progress, slug, z] of [[.45, 'still-dental', -93], [.96, 'netflix-squid-game-2', -158]]) {
     log.phase(`arrive at ${slug}`);
     await page.evaluate(p => scrollTo({ top: document.querySelector('.immersive-hero').offsetHeight * 8 * p, behavior: 'instant' }), progress);
     await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', slug);

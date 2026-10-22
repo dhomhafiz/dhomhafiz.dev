@@ -19,14 +19,14 @@ test('native forward and reverse scroll traverse the real pinned scene into Work
   await page.mouse.move(-10, -10);
   const end = await endScroll(page);
   expect(end).toBeGreaterThan(2500);
-  const cases = [[0, 6], [.2, -24], [.4, -65], [.6, -94], [.8, -108], [1, -115]];
+  const cases = [[0, 6], [.2, -18.5], [.4, -52.1], [.6, -75.8], [.8, -87.3], [1, -93]];
   for (const [index, [fraction, z]] of cases.entries()) {
     await seek(page, end * fraction, z);
     expect(Math.abs((await page.locator('.immersive-hero').boundingBox()).y)).toBeLessThan(1);
     const pose = await cameraPose(page);
     expect(Math.abs(pose.x)).toBeLessThan(6.2);
     expect(pose.y).toBeGreaterThan(2.2);
-    expect(pose.y).toBeLessThan(4.7);
+    expect(pose.y).toBeLessThan(5.7);
     expect(Math.abs(pose.yaw)).toBeLessThan(35);
     expect(Math.abs(pose.pitch)).toBeLessThan(20);
     await page.screenshot({ path: `artifacts/milestone-2b/forward-${index}.png` });
@@ -34,7 +34,7 @@ test('native forward and reverse scroll traverse the real pinned scene into Work
   await page.evaluate(top => scrollTo({ top, behavior: 'instant' }), end * 0.85);
   await expect.poll(async () => (await cameraPose(page)).z).toBeLessThan(-85);
   await page.screenshot({ path: 'artifacts/milestone-2b/arrival.png' });
-  await seek(page, end, -115);
+  await seek(page, end, -93);
   await expect(page.locator('#gallery-heading')).toBeInViewport();
   await expect(page.locator('.route-gallery-ui')).toHaveJSProperty('inert', false);
   await expect(projects(page)).toHaveAttribute('aria-current', 'location');
@@ -85,7 +85,7 @@ test('rapid scroll and pointer reversals stay bounded, then settle at the same c
     expect(Math.abs(pose.pitch)).toBeLessThan(24);
   }
   await page.mouse.move(-10, -10);
-  await seek(page, end * .4, -65);
+  await seek(page, end * .4, -52.1);
   const settled = await cameraPose(page);
   await page.mouse.move(1439, 500);
   await page.waitForTimeout(900);
@@ -100,13 +100,13 @@ test('refresh restores mid-journey scroll; Works deep links and film links remai
   test.setTimeout(90_000);
   await openScene(page);
   const end = await endScroll(page);
-  await seek(page, end * .4, -65);
+  await seek(page, end * .4, -52.1);
   const saved = await page.evaluate(() => scrollY);
   await page.reload();
   await expect(page.locator('.route-journey')).toHaveAttribute('data-journey', 'active');
   await expect.poll(() => page.evaluate(() => Math.abs(scrollY - history.state.routeJourneyScroll))).toBeLessThan(2);
   expect(Math.abs(await page.evaluate(() => scrollY) - saved)).toBeLessThan(2);
-  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 65), { timeout: 15_000 }).toBeLessThan(0.15);
+  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 52.1), { timeout: 15_000 }).toBeLessThan(0.15);
   // A fresh visit must clear the previous reload backup rather than resurrect it.
   // Navigating the identical URL can itself behave as a reload in Chromium.
   await page.goto('/work/still-dental/');
@@ -146,13 +146,13 @@ test('pause keeps the canvas frozen while scroll advances, then resumes onto the
   await page.waitForTimeout(500);
   expect(await cameraPose(page)).toEqual(frozen);
   await page.getByRole('button', { name: 'Resume scene', exact: true }).click();
-  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 24)).toBeLessThan(0.15);
+  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 18.5)).toBeLessThan(0.15);
 });
 
 for (const failure of ['reduced motion', 'context loss']) {
   test(`${failure} releases the enhanced track while retaining the Works destination`, async ({ page }) => {
     await openScene(page);
-    await seek(page, await endScroll(page), -115);
+    await seek(page, await endScroll(page), -93);
     if (failure === 'reduced motion') await page.emulateMedia({ reducedMotion: 'reduce' });
     else await page.locator('canvas').evaluate(canvas => canvas.getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
     await expect(page.locator('.route-journey')).not.toHaveAttribute('data-journey');

@@ -15,10 +15,11 @@ interface ProjectScreenProps {
   width: number;
   height: number;
   index: number;
+  displayBrightness?: number;
 }
 
 // The existing texture, feedback and raycast handlers, shared by physical displays.
-export function ProjectScreen3D({ project, index, journey, onHover, width, height }: ProjectScreenProps) {
+export function ProjectScreen3D({ project, index, journey, onHover, width, height, displayBrightness = 1 }: ProjectScreenProps) {
   const texture = useLoader(TextureLoader, project.preview.src);
   const edge = useRef<MeshBasicMaterial>(null);
   const hovered = useRef(false);
@@ -49,7 +50,7 @@ export function ProjectScreen3D({ project, index, journey, onHover, width, heigh
       onPointerOut={() => hover(false)}
       onClick={event => { if (allowed(event)) { event.stopPropagation(); window.location.assign(project.href); } }}>
       <planeGeometry args={[Math.min(innerWidth, innerHeight * project.preview.width / project.preview.height), Math.min(innerHeight, innerWidth * project.preview.height / project.preview.width)]} />
-      <meshBasicMaterial map={texture} toneMapped={false} fog={false} />
+      <meshBasicMaterial map={texture} color={[displayBrightness, displayBrightness, displayBrightness]} toneMapped={false} fog={false} />
     </mesh>
   </group>;
 }

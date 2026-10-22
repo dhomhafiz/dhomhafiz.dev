@@ -13,13 +13,20 @@ const settingsContext = { exports: {} };
 vm.runInNewContext(settings, settingsContext);
 const { billboardDestinations } = settingsContext.exports;
 const billboardDestination = billboardDestinations.at(-1);
+const journey = ts.transpileModule(fs.readFileSync('src/components/features/immersive/routeJourneySettings.ts', 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS },
+}).outputText;
+const journeyContext = { exports: {} };
+vm.runInNewContext(journey, journeyContext);
 const context = { exports: {}, require: name => {
   if (name === 'three') return THREE;
-  assert.equal(name, './routeBillboardSettings'); return settingsContext.exports;
+  if (name === './routeBillboardSettings') return settingsContext.exports;
+  assert.equal(name, './routeJourneySettings'); return journeyContext.exports;
 } };
 vm.runInNewContext(compiled, context);
 const { sampleCameraPath: sample } = context.exports;
 const position = new THREE.Vector3(), tangent = new THREE.Vector3(), rotation = { yaw: 0, pitch: 0 };
+const contactDeparture = journeyContext.exports.routeJourneySettings.contactDeparture;
 
 test('path remains continuous, forward, and inside the existing road corridor', () => {
   let previousZ = Infinity;
@@ -29,7 +36,7 @@ test('path remains continuous, forward, and inside the existing road corridor', 
     assert.ok(position.z <= previousZ);
     if (step) assert.ok(previousZ - position.z < 1);
     assert.ok(position.x > -5.5 && position.x < 5.5);
-    assert.ok(position.y >= 2.25 - 1e-10 && position.y <= 4.4 + 1e-10);
+    assert.ok(position.y >= 2.25 - 1e-10 && position.y <= 5.4 + 1e-10);
     assert.ok(Math.abs(rotation.yaw) < THREE.MathUtils.degToRad(35));
     assert.ok(Math.abs(rotation.pitch) < THREE.MathUtils.degToRad(20));
     assert.ok(Math.abs(rotation.yaw - previousYaw) < 0.015);
@@ -45,8 +52,8 @@ test('path clamps to clear endpoints and sampling is reversible without internal
   assert.equal(rotation.pitch, -0.025);
   sample(0.37, position, tangent, rotation);
   const forward = [...position.toArray(), rotation.yaw, rotation.pitch];
-  sample(2, position, tangent, rotation);
-  assert.ok(position.distanceTo(new THREE.Vector3(-5.4, 4.4, -194)) < 1e-10);
+  sample(contactDeparture, position, tangent, rotation);
+  assert.ok(position.distanceTo(new THREE.Vector3(-1.5, 5.4, -158)) < 1e-10);
   sample(0.37, position, tangent, rotation);
   assert.deepEqual([...position.toArray(), rotation.yaw, rotation.pitch], forward);
 });
@@ -61,6 +68,7 @@ test('narrow framing stays forward and inside the rails while aiming at the conf
       assert.ok(position.x > -6.2 && position.x < 6.2);
       previousZ = position.z;
     }
+    sample(contactDeparture, position, tangent, rotation, THREE.MathUtils.degToRad(degrees));
     const forward = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(rotation.pitch, rotation.yaw, 0, 'YXZ'));
     const target = new THREE.Vector3(...billboardDestination.position)
       .add(new THREE.Vector3(...billboardDestination.focusOffset)).sub(position).normalize();
@@ -79,9 +87,9 @@ test('billboard structure is beyond the right rail and the road extends past it'
 
 test('viewing intervals hold their composition and departures remain continuous', () => {
   for (const destination of billboardDestinations) {
-    sample(destination.viewStart + .01, position, tangent, rotation);
+    sample((destination.viewStart + .01) * contactDeparture, position, tangent, rotation);
     const pose = [...position.toArray(), rotation.yaw, rotation.pitch];
-    sample(destination.viewEnd - .01, position, tangent, rotation);
+    sample((destination.viewEnd - .01) * contactDeparture, position, tangent, rotation);
     assert.deepEqual([...position.toArray(), rotation.yaw, rotation.pitch], pose);
   }
 });

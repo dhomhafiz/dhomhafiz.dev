@@ -33,7 +33,7 @@ test('one continuous road visits both roadside screens and reverses through stab
   await page.screenshot({ path: 'artifacts/milestone-3b/hero.png' });
   expect(previews.has('/images/dental-home.webp')).toBe(true);
   expect(previews.has('/images/squid-game-2-installation.webp')).toBe(true);
-  await settle(page, .45, -115);
+  await settle(page, .45, -93);
   await expect(hero(page)).toHaveAttribute('data-billboard', 'still-dental');
   await expect(title(page)).toHaveText('Still Dental');
   await expect(ui(page).getByText('Concept Project · Healthcare')).toBeVisible();
@@ -41,10 +41,10 @@ test('one continuous road visits both roadside screens and reverses through stab
   const dental = await cameraPose(page);
   expect(dental.x).toBeGreaterThan(0); expect(dental.yaw).toBeLessThan(0);
   await page.screenshot({ path: 'artifacts/milestone-3b/dental.png' });
-  await settle(page, .48, -115);
+  await settle(page, .48, -93);
   expect(Math.abs((await cameraPose(page)).yaw - dental.yaw)).toBeLessThan(.05);
 
-  await settle(page, .72, -172.1328);
+  await settle(page, .72, -140.1373);
   await expect(ui(page)).toHaveJSProperty('inert', true);
   await expect(ui(page)).toHaveAttribute('aria-hidden', 'true');
   const highway = await cameraPose(page);
@@ -56,7 +56,7 @@ test('one continuous road visits both roadside screens and reverses through stab
   expect(Math.abs((await cameraPose(page)).z - highway.z)).toBeLessThan(.1);
   await page.mouse.move(-10, -10);
 
-  await settle(page, .96, -194);
+  await settle(page, .96, -158);
   await expect(hero(page)).toHaveAttribute('data-billboard', 'netflix-squid-game-2');
   await expect(title(page)).toHaveText('Netflix Squid Game 2 Interactive Poll System');
   await expect(ui(page).getByText('Interactive Installation · Python')).toBeVisible();
@@ -70,15 +70,15 @@ test('one continuous road visits both roadside screens and reverses through stab
   expect(beyond.x).toBeGreaterThan(0); expect(beyond.x).toBeLessThan(1440);
   expect(beyond.y).toBeLessThan(1000);
   await page.screenshot({ path: 'artifacts/milestone-3b/voting.png' });
-  await settle(page, .99, -194);
+  await settle(page, .99, -158);
   expect(Math.abs((await cameraPose(page)).yaw - voting.yaw)).toBeLessThan(.05);
   await page.setViewportSize({ width: 768, height: 1024 });
   await scrollProgress(page, .96);
   await expect(title(page)).toBeInViewport();
   await page.screenshot({ path: 'artifacts/milestone-3b/voting-narrow.png' });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await settle(page, .72, -172.1328);
-  await settle(page, .45, -115);
+  await settle(page, .72, -140.1373);
+  await settle(page, .45, -93);
   expect(Math.abs((await cameraPose(page)).yaw - dental.yaw)).toBeLessThan(.1);
   await settle(page, 0, 6);
   await expect(ui(page)).toHaveJSProperty('inert', true);
@@ -91,8 +91,8 @@ test('both physical screens hover and open their own existing case study, restor
   await nav(page).click();
   await expect(page).toHaveURL(/#works$/);
   for (const [slug, position, z] of [
-    ['still-dental', [15.9, 13.6, -138], -115],
-    ['netflix-squid-game-2', [-15.9, 13.6, -218], -194],
+    ['still-dental', [15.9, 13.6, -115], -93],
+    ['netflix-squid-game-2', [-15.9, 15.6, -182], -158],
   ]) {
     await expect(hero(page)).toHaveAttribute('data-billboard', slug);
     await expect.poll(async () => Math.abs((await cameraPose(page)).z - z)).toBeLessThan(.1);
@@ -150,7 +150,7 @@ test('second focus and highway reload restore; a fresh Works deep link starts at
   await openScene(page); await nav(page).click();
   await expect(page).toHaveURL(/#works$/);
   await expect(title(page)).toBeFocused();
-  for (const [progress, z] of [[.96, -194], [.72, -172.1328]]) {
+  for (const [progress, z] of [[.96, -158], [.72, -140.1373]]) {
     await settle(page, progress, z);
     await expect.poll(() => page.evaluate(() => Math.abs(Number(sessionStorage.getItem(`route-journey:${location.pathname}${location.search}${location.hash}`)) - scrollY))).toBeLessThan(1);
     await page.reload();

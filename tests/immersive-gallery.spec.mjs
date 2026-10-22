@@ -35,7 +35,7 @@ test('billboard is visible from Hero, grows along the roadside approach, and rev
   await page.mouse.move(-10, -10);
   const end = await galleryEnd(page);
   let previousArea = 0;
-  for (const [index, fraction, z] of [[0, 0, 6], [1, .4, -65], [2, .6, -94], [3, .8, -108], [4, 1, -115]]) {
+  for (const [index, fraction, z] of [[0, 0, 6], [1, .4, -52.1], [2, .6, -75.8], [3, .8, -87.3], [4, 1, -93]]) {
     await seek(page, end * firstTravel(fraction), z);
     const pose = await cameraPose(page);
     expect(Math.abs(pose.x)).toBeLessThan(6.2);
@@ -66,7 +66,7 @@ test('billboard is visible from Hero, grows along the roadside approach, and rev
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.evaluate(top => scrollTo({ top, behavior: 'instant' }), (await galleryEnd(page)) * .45);
   // A smaller, road-facing display may fit without the old display's camera retreat.
-  await expect.poll(async () => (await cameraPose(page)).z).toBeGreaterThan(-115.1);
+  await expect.poll(async () => (await cameraPose(page)).z).toBeGreaterThan(-93.1);
   const narrow = projectedBillboard(await cameraPose(page), 768, 1024);
   expect(narrow.x).toBeGreaterThan(0);
   expect(narrow.x + narrow.width).toBeLessThan(768);
@@ -77,7 +77,7 @@ test('billboard is visible from Hero, grows along the roadside approach, and rev
   await page.screenshot({ path: 'artifacts/roadside-billboard/narrow-billboard.png' });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.mouse.move(-10, -10);
-  await seek(page, end * firstTravel(.6), -94);
+  await seek(page, end * firstTravel(.6), -75.8);
   await seek(page, 0, 6);
   await expect(page.locator('.route-gallery-ui')).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('.hero-copy-block')).toHaveCSS('opacity', '1');
@@ -127,11 +127,11 @@ test('keyboard link and film switch keep one active presentation without losing 
 test('gallery deep links and mid-journey refresh restore while cinematic Contact keeps the archive inert', async ({ page }) => {
   test.setTimeout(90_000);
   await openScene(page);
-  await seek(page, (await galleryEnd(page)) * firstTravel(.6), -94);
+  await seek(page, (await galleryEnd(page)) * firstTravel(.6), -75.8);
   await page.waitForTimeout(200); // Allow the existing debounced scroll persistence to settle.
   await page.reload();
   await expect(page.locator('.route-journey')).toHaveAttribute('data-journey', 'active');
-  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 94), { timeout: 15_000 }).toBeLessThan(0.2);
+  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 75.8), { timeout: 15_000 }).toBeLessThan(0.2);
   await page.goto('/#works');
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-gallery', 'active');
   await page.reload();

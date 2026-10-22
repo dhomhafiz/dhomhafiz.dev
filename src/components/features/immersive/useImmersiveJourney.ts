@@ -72,6 +72,10 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
     const update = (progress: number) => {
       if (suspended.current) return;
       journey.current.progress = progress;
+      const projectStart = billboardDestinations[0].viewStart * routeJourneySettings.contactDeparture;
+      const destination = progress < projectStart ? "top" :
+        progress <= routeJourneySettings.contactStart ? "works" : "contact";
+      if (track.dataset.navigation !== destination) track.dataset.navigation = destination;
       // Release the introduction, while keyboard focus can always restore it.
       const fade = progress > routeJourneySettings.contactDeparture ? 0 : 1 - gsap.utils.clamp(0, 1, billboardProgress(progress) / (billboardDestinations[0].viewStart * 0.32));
       if (copy) { copy.style.opacity = String(fade); copy.inert = fade === 0; }
@@ -87,7 +91,7 @@ export function useImmersiveJourney(surface: RefObject<HTMLDivElement | null>, e
       if (active) hero.dataset.billboard = billboardDestinations[index].projectSlug;
       else delete hero.dataset.billboard;
       if (gallery) { gallery.inert = !active; gallery.setAttribute("aria-hidden", String(!active)); }
-      const atContact = progress > 0.84 && scrollY <= journeyEnd() + hero.offsetHeight * 0.15;
+      const atContact = progress > routeJourneySettings.contactStart && scrollY <= journeyEnd() + hero.offsetHeight * 0.15;
       hero.dataset.contact = atContact ? "active" : "inactive";
       if (contact) {
         contact.dataset.routeContact = atContact ? "active" : "waiting";

@@ -54,9 +54,9 @@ test('scroll travel remains independent of mouse offsets and narrow screens reta
     const progress = .4 * (.5 - Math.sin(Math.asin(.6) / 3));
     scrollTo({ top: hero.offsetHeight * 8 * progress, behavior: 'instant' });
   });
-  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 24)).toBeLessThan(0.05);
+  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 18.5)).toBeLessThan(0.05);
   const active = await cameraPose(page);
-  expect(active.z).toBeCloseTo(-24, 0);
+  expect(active.z).toBeCloseTo(-18.5, 0);
   expect(Math.abs(active.yaw)).toBeGreaterThan(2);
   expect(Math.abs(active.yaw)).toBeLessThan(11);
   await page.mouse.move(-10, -10);

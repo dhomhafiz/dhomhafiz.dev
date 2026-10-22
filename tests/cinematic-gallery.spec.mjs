@@ -7,7 +7,7 @@ const back = page => page.getByRole('button', { name: 'Back to 3D Experience' })
 async function arrive(page, progress, slug) {
   await page.evaluate(p => scrollTo({ top: document.querySelector('.immersive-hero').offsetHeight * 8 * p, behavior: 'instant' }), progress);
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', slug);
-  const z = progress > .9 ? -194 : -115;
+  const z = progress > .9 ? -158 : -93;
   await expect.poll(async () => Math.abs((await cameraPose(page)).z - z)).toBeLessThan(.02);
 }
 
@@ -66,7 +66,7 @@ test('Back, Forward, refresh, rapid dismissal, carousel and case-study Back pres
   await back(page).click();
   await expect(archive(page)).toHaveCount(0);
   await expect(page.locator('.immersive-hero')).toHaveAttribute('data-billboard', 'netflix-squid-game-2');
-  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 194)).toBeLessThan(.1);
+  await expect.poll(async () => Math.abs((await cameraPose(page)).z + 158)).toBeLessThan(.1);
   await open(page).click();
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');

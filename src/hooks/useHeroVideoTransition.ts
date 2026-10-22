@@ -13,7 +13,7 @@ export function useHeroVideoTransition(spatial = false) {
     const hero = surface.closest<HTMLElement>(".immersive-hero");
     const track = hero?.closest<HTMLElement>(".route-journey");
     const gallery = document.querySelector<HTMLElement>(".route-gallery-presentation");
-    const navigation = ["works", "contact"].map(id => ({
+    const navigation = ["top", "works", "contact"].map(id => ({
       id,
       section: document.getElementById(id),
       link: header?.querySelector<HTMLAnchorElement>(`nav a[href="#${id}"]`),
@@ -25,20 +25,18 @@ export function useHeroVideoTransition(spatial = false) {
     let distance = 1;
     let height = 0;
     let headerHeight = 0;
-    let headerScrolled = scrollY > 24;
     const render = () => {
       request = 0;
       // The hidden archive shares the track's origin, so its bounds cannot identify
       // a journey destination. Follow the existing journey/presentation state instead.
       const activationLine = headerHeight + Math.min(innerHeight * .25, 160);
-      let nextSection = "";
+      let nextSection = "top";
       if (gallery?.dataset.presentation === "active") nextSection = "works";
       else if (track?.dataset.journey === "active") {
-        if (hero?.dataset.contact === "active") nextSection = "contact";
-        else if (hero?.dataset.gallery === "active") nextSection = "works";
+        nextSection = track.dataset.navigation ?? "top";
       } else {
         // Fallback mode retains ordinary section navigation in either direction.
-        navigation.forEach(({ id, section }) => {
+        navigation.slice(1).forEach(({ id, section }) => {
           if (section?.dataset.routeContact === "waiting") return;
           if (section && section.getBoundingClientRect().top <= activationLine) nextSection = id;
         });
@@ -50,11 +48,6 @@ export function useHeroVideoTransition(spatial = false) {
           else link?.removeAttribute("aria-current");
         });
       }
-      // Share the existing frame with the header; hysteresis avoids flicker near the top.
-      if (scrollY > 32) headerScrolled = true;
-      else if (scrollY < 12) headerScrolled = false;
-      const headerSurface = headerScrolled ? "scrolled" : "top";
-      if (header && header.dataset.surface !== headerSurface) header.dataset.surface = headerSurface;
       // The fixed header now overlays the hero, so the film starts at the page origin.
       const progress = spatial || motion.matches ? 0 : Math.max(0, Math.min(1, (scrollY - origin) / distance));
       const { scale, radius } = sectionTransitionFrame(progress, innerWidth < 768);
@@ -81,7 +74,7 @@ export function useHeroVideoTransition(spatial = false) {
     // Gallery open/close and enhancement changes can happen without a scroll.
     const stateObserver = new MutationObserver(schedule);
     if (hero) stateObserver.observe(hero, { attributes: true, attributeFilter: ["data-gallery", "data-contact"] });
-    if (track) stateObserver.observe(track, { attributes: true, attributeFilter: ["data-journey"] });
+    if (track) stateObserver.observe(track, { attributes: true, attributeFilter: ["data-journey", "data-navigation"] });
     if (gallery) stateObserver.observe(gallery, { attributes: true, attributeFilter: ["data-presentation"] });
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", measure);
@@ -97,7 +90,6 @@ export function useHeroVideoTransition(spatial = false) {
       surface.style.removeProperty("transform");
       surface.style.removeProperty("clip-path");
       surface.style.removeProperty("will-change");
-      header?.removeAttribute("data-surface");
       navigation.forEach(({ link }) => link?.removeAttribute("aria-current"));
     };
   }, [spatial]);
